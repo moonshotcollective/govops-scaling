@@ -49,6 +49,7 @@ jobs:
     - name: Compile
       working-directory: ./packages/hardhat
       run: npx hardhat compile --show-stack-traces
-    - name: Slither
-      working-directory: ./packages/hardhat
-      uses: crytic/slither-action@v0.1.1
+    - uses: crytic/slither-action@v0.1.1
+      with:
+        target: ./packages/hardhat
+
