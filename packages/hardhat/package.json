@@ -33,6 +33,9 @@
     "solhint": "^3.3.7"
   },
   "scripts": {
+    "lint": "npx solhint --fix \"contracts/**/*.sol\" && npx prettier -w . && npx eslint --fix .",
+    "lint:sol": "npx solhint --fix \"contracts/**/*.sol\" && npx prettier -w .",
+    "lint:js": "npx prettier -w . && npx eslint --fix .",
     "chain": "hardhat node --network hardhat --no-deploy",
     "fork": "hardhat node --no-deploy --network hardhat --fork https://mainnet.infura.io/v3/460f40a260564ac4a4f4b3fffb032dad",
     "test": "hardhat test --network hardhat",
