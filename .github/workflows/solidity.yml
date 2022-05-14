@@ -1,0 +1,54 @@
+name: Solidity CI
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'yarn'
+    - name: Install packages
+      run: yarn
+    - name: Compile
+      working-directory: ./packages/hardhat
+      run: npx hardhat compile --show-stack-traces
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'yarn'
+    - name: Install packages
+      run: yarn
+    - name: Lint
+      working-directory: ./packages/hardhat
+      run: yarn run lint
+  slither:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'yarn'
+    - name: Install packages
+      run: yarn
+    - name: Compile
+      working-directory: ./packages/hardhat
+      run: npx hardhat compile --show-stack-traces
+    - name: Slither
+      working-directory: ./packages/hardhat
+      uses: crytic/slither-action@v0.1.1
