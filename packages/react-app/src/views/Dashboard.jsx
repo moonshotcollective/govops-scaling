@@ -1,6 +1,6 @@
 import React from "react";
 
-const Dashboard = ({ ...props }) => {
+const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   return <div>{...props}</div>;
 };
 

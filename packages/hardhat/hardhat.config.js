@@ -253,6 +253,15 @@ module.exports = {
   solidity: {
     compilers: [
       {
+        version: "0.8.13",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 9999,
+          },
+        },
+      },
+      {
         version: "0.8.4",
         settings: {
           optimizer: {
@@ -284,14 +293,6 @@ module.exports = {
     pretty: false,
   },
 };
-
-const DEBUG = false;
-
-function debug(text) {
-  if (DEBUG) {
-    console.log(text);
-  }
-}
 
 task(
   "generate",

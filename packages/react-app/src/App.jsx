@@ -16,21 +16,21 @@ import {
   Account,
   Contract,
   Faucet,
+  FaucetHint,
   GasGauge,
   Header,
+  NetworkDisplay,
+  NetworkSwitch,
   Ramp,
   ThemeSwitch,
-  NetworkDisplay,
-  FaucetHint,
-  NetworkSwitch,
 } from "./components";
-import { NETWORKS, ALCHEMY_KEY } from "./constants";
+import { ALCHEMY_KEY, NETWORKS } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, ExampleUI, Hints, Subgraph, Dashboard } from "./views";
 import { useStaticJsonRPC } from "./hooks";
+import { Dashboard, ExampleUI, Hints, Home, Subgraph } from "./views";
 
 const { ethers } = require("ethers");
 /*
@@ -284,6 +284,9 @@ function App(props) {
         <Route exact path="/">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
           <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+        </Route>
+        <Route exact path="/dashboard">
+          <Dashboard readContracts={readContracts} writeContracts={writeContracts} address={address} tx={tx} />
         </Route>
         <Route exact path="/debug">
           <Contract
