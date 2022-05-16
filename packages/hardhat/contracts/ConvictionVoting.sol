@@ -108,30 +108,34 @@ contract ConvictionVoting is Ownable {
 
     /// @dev return Gauge information
     /// @param gaugeId the id of the gauge to return values for
-    function getGaugeById(
-        uint256 gaugeId
-    ) external view returns(uint256, Conviction memory, uint256) {
-      Gauge storage gauge = gauges[gaugeId];
-      // uint256 conviction = gauge.conviction; // ? Total Score ?
+    function getGaugeById(uint256 gaugeId)
+        external
+        view
+        returns (
+            uint256,
+            Conviction memory,
+            uint256
+        )
+    {
+        Gauge storage gauge = gauges[gaugeId];
+        // uint256 conviction = gauge.conviction; // ? Total Score ?
 
-      // return (0, conviction, 0);
+        // return (0, conviction, 0);
     }
 
     /// @dev Generate a conviction score
     /// @param amount the amount of the deposit
     /// @param timestamp the time of the deposit
-    function getScoreWeight(
-        uint256 amount,
-        uint256 timestamp
-    ) external pure returns(uint256 score) {
+    function getScoreWeight(uint256 amount, uint256 timestamp)
+        external
+        pure
+        returns (uint256 score)
+    {
         // generate a score weight
-        score =  0;
+        score = 0;
 
         // do some math...
 
         return score;
     }
-
-
-
 }

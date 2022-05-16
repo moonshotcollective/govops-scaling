@@ -1,9 +1,9 @@
+/* eslint-disable no-console */
 const fs = require("fs");
 const chalk = require("chalk");
 
 const graphDir = "../subgraph";
 const deploymentsDir = "./deployments";
-const publishDir = "../react-app/src/contracts";
 
 function publishContract(contractName, networkName) {
   try {
@@ -56,7 +56,7 @@ function publishContract(contractName, networkName) {
     return true;
   } catch (e) {
     console.log(
-      "Failed to publish " + chalk.red(contractName) + " to the subgraph."
+      `Failed to publish ${chalk.red(contractName)} to the subgraph.`
     );
     console.log(e);
     return false;
@@ -65,9 +65,9 @@ function publishContract(contractName, networkName) {
 
 async function main() {
   const directories = fs.readdirSync(deploymentsDir);
-  directories.forEach(function (directory) {
+  directories.forEach((directory) => {
     const files = fs.readdirSync(`${deploymentsDir}/${directory}`);
-    files.forEach(function (file) {
+    files.forEach((file) => {
       if (file.indexOf(".json") >= 0) {
         const contractName = file.replace(".json", "");
         publishContract(contractName, directory);
