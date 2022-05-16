@@ -25,7 +25,7 @@ require("@nomiclabs/hardhat-etherscan");
 //
 const defaultNetwork = "localhost";
 
-const mainnetGwei = 21;
+const mainnetGwei = 39;
 
 function mnemonic() {
   try {
@@ -252,8 +252,17 @@ module.exports = {
   },
   solidity: {
     compilers: [
+      // {
+      //   version: "0.8.13",
+      //   settings: {
+      //     optimizer: {
+      //       enabled: true,
+      //       runs: 9999,
+      //     },
+      //   },
+      // },
       {
-        version: "0.8.13",
+        version: "0.8.4",
         settings: {
           optimizer: {
             enabled: true,
@@ -284,3 +293,178 @@ module.exports = {
     pretty: false,
   },
 };
+
+task(
+  "generate",
+  "Create a mnemonic for builder deploys",
+  async (_, { ethers }) => {
+    const bip39 = require("bip39");
+    const hdkey = require("ethereumjs-wallet/hdkey");
+    const mnemonic = bip39.generateMnemonic();
+    if (DEBUG) console.log("mnemonic", mnemonic);
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    if (DEBUG) console.log("seed", seed);
+    const hdwallet = hdkey.fromMasterSeed(seed);
+    const wallet_hdpath = "m/44'/60'/0'/0/";
+    const account_index = 0;
+    const fullPath = wallet_hdpath + account_index;
+    if (DEBUG) console.log("fullPath", fullPath);
+    const wallet = hdwallet.derivePath(fullPath).getWallet();
+    const privateKey = `0x${wallet._privKey.toString("hex")}`;
+    if (DEBUG) console.log("privateKey", privateKey);
+    const EthUtil = require("ethereumjs-util");
+    const address = `0x${EthUtil.privateToAddress(wallet._privKey).toString(
+      "hex"
+    )}`;
+    console.log(
+      `🔐 Account Generated as ${address} and set as mnemonic in packages/hardhat`
+    );
+    console.log(
+      "💬 Use 'yarn run account' to get more information about the deployment account."
+    );
+
+    fs.writeFileSync(`./${address}.txt`, mnemonic.toString());
+    fs.writeFileSync("./mnemonic.txt", mnemonic.toString());
+  }
+);
+
+task(
+  "mineContractAddress",
+  "Looks for a deployer account that will give leading zeros"
+)
+  .addParam("searchFor", "String to search for")
+  .setAction(async (taskArgs, { network, ethers }) => {
+    let contract_address = "";
+    let address;
+
+    const bip39 = require("bip39");
+    const hdkey = require("ethereumjs-wallet/hdkey");
+
+    let mnemonic = "";
+    while (contract_address.indexOf(taskArgs.searchFor) != 0) {
+      mnemonic = bip39.generateMnemonic();
+      if (DEBUG) console.log("mnemonic", mnemonic);
+      const seed = await bip39.mnemonicToSeed(mnemonic);
+      if (DEBUG) console.log("seed", seed);
+      const hdwallet = hdkey.fromMasterSeed(seed);
+      const wallet_hdpath = "m/44'/60'/0'/0/";
+      const account_index = 0;
+      const fullPath = wallet_hdpath + account_index;
+      if (DEBUG) console.log("fullPath", fullPath);
+      const wallet = hdwallet.derivePath(fullPath).getWallet();
+      const privateKey = `0x${wallet._privKey.toString("hex")}`;
+      if (DEBUG) console.log("privateKey", privateKey);
+      const EthUtil = require("ethereumjs-util");
+      address = `0x${EthUtil.privateToAddress(wallet._privKey).toString(
+        "hex"
+      )}`;
+
+      const rlp = require("rlp");
+      const keccak = require("keccak");
+
+      const nonce = 0x00; // The nonce must be a hex literal!
+      const sender = address;
+
+      const input_arr = [sender, nonce];
+      const rlp_encoded = rlp.encode(input_arr);
+
+      const contract_address_long = keccak("keccak256")
+        .update(rlp_encoded)
+        .digest("hex");
+
+      contract_address = contract_address_long.substring(24); // Trim the first 24 characters.
+    }
+
+    console.log(
+      `⛏  Account Mined as ${address} and set as mnemonic in packages/hardhat`
+    );
+    console.log(
+      `📜 This will create the first contract: ${chalk.magenta(
+        `0x${contract_address}`
+      )}`
+    );
+    console.log(
+      "💬 Use 'yarn run account' to get more information about the deployment account."
+    );
+
+    fs.writeFileSync(
+      `./${address}_produces${contract_address}.txt`,
+      mnemonic.toString()
+    );
+    fs.writeFileSync("./mnemonic.txt", mnemonic.toString());
+  });
+
+task(
+  "account",
+  "Get balance informations for the deployment account.",
+  async (_, { ethers }) => {
+    const hdkey = require("ethereumjs-wallet/hdkey");
+    const bip39 = require("bip39");
+    const mnemonic = fs.readFileSync("./mnemonic.txt").toString().trim();
+    if (DEBUG) console.log("mnemonic", mnemonic);
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    if (DEBUG) console.log("seed", seed);
+    const hdwallet = hdkey.fromMasterSeed(seed);
+    const wallet_hdpath = "m/44'/60'/0'/0/";
+    const account_index = 0;
+    const fullPath = wallet_hdpath + account_index;
+    if (DEBUG) console.log("fullPath", fullPath);
+    const wallet = hdwallet.derivePath(fullPath).getWallet();
+    const privateKey = `0x${wallet._privKey.toString("hex")}`;
+    if (DEBUG) console.log("privateKey", privateKey);
+    const EthUtil = require("ethereumjs-util");
+    const address = `0x${EthUtil.privateToAddress(wallet._privKey).toString(
+      "hex"
+    )}`;
+
+    const qrcode = require("qrcode-terminal");
+    qrcode.generate(address);
+    console.log(`‍📬 Deployer Account is ${address}`);
+    for (const n in config.networks) {
+      // console.log(config.networks[n],n)
+      try {
+        const provider = new ethers.providers.JsonRpcProvider(
+          config.networks[n].url
+        );
+        const balance = await provider.getBalance(address);
+        console.log(` -- ${n} --  -- -- 📡 `);
+        console.log(`   balance: ${ethers.utils.formatEther(balance)}`);
+        console.log(`   nonce: ${await provider.getTransactionCount(address)}`);
+      } catch (e) {
+        if (DEBUG) {
+          console.log(e);
+        }
+      }
+    }
+  }
+);
+
+async function addr(ethers, addr) {
+  if (isAddress(addr)) {
+    return getAddress(addr);
+  }
+  const accounts = await ethers.provider.listAccounts();
+  if (accounts[addr] !== undefined) {
+    return accounts[addr];
+  }
+  throw `Could not normalize address: ${addr}`;
+}
+
+task("accounts", "Prints the list of accounts", async (_, { ethers }) => {
+  const accounts = await ethers.provider.listAccounts();
+  accounts.forEach((account) => console.log(account));
+});
+
+task("blockNumber", "Prints the block number", async (_, { ethers }) => {
+  const blockNumber = await ethers.provider.getBlockNumber();
+  console.log(blockNumber);
+});
+
+task("balance", "Prints an account's balance")
+  .addPositionalParam("account", "The account's address")
+  .setAction(async (taskArgs, { ethers }) => {
+    const balance = await ethers.provider.getBalance(
+      await addr(ethers, taskArgs.account)
+    );
+    console.log(formatUnits(balance, "ether"), "ETH");
+  });
