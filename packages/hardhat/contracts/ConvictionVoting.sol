@@ -28,6 +28,7 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Arrays.sol";
 
 /// @title A title that should describe the contract/interface
 /// @author The name of the author
@@ -35,11 +36,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @dev Explain to a developer any extra details
 contract ConvictionVoting is Ownable {
     using SafeERC20 for IERC20;
+    using Arrays for uint256[];
 
     struct Gauge {
         uint256 id;
-        mapping(uint256 => Conviction) conviction;
         uint256 currentConvictionId;
+        mapping(uint256 => Conviction) conviction;
+        mapping(uint256 => mapping(address => uint256[])) convictionsByUser;
     }
 
     struct Conviction {
@@ -51,16 +54,23 @@ contract ConvictionVoting is Ownable {
     uint256 currentGaugeId;
 
     /// @dev Mapping of all gauges structs
-    mapping(uint256 => Gauge) gauges;
+    mapping(uint256 => Gauge) public gauges;
 
     /// @dev Mapping of conviction scores for a user
-    mapping(address => uint256) scores;
+    mapping(address => uint256) public scores;
 
     IERC20 token;
 
     event NewGauge(uint256 indexed id);
     event AddConviction(
         uint256 indexed gaugeId,
+        uint256 indexed convictionId,
+        address indexed user,
+        uint256 indexed amount
+    );
+    event RemoveConviction(
+        uint256 indexed gaugeId,
+        uint256 indexed convictionId,
         address indexed user,
         uint256 indexed amount
     );
@@ -95,33 +105,28 @@ contract ConvictionVoting is Ownable {
     ) external {
         Gauge storage gauge = gauges[gaugeId];
         require(gauge.id != 0, "NONEXISTENT_GAUGE");
-        Conviction storage conviction = gauge.conviction[
-            gauge.currentConvictionId++
-        ]; // convictionId starts from 0...
+        uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
+        Conviction storage conviction = gauge.conviction[convictionId];
         conviction.userAddress = user;
         conviction.amount = amount;
         conviction.timestamp = block.timestamp;
+        gauge.convictionsByUser[user].push(convictionId);
         token.safeTransferFrom(user, address(this), amount);
 
-        emit AddConviction(gaugeId, user, amount);
+        emit AddConviction(gaugeId, convictionId, user, amount);
     }
 
-    /// @dev return Gauge information
-    /// @param gaugeId the id of the gauge to return values for
-    function getGaugeById(uint256 gaugeId)
-        external
-        view
-        returns (
-            uint256,
-            Conviction memory,
-            uint256
-        )
-    {
-        Gauge storage gauge = gauges[gaugeId];
-        // uint256 conviction = gauge.conviction; // ? Total Score ?
+    // function removeConvictionByIds(
+    //     uint256 gaugeId, uint256 count, bool fromRightSide
+    // ) external {
+    //     Gauge memory gauge = gauges[gaugeId];
+    //     require(gauge.id != 0, "NONEXISTENT_GAUGE");
+    //     uint256[] memory addressConvictions = gauge.convictionsByUser[msg.sender];
 
-        // return (0, conviction, 0);
-    }
+    //     if (fromRightSide) {
+    //         addressConvictions = addressConvictions[]
+    //     }
+    // }
 
     /// @dev Generate a conviction score
     /// @param amount the amount of the deposit

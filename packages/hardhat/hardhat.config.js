@@ -9,7 +9,7 @@ require("hardhat-deploy");
 require("hardhat-gas-reporter");
 require("hardhat-abi-exporter");
 
-const ethers = require("@nomiclabs/hardhat-ethers");
+require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
 const bip39 = require("bip39");
@@ -17,7 +17,7 @@ const hdkey = require("ethereumjs-wallet/hdkey");
 const EthUtil = require("ethereumjs-util");
 const qrcode = require("qrcode-terminal");
 
-const { isAddress, getAddress, formatUnits } = ethers.utils;
+const { isAddress, getAddress, formatUnits } = require("ethers/lib/utils");
 
 const { DEBUG } = process.env;
 
@@ -33,7 +33,7 @@ const { DEBUG } = process.env;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "localhost";
+const defaultNetwork = "hardhat";
 
 const mainnetGwei = 39;
 
@@ -372,7 +372,7 @@ task(
   }
 );
 
-async function addr(_addr) {
+async function addr(ethers, _addr) {
   if (isAddress(_addr)) {
     return getAddress(_addr);
   }
@@ -384,13 +384,13 @@ async function addr(_addr) {
 }
 
 // eslint-disable-next-line no-undef
-task("accounts", "Prints the list of accounts", async () => {
+task("accounts", "Prints the list of accounts", async (_, { ethers }) => {
   const accounts = await ethers.provider.listAccounts();
   accounts.forEach((account) => console.log(account));
 });
 
 // eslint-disable-next-line no-undef
-task("blockNumber", "Prints the block number", async () => {
+task("blockNumber", "Prints the block number", async (_, { ethers }) => {
   const blockNumber = await ethers.provider.getBlockNumber();
   console.log(blockNumber);
 });
@@ -398,7 +398,7 @@ task("blockNumber", "Prints the block number", async () => {
 // eslint-disable-next-line no-undef
 task("balance", "Prints an account's balance")
   .addPositionalParam("account", "The account's address")
-  .setAction(async (taskArgs) => {
+  .setAction(async (taskArgs, { ethers }) => {
     const balance = await ethers.provider.getBalance(
       await addr(ethers, taskArgs.account)
     );
