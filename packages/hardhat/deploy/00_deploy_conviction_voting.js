@@ -1,9 +1,9 @@
 /* eslint-disable */
-// deploy/00_deploy_your_contract.js
+// deploy/00_deploy_conviction_voting.js
 
-// const { ethers } = require("hardhat");
+const { ethers } = require("hardhat");
 
-// const localChainId = "31337";
+const localChainId = "31337";
 
 // const sleep = (ms) =>
 //   new Promise((r) =>
@@ -16,26 +16,17 @@
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
-  // const chainId = await getChainId();
+  const chainId = await getChainId();
 
-  await deploy("YourContract", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+  await deploy("ConvictionVoting", {
     from: deployer,
-    // args: [ "Hello", ethers.utils.parseEther("1.5") ],
+    args: [],
     log: true,
     waitConfirmations: 5,
   });
 
   // Getting a previously deployed contract
   // const YourContract = await ethers.getContract("YourContract", deployer);
-  /*  await YourContract.setPurpose("Hello");
-  
-    To take ownership of yourContract using the ownable library uncomment next line and add the 
-    address you want to be the owner. 
-    // await yourContract.transferOwnership(YOUR_ADDRESS_HERE);
-
-    //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
-  */
 
   /*
   //If you want to send value to an address from the deployer
@@ -68,8 +59,8 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   // try {
   //   if (chainId !== localChainId) {
   //     await run("verify:verify", {
-  //       address: YourContract.address,
-  //       contract: "contracts/YourContract.sol:YourContract",
+  //       address: ConvictionVoting.address,
+  //       contract: "contracts/ConvictionVoting.sol:ConvictionVoting",
   //       constructorArguments: [],
   //     });
   //   }
@@ -77,4 +68,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   //   console.error(error);
   // }
 };
-module.exports.tags = ["YourContract"];
+module.exports.tags = ["ConvictionVoting"];

@@ -61,6 +61,7 @@ contract ConvictionVoting is Ownable {
         _transferOwnership(owner);
     }
 
+    /// @dev Adds a new gauge with no values
     function addGauge() external onlyOwner {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
@@ -69,6 +70,10 @@ contract ConvictionVoting is Ownable {
         emit NewGauge(current);
     }
 
+    /// @dev Adds conviction to a gauge
+    /// @param user the address of the user adding conviction
+    /// @param guageId the id of the guage adding conviction to
+    /// @param amount the amount of GTC being convicted => **not the weight of it**
     function addConviction(
         address user,
         uint256 gaugeId,
@@ -86,4 +91,6 @@ contract ConvictionVoting is Ownable {
 
         emit AddConviction(gaugeId, user, amount);
     }
+
+
 }
