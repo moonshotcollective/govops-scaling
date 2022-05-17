@@ -36,6 +36,8 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     waitConfirmations: 5,
   });
 
+  console.log({ GTC: GTC.address });
+
   // Verify from the command line by running `yarn verify`
 
   // You can also Verify your contracts with Etherscan here...
