@@ -38,6 +38,9 @@ contract ConvictionVoting is Ownable {
     using SafeERC20 for IERC20;
     using Arrays for uint256[];
 
+    error BadGaugeId();
+    error EmptyCount();
+
     struct Gauge {
         uint256 id;
         uint256 currentConvictionId;
@@ -104,7 +107,7 @@ contract ConvictionVoting is Ownable {
         uint256 amount
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        require(gauge.id != 0, "NONEXISTENT_GAUGE");
+        if(gauge.id != 0) revert BadGaugeId();
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
         Conviction storage convictions = gauge.convictions[convictionId];
         convictions.userAddress = user;
@@ -123,19 +126,19 @@ contract ConvictionVoting is Ownable {
         uint256[] calldata convictions
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        require(gauge.id != 0, "NONEXISTENT_GAUGE");
-        require(count != 0, "EMPTY_COUNT");
+        if(gauge.id != 0) revert BadGaugeId();
+        if(count != 0) revert EmptyCount();
         uint256 returnAmount = 0;
         if (oldestFirst) {
             for (uint256 i = 0; i <= count; i++) {
                 require(
-                    gauge.convictions[convictions[i]].userAddress == msg.sender,
+                    gauge.convictions[convictions[i]].userAddress == _msgSender(),
                     "ONLY_VOTER"
                 );
                 returnAmount += gauge.convictions[convictions[i]].amount;
                 delete gauge.convictions[convictions[i]];
             }
-            gauge.convictionsByUser[msg.sender] = uint256[](
+            gauge.convictionsByUser[_msgSender()] = uint256[](
                 convictions[:count]
             );
         } else {
@@ -145,17 +148,17 @@ contract ConvictionVoting is Ownable {
                 i--
             ) {
                 require(
-                    gauge.convictions[convictions[i]].userAddress == msg.sender,
+                    gauge.convictions[convictions[i]].userAddress == _msgSender(),
                     "ONLY_VOTER"
                 );
                 returnAmount += gauge.convictions[convictions[i]].amount;
                 delete gauge.convictions[convictions[i]];
             }
-            gauge.convictionsByUser[msg.sender] = uint256[](
+            gauge.convictionsByUser[_msgSender()] = uint256[](
                 convictions[:count]
             );
         }
-        token.safeTransfer(msg.sender, returnAmount);
+        token.safeTransfer(_msgSender(), returnAmount);
     }
 
     /// @dev Generate a conviction score
@@ -176,13 +179,13 @@ contract ConvictionVoting is Ownable {
 
     function getIntFromMappingForConvictionsByUser(uint256 gaugeId, address user) public view returns (uint256[] memory) {
         Gauge storage gauge = gauges[gaugeId];
-        // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][msg.sender];
-        return gauge.convictionsByUser[gaugeId][user];
+        // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][_msgSender()];
+        return gauge.convictionsByUser[user];
     }
 
     function getIntFromMappingForTotalConviction(uint256 gaugeId) public view returns (address, uint256, uint256) {
         Gauge storage gauge = gauges[gaugeId];
-        Conviction storage conviction = gauge.conviction[gaugeId];
+        Conviction storage conviction = gauge.convictions[gaugeId];
 
         return (conviction.userAddress, conviction.amount, conviction.timestamp);
     }
