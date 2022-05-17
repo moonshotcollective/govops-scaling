@@ -143,4 +143,10 @@ contract ConvictionVoting is Ownable {
 
         return score;
     }
+
+    function getIntFromMapping(uint256 gaugeId, address user) public view returns (uint256[] memory) {
+        Gauge storage gauge = gauges[gaugeId];
+        // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][msg.sender];
+        return gauge.convictionsByUser[gaugeId][user];
+    }
 }

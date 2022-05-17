@@ -12,10 +12,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   useEffect(() => {
     const getUsersForConvictionScore = async () => {
       // fetch the current users and conviction score for a gauge
-      // await tx(readContracts && readContracts.gauges()).then(x => {
-      //   console.log("Gauges: ", x);
-      //   setGauges(x);
-      // });
+      await tx(readContracts && readContracts.getIntFromMapping(1, address)).then(x => {
+        console.log("Gauges: ", x);
+        setGauges(x);
+      });
     };
 
     return () => {
