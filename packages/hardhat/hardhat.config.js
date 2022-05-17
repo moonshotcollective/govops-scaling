@@ -33,7 +33,7 @@ const { DEBUG } = process.env;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "hardhat";
+const defaultNetwork = "localhost";
 
 const mainnetGwei = 39;
 

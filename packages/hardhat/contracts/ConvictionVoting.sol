@@ -66,13 +66,13 @@ contract ConvictionVoting is Ownable {
         uint256 indexed gaugeId,
         uint256 indexed convictionId,
         address indexed user,
-        uint256 indexed amount
+        uint256 amount
     );
     event RemoveConviction(
         uint256 indexed gaugeId,
         uint256 indexed convictionId,
         address indexed user,
-        uint256 indexed amount
+        uint256 amount
     );
     event RemoveConviction(
         uint256 indexed gaugeId,
@@ -110,7 +110,7 @@ contract ConvictionVoting is Ownable {
         conviction.userAddress = user;
         conviction.amount = amount;
         conviction.timestamp = block.timestamp;
-        gauge.convictionsByUser[user].push(convictionId);
+        gauge.convictionsByUser[gauge.id][user].push(convictionId);
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
