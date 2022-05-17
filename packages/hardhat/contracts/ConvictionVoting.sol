@@ -144,9 +144,16 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    function getIntFromMapping(uint256 gaugeId, address user) public view returns (uint256[] memory) {
+    function getIntFromMappingForConvictionsByUser(uint256 gaugeId, address user) public view returns (uint256[] memory) {
         Gauge storage gauge = gauges[gaugeId];
         // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][msg.sender];
         return gauge.convictionsByUser[gaugeId][user];
+    }
+
+    function getIntFromMappingForTotalConviction(uint256 gaugeId) public view returns (address, uint256, uint256) {
+        Gauge storage gauge = gauges[gaugeId];
+        Conviction storage conviction = gauge.conviction[gaugeId];
+
+        return (conviction.userAddress, conviction.amount, conviction.timestamp);
     }
 }
