@@ -30,13 +30,16 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Arrays.sol";
 
-/// @title A title that should describe the contract/interface
-/// @author The name of the author
+/// @title Conviction Voting Contract
+/// @author QEDK, Jaxcoder
 /// @notice Explain to an end user what this does
 /// @dev Explain to a developer any extra details
 contract ConvictionVoting is Ownable {
     using SafeERC20 for IERC20;
     using Arrays for uint256[];
+
+    error BadGaugeId();
+    error EmptyCount();
 
     struct Gauge {
         uint256 id;
@@ -44,7 +47,7 @@ contract ConvictionVoting is Ownable {
         mapping(uint256 => Conviction) convictions;
         mapping(address => uint256[]) convictionsByUser;
     }
-
+ 
     struct Conviction {
         address userAddress;
         uint256 amount;
@@ -53,10 +56,10 @@ contract ConvictionVoting is Ownable {
 
     uint256 currentGaugeId;
 
-    /// @dev Mapping of all gauges structs
+    /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
 
-    /// @dev Mapping of conviction scores for a user
+    /// @notice Mapping of conviction scores for a user
     mapping(address => uint256) public scores;
 
     IERC20 token;
@@ -85,7 +88,7 @@ contract ConvictionVoting is Ownable {
         _transferOwnership(owner);
     }
 
-    /// @dev Adds a new gauge with no values
+    /// @notice Adds a new gauge with no values
     function addGauge() external onlyOwner {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
@@ -94,7 +97,7 @@ contract ConvictionVoting is Ownable {
         emit NewGauge(current);
     }
 
-    /// @dev Adds conviction to a gauge
+    /// @notice Adds conviction to a gauge
     /// @param user the address of the user adding conviction
     /// @param gaugeId the id of the guage adding conviction to
     /// @param amount the amount of GTC being convicted => **not the weight of it**
@@ -104,7 +107,7 @@ contract ConvictionVoting is Ownable {
         uint256 amount
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        require(gauge.id != 0, "NONEXISTENT_GAUGE");
+        if(gauge.id != 0) revert BadGaugeId();
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
         Conviction storage convictions = gauge.convictions[convictionId];
         convictions.userAddress = user;
@@ -116,6 +119,11 @@ contract ConvictionVoting is Ownable {
         emit AddConviction(gaugeId, convictionId, user, amount);
     }
 
+    /// @notice removes conviction by id(s)
+    /// @param gaugeId the id of the gauge
+    /// @param count ...
+    /// @param oldestFirst should we use the oldest first?
+    /// @param convictions array of conviction values
     function removeConvictionByIds(
         uint256 gaugeId,
         uint256 count,
@@ -123,19 +131,19 @@ contract ConvictionVoting is Ownable {
         uint256[] calldata convictions
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        require(gauge.id != 0, "NONEXISTENT_GAUGE");
-        require(count != 0, "EMPTY_COUNT");
+        if(gauge.id != 0) revert BadGaugeId();
+        if(count != 0) revert EmptyCount();
         uint256 returnAmount = 0;
         if (oldestFirst) {
             for (uint256 i = 0; i <= count; i++) {
                 require(
-                    gauge.convictions[convictions[i]].userAddress == msg.sender,
+                    gauge.convictions[convictions[i]].userAddress == _msgSender(),
                     "ONLY_VOTER"
                 );
                 returnAmount += gauge.convictions[convictions[i]].amount;
                 delete gauge.convictions[convictions[i]];
             }
-            gauge.convictionsByUser[msg.sender] = uint256[](
+            gauge.convictionsByUser[_msgSender()] = uint256[](
                 convictions[:count]
             );
         } else {
@@ -145,22 +153,23 @@ contract ConvictionVoting is Ownable {
                 i--
             ) {
                 require(
-                    gauge.convictions[convictions[i]].userAddress == msg.sender,
+                    gauge.convictions[convictions[i]].userAddress == _msgSender(),
                     "ONLY_VOTER"
                 );
                 returnAmount += gauge.convictions[convictions[i]].amount;
                 delete gauge.convictions[convictions[i]];
             }
-            gauge.convictionsByUser[msg.sender] = uint256[](
+            gauge.convictionsByUser[_msgSender()] = uint256[](
                 convictions[:count]
             );
         }
-        token.safeTransfer(msg.sender, returnAmount);
+        token.safeTransfer(_msgSender(), returnAmount);
     }
 
-    /// @dev Generate a conviction score
+    /// @notice Generate a conviction score
     /// @param amount the amount of the deposit
     /// @param timestamp the time of the deposit
+    /// @return score
     function getScoreWeight(uint256 amount, uint256 timestamp)
         external
         pure
@@ -172,5 +181,27 @@ contract ConvictionVoting is Ownable {
         // do some math...
 
         return score;
+    }
+
+    /// @notice get a users conviction score for a gauge
+    /// @param gaugeId the id of the gauge
+    /// @param user the address of the user
+    function getIntArrayFromMappingForConvictionsByUser(uint256 gaugeId, address user) public view returns (uint256[] memory) {
+        Gauge storage gauge = gauges[gaugeId];
+        // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][_msgSender()];
+        return gauge.convictionsByUser[user];
+    }
+
+    /// @notice get a total conviction score for a gauge
+    /// @param gaugeId the id of the gauge
+    function getIntFromMappingForTotalConvictionForGauge(uint256 gaugeId) public view returns (uint256) {
+        Gauge storage gauge = gauges[gaugeId];
+        Conviction storage convictions = gauge.convictions[gaugeId];
+        uint256 convictionTotalForGuage = 0;
+        //for(uint i = 0; i < gauge.convictions[gaugeId].length; i++) {
+            // add them upp
+        //}
+
+        return convictionTotalForGuage;
     }
 }
