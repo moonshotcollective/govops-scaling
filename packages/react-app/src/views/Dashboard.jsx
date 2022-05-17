@@ -7,7 +7,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { address: address, score: 75 },
     { address: address, score: 57 },
   ]);
-  const [gauges, setGauges] = useState([]);
+  const [gauges, setGauges] = useState([{ id: 1 }, { id: 2 }]);
 
   useEffect(() => {
     const getTotalCovictionForGuage = async () => {
