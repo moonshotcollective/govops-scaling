@@ -23,7 +23,7 @@
                     Moonshot Collective
             https://github.com/moonshotcollective
 */
-pragma solidity 0.8.13;
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -41,8 +41,8 @@ contract ConvictionVoting is Ownable {
     struct Gauge {
         uint256 id;
         uint256 currentConvictionId;
-        mapping(uint256 => Conviction) conviction;
-        mapping(uint256 => mapping(address => uint256[])) convictionsByUser;
+        mapping(uint256 => Conviction) convictions;
+        mapping(address => uint256[]) convictionsByUser;
     }
 
     struct Conviction {
@@ -106,27 +106,57 @@ contract ConvictionVoting is Ownable {
         Gauge storage gauge = gauges[gaugeId];
         require(gauge.id != 0, "NONEXISTENT_GAUGE");
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
-        Conviction storage conviction = gauge.conviction[convictionId];
-        conviction.userAddress = user;
-        conviction.amount = amount;
-        conviction.timestamp = block.timestamp;
-        gauge.convictionsByUser[gauge.id][user].push(convictionId);
+        Conviction storage convictions = gauge.convictions[convictionId];
+        convictions.userAddress = user;
+        convictions.amount = amount;
+        convictions.timestamp = block.timestamp;
+        gauge.convictionsByUser[user].push(convictionId);
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
     }
 
-    // function removeConvictionByIds(
-    //     uint256 gaugeId, uint256 count, bool fromRightSide
-    // ) external {
-    //     Gauge memory gauge = gauges[gaugeId];
-    //     require(gauge.id != 0, "NONEXISTENT_GAUGE");
-    //     uint256[] memory addressConvictions = gauge.convictionsByUser[msg.sender];
-
-    //     if (fromRightSide) {
-    //         addressConvictions = addressConvictions[]
-    //     }
-    // }
+    function removeConvictionByIds(
+        uint256 gaugeId,
+        uint256 count,
+        bool oldestFirst,
+        uint256[] calldata convictions
+    ) external {
+        Gauge storage gauge = gauges[gaugeId];
+        require(gauge.id != 0, "NONEXISTENT_GAUGE");
+        require(count != 0, "EMPTY_COUNT");
+        uint256 returnAmount = 0;
+        if (oldestFirst) {
+            for (uint256 i = 0; i <= count; i++) {
+                require(
+                    gauge.convictions[convictions[i]].userAddress == msg.sender,
+                    "ONLY_VOTER"
+                );
+                returnAmount += gauge.convictions[convictions[i]].amount;
+                delete gauge.convictions[convictions[i]];
+            }
+            gauge.convictionsByUser[msg.sender] = uint256[](
+                convictions[:count]
+            );
+        } else {
+            for (
+                uint256 i = convictions.length - 1;
+                i >= convictions.length - count;
+                i--
+            ) {
+                require(
+                    gauge.convictions[convictions[i]].userAddress == msg.sender,
+                    "ONLY_VOTER"
+                );
+                returnAmount += gauge.convictions[convictions[i]].amount;
+                delete gauge.convictions[convictions[i]];
+            }
+            gauge.convictionsByUser[msg.sender] = uint256[](
+                convictions[:count]
+            );
+        }
+        token.safeTransfer(msg.sender, returnAmount);
+    }
 
     /// @dev Generate a conviction score
     /// @param amount the amount of the deposit
