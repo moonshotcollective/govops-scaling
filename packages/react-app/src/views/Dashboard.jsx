@@ -1,4 +1,4 @@
-import { Card, Col, Input, List, Row, Switch } from "antd";
+import { Button, Card, Col, Input, List, Row, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
@@ -13,6 +13,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { id: 2, score: 0 },
   ]);
   const [action, setAction] = useState(true);
+  const [amount, setAmount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [approval, setApproval] = useState(0);
+  const [lengthOfTime, setLengthOfTime] = useState(0);
+  const [proposalId, setProposalId] = useState();
 
   const onSwitchChange = e => {
     setAction(e);
@@ -32,6 +37,19 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     };
   }, [address]);
 
+  useEffect(() => {
+    const getApprovedAmount = () => {
+      readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
+        console.log("Allowance for CV: ", r.toString());
+        setApproval(r.toString());
+      });
+    };
+
+    return () => {
+      getApprovedAmount();
+    };
+  }, [address]);
+
   return (
     <div style={{ margin: "20px" }}>
       <Row align="center">
@@ -45,8 +63,29 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <span className="">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
           <br />
+          <label>Proposal Id: </label>
+          <Input
+            value={proposalId}
+            onChange={e => {
+              setProposalId(e.target.value);
+            }}
+          />
           <label>Amount: </label>
-          <Input />
+          <Input
+            value={amount}
+            onChange={e => {
+              setAmount(e.target.value);
+            }}
+          />
+          <label>Length of Time: </label>
+          <Input
+            value={lengthOfTime}
+            onChange={e => {
+              setLengthOfTime(e.target.value);
+            }}
+          />
+          <br />
+          {!approval > 0 ? <Button loading={loading}>Submit</Button> : <Button loading={loading}>Approve</Button>}
         </Col>
       </Row>
       <Row>
@@ -56,7 +95,14 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             dataSource={gauges}
             renderItem={item => (
               <List.Item>
-                <Card title={item.id}>Score: {item.score}</Card>
+                <Card
+                  title={item.id}
+                  onClick={e => {
+                    setProposalId(item.id);
+                  }}
+                >
+                  Score: {item.score}
+                </Card>
               </List.Item>
             )}
           />
