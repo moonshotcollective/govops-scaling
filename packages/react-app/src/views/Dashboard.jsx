@@ -7,19 +7,22 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { address: address, score: 75 },
     { address: address, score: 57 },
   ]);
-  const [gauges, setGauges] = useState([{ id: 1 }, { id: 2 }]);
+  const [gauges, setGauges] = useState([
+    { id: 1, score: 0 },
+    { id: 2, score: 0 },
+  ]);
 
   useEffect(() => {
-    const getTotalCovictionForGuage = async () => {
+    const getConvictionScoreForGauge = async () => {
       // fetch the current total conviction score for a gauge
-      await tx(readContracts && readContracts.getIntFromMappingForTotalConviction(1)).then(x => {
+      await tx(readContracts && readContracts.getConvictionScoreForGauge(1)).then(x => {
         console.log("Gauges: ", x);
-        setGauges(x);
+        setGauges({ id: 1, score: x });
       });
     };
 
     return () => {
-      getTotalCovictionForGuage();
+      getConvictionScoreForGauge();
     };
   }, [users]);
 
