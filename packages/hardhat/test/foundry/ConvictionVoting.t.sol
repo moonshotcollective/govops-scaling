@@ -81,7 +81,7 @@ contract ConvictionVotingTest is Test, Ownable {
         emit AddConviction(gaugeId, convictionId, user, amount);
     }
 
-    function testGetConvictionScore(uint256 gaugeId)
+    function testCalculateConvictionScore(uint256 gaugeId)
         external
         view
         returns (uint256 score)
@@ -96,6 +96,18 @@ contract ConvictionVotingTest is Test, Ownable {
         }
 
         return score;
+    }
+
+    function testCalculateMinimumConviction(
+        uint256 gaugeId
+    )
+        external
+        view
+        returns(uint256)
+    {
+        uint256 convictionReqd = 0;
+
+        return convictionReqd;
     }
 
     /// @notice index out of bounds error
