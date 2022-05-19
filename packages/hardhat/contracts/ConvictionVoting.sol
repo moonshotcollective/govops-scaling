@@ -84,8 +84,8 @@ contract ConvictionVoting is Ownable {
         uint256 indexed amount
     );
 
-    constructor(IERC20 newToken, address owner) {
-        token = newToken;
+    constructor(address newToken, address owner) {
+        token = IERC20(newToken);
         _transferOwnership(owner);
     }
 
