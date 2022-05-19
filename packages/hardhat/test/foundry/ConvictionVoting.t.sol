@@ -53,23 +53,23 @@ contract ConvictionVotingTest is Test {
 
     mapping(uint256 => Gauge) public gauges;
 
-    // function testAddConviction(
-    //     address user,
-    //     uint256 gaugeId,
-    //     uint256 amount
-    // ) external {
-    //     Gauge storage gauge = gauges[gaugeId];
-    //     if (gauge.id != 0) revert BadGaugeId();
-    //     uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
-    //     Conviction storage convictions = gauge.convictions[convictionId];
-    //     convictions.userAddress = user;
-    //     convictions.amount = amount;
-    //     convictions.timestamp = block.timestamp;
-    //     gauge.convictionsByUser[user].push(convictionId);
-    //     token.safeTransferFrom(user, address(this), amount);
+    function testAddConviction(
+        address user,
+        uint256 gaugeId,
+        uint256 amount
+    ) external {
+        Gauge storage gauge = gauges[gaugeId];
+        if (gauge.id != 0) revert BadGaugeId();
+        uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
+        Conviction storage convictions = gauge.convictions[convictionId];
+        convictions.userAddress = user;
+        convictions.amount = amount;
+        convictions.timestamp = block.timestamp;
+        gauge.convictionsByUser[user].push(convictionId);
+        // token.safeTransferFrom(user, address(this), amount);
 
-    //     emit AddConviction(gaugeId, convictionId, user, amount);
-    // }
+        emit AddConviction(gaugeId, convictionId, user, amount);
+    }
 
     function testAddGauge() external {
         uint256 current = ++currentGaugeId;
