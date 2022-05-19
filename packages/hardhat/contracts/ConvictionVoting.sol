@@ -36,6 +36,7 @@ import "./libs/ABDKMath64x64.sol";
 /// @notice Explain to an end user what this does
 /// @dev Explain to a developer any extra details
 contract ConvictionVoting is Ownable {
+    using ABDKMath64x64 for uint256;
     using SafeERC20 for IERC20;
     using Arrays for uint256[];
 
@@ -179,9 +180,7 @@ contract ConvictionVoting is Ownable {
     {
         Gauge storage gauge = gauges[gaugeId];
         for (uint256 i = 0; i < gauge.currentConvictionId; i++) {
-            uint256 x1 = uint256(
-                ABDKMath64x64.sqrtu(gauge.convictions[i].amount)
-            );
+            uint256 x1 = gauge.convictions[i].amount.sqrtu();
             uint256 x2 = (block.timestamp - gauge.convictions[i].timestamp)**2;
             score += x1 * x2;
         }

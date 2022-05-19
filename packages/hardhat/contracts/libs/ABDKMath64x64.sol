@@ -21,7 +21,7 @@ library ABDKMath64x64 {
      * @param x unsigned 256-bit integer number
      * @return unsigned 128-bit integer number
      */
-    function sqrtu(uint256 x) external pure returns (uint128) {
+    function sqrtu(uint256 x) internal pure returns (uint128) {
         unchecked {
             if (x == 0) return 0;
             else {
