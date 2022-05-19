@@ -172,7 +172,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Calculate conviction score for a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @return score
-    function getConvictionScore(uint256 gaugeId)
+    function getConvictionScoreForGauge(uint256 gaugeId)
         external
         view
         returns (uint256 score)
