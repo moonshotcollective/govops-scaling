@@ -1,4 +1,4 @@
-import { Card, Col, List, Row } from "antd";
+import { Card, Col, Input, List, Row, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
@@ -12,6 +12,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { id: 1, score: 0 },
     { id: 2, score: 0 },
   ]);
+  const [action, setAction] = useState(true);
+
+  const onSwitchChange = e => {
+    setAction(e);
+  };
 
   useEffect(() => {
     const getConvictionScoreForGauge = async () => {
@@ -29,6 +34,21 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   return (
     <div style={{ margin: "20px" }}>
+      <Row align="center">
+        <Col span={12} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
+          <Switch
+            className=""
+            checkedChildren="Stake"
+            unCheckedChildren="Unstake"
+            defaultChecked
+            onChange={onSwitchChange}
+          />
+          <span className="">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
+          <br />
+          <label>Amount: </label>
+          <Input />
+        </Col>
+      </Row>
       <Row>
         <Col span={24}>
           <List
