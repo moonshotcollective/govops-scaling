@@ -8,6 +8,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { address: address, score: 57 },
   ]);
   const [gauges, setGauges] = useState([
+    // mock gauges
     { id: 1, score: 0 },
     { id: 2, score: 0 },
   ]);
@@ -15,7 +16,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   useEffect(() => {
     const getConvictionScoreForGauge = async () => {
       // fetch the current total conviction score for a gauge
-      await tx(readContracts && readContracts.getConvictionScoreForGauge(1)).then(x => {
+      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(1).then(x => {
         console.log("Gauges: ", x);
         setGauges({ id: 1, score: x });
       });
@@ -24,7 +25,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getConvictionScoreForGauge();
     };
-  }, [users]);
+  }, [address]);
 
   return (
     <div style={{ margin: "20px" }}>
@@ -32,10 +33,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         <Col span={24}>
           <List
             grid={{ gutter: 16, column: 4 }}
-            dataSource={users}
+            dataSource={gauges}
             renderItem={item => (
               <List.Item>
-                <Card title={item.address}>Card content</Card>
+                <Card title={item.id}>Score: {item.score}</Card>
               </List.Item>
             )}
           />

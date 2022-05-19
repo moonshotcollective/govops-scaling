@@ -90,6 +90,7 @@ contract ConvictionVoting is Ownable {
 
     constructor(address newToken, address owner) {
         token = IERC20(newToken);
+        currentGaugeId = 0;
         _transferOwnership(owner);
     }
 
@@ -112,7 +113,7 @@ contract ConvictionVoting is Ownable {
         uint256 amount
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        if (gauge.id != 0) revert BadGaugeId();
+        if (gauge.id == 0) revert BadGaugeId();
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
         Conviction storage convictions = gauge.convictions[convictionId];
         convictions.userAddress = user;
@@ -177,7 +178,7 @@ contract ConvictionVoting is Ownable {
     /// @param gaugeId Gauge id to calculate score for
     /// @return score
     function calculateConvictionScoreForGauge(uint256 gaugeId)
-        external
+        public
         view
         returns (uint256 score)
     {
