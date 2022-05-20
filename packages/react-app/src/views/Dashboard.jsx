@@ -7,6 +7,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { address: address, score: 75 },
     { address: address, score: 57 },
   ]);
+  const [currentGaugeId, setCurrentGaugeId] = useState();
   const [gauges, setGauges] = useState([
     // mock gauges
     { id: 1, score: 0 },
@@ -18,17 +19,35 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [approval, setApproval] = useState(0);
   const [lengthOfTime, setLengthOfTime] = useState(0);
   const [proposalId, setProposalId] = useState();
+  const [score, setScore] = useState();
 
   const onSwitchChange = e => {
     setAction(e);
   };
+
+  const addGauge = () => {
+    tx(writeContracts?.ConvictionVoting?.addGauge());
+  };
+
+  useEffect(() => {
+    const getGauges = () => {
+      readContracts?.ConvictionVoting?.gauges(1).then(r => {
+        console.log("Gauges: ", r);
+        setGauges(r);
+      });
+    };
+
+    return () => {
+      getGauges();
+    };
+  }, [address]);
 
   useEffect(() => {
     const getConvictionScoreForGauge = async () => {
       // fetch the current total conviction score for a gauge
       await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(1).then(x => {
         console.log("Gauges: ", x);
-        setGauges({ id: 1, score: x });
+        setScore({ id: 1, score: x });
       });
     };
 
