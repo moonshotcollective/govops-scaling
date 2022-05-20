@@ -71,7 +71,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   useEffect(() => {
     const getGauges = () => {
-      readContracts?.ConvictionVoting?.gauges(1).then(r => {
+      readContracts?.ConvictionVoting?.gauges(currentGaugeId ?? 1).then(r => {
         console.log("Gauges: ", r);
         setGauges(r);
       });
@@ -80,21 +80,21 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getGauges();
     };
-  }, [address]);
+  }, [currentGaugeId]);
 
   useEffect(() => {
     const getConvictionScoreForGauge = async () => {
       // fetch the current total conviction score for a gauge
-      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(1).then(x => {
+      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId ?? 1).then(x => {
         console.log("Gauges: ", x);
-        setScore({ id: 1, score: x });
+        setScore({ id: 1, score: x.toString() });
       });
     };
 
     return () => {
       getConvictionScoreForGauge();
     };
-  }, [address]);
+  }, [currentGaugeId]);
 
   useEffect(() => {
     const getApprovedAmount = () => {
@@ -118,37 +118,49 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         </Col>
         <Col span={12} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <Switch
-            className=""
+            className="right-9 m-4"
             checkedChildren="Stake"
             unCheckedChildren="Unstake"
             defaultChecked
             onChange={onSwitchChange}
           />
-          <span className="">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
+          <span className="m-4">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
           <br />
           <label>Proposal Id: </label>
           <Input
+            className="w-60 m-4"
             value={proposalId}
             onChange={e => {
               setProposalId(e.target.value);
             }}
           />
+          <br />
           <label>Amount: </label>
           <Input
+            className="w-60 m-4"
             value={amount}
             onChange={e => {
               setAmount(e.target.value);
             }}
           />
-          <label>Length of Time: </label>
+          <br />
+          {/* <label>Length of Time: </label>
           <Input
             value={lengthOfTime}
             onChange={e => {
               setLengthOfTime(e.target.value);
             }}
           />
-          <br />
-          {!approval > 0 ? <Button loading={loading}>Submit</Button> : <Button loading={loading}>Approve</Button>}
+          <br /> */}
+          {!approval > 0 ? (
+            <Button className="m-1" loading={loading}>
+              Submit
+            </Button>
+          ) : (
+            <Button className="m-1" loading={loading}>
+              Approve
+            </Button>
+          )}
         </Col>
       </Row>
       <Divider>Proposals</Divider>
