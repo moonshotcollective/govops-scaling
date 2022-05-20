@@ -1,7 +1,6 @@
 import { Button } from "antd";
 import React from "react";
 import { useThemeSwitcher } from "react-css-theme-switcher";
-
 import Address from "./Address";
 import Balance from "./Balance";
 import Wallet from "./Wallet";
@@ -93,8 +92,15 @@ export default function Account({
     <span>
       {web3Modal && web3Modal.cachedProvider ? (
         <>
-          {address && <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />}
-          <Balance address={address} provider={localProvider} price={price} />
+          {address && (
+            <Address
+              className="text-xs"
+              address={address}
+              ensProvider={mainnetProvider}
+              blockExplorer={blockExplorer}
+            />
+          )}
+          <Balance className="text-xs" address={address} provider={localProvider} price={price} />
           <Wallet
             address={address}
             provider={localProvider}
@@ -108,16 +114,23 @@ export default function Account({
         ""
       ) : isContract ? (
         <>
-          {address && <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />}
-          <Balance address={address} provider={localProvider} price={price} />
+          {address && (
+            <Address
+              className="text-xs"
+              address={address}
+              ensProvider={mainnetProvider}
+              blockExplorer={blockExplorer}
+            />
+          )}
+          <Balance className="text-xs" address={address} provider={localProvider} price={price} />
         </>
       ) : (
         ""
       )}
       {useBurner && web3Modal && !web3Modal.cachedProvider ? (
         <>
-          <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />
-          <Balance address={address} provider={localProvider} price={price} />
+          <Address className="text-xs" address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />
+          <Balance className="text-xs" address={address} provider={localProvider} price={price} />
           <Wallet
             address={address}
             provider={localProvider}

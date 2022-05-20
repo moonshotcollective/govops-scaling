@@ -115,10 +115,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
       <Row align="center">
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {currentGaugeId ?? "Not Selected"}</span>
+          <Button className="mt-56">Add Gauge</Button>
         </Col>
         <Col span={12} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <Switch
-            className="right-9 m-4"
+            className="right-9 m-4 bg-purple-600"
             checkedChildren="Stake"
             unCheckedChildren="Unstake"
             defaultChecked
@@ -153,11 +154,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <br /> */}
           {!approval > 0 ? (
-            <Button className="m-1" loading={loading}>
+            <Button className="mt-10" loading={loading}>
               Submit
             </Button>
           ) : (
-            <Button className="m-1" loading={loading}>
+            <Button className="mt-10" loading={loading}>
               Approve
             </Button>
           )}
