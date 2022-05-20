@@ -47,7 +47,7 @@ contract ConvictionVoting is Ownable {
     struct Gauge {
         uint256 id;
         uint256 currentConvictionId;
-        uint256 totalCoviction;
+        uint256 totalCovictionStaked;
         mapping(uint256 => Conviction) convictions;
         mapping(address => uint256[]) convictionsByUser;
     }
@@ -97,11 +97,7 @@ contract ConvictionVoting is Ownable {
     }
 
     /// @notice Adds a new gauge with no values
-    function addGauge()
-        external
-        onlyOwner
-        returns(uint256 totalGauges)
-    {
+    function addGauge() external onlyOwner returns (uint256 totalGauges) {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
         gauge.id = current;
@@ -200,23 +196,13 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    function getGaugeDetails(
-        uint256 gaugeId
-    )
-        public
-        view
-        returns(uint256)
-    {
+    function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
         Gauge storage gauge = gauges[gaugeId];
 
-        return gauge.totalCoviction;
+        return gauge.totalCovictionStaked;
     }
 
-    function totalStaked() 
-        public
-        view
-        returns(uint256)
-    {
+    function totalStaked() public view returns (uint256) {
         uint256 staked = token.balanceOf(address(this));
 
         return staked;
@@ -226,10 +212,7 @@ contract ConvictionVoting is Ownable {
     /// @param gaugeId the id of the gauge
     /// @param user the address of the user
     /// @return userCovictions the users convictions for a gauge
-    function getConvictionsByUser(
-        uint256 gaugeId,
-        address user
-    )
+    function getConvictionsByUser(uint256 gaugeId, address user)
         public
         view
         returns (uint256[] memory userCovictions)
@@ -242,9 +225,7 @@ contract ConvictionVoting is Ownable {
     /// @notice get a total conviction score for a gauge
     /// @param gaugeId the id of the gauge
     /// @return convictionTotal the total conviction for that gauge
-    function getTotalConvictionForGauge(
-        uint256 gaugeId
-    )
+    function getTotalConvictionForGauge(uint256 gaugeId)
         public
         view
         returns (uint256 convictionTotal)
@@ -262,12 +243,10 @@ contract ConvictionVoting is Ownable {
     /// @notice Calculates the minimum conviction a user can commit
     /// @param gaugeId the id of the gauge
     /// @return convictionReqd The amount of tokens required to add conviction to a gauge
-    function calculateMinimumConviction(
-        uint256 gaugeId
-    )
+    function calculateMinimumConviction(uint256 gaugeId)
         external
         view
-        returns(uint256)
+        returns (uint256)
     {
         uint256 convictionReqd = 0;
 
@@ -283,15 +262,12 @@ contract ConvictionVoting is Ownable {
     /// threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - requestedAmount * D) ** 2
     /// @param requestedAmount Requested amount of tokens for a certain proposal
     /// @return threshold The threshold a proposal's conviction should surpass in order to be able to execute it.
-    function calculateThreshold(
-        uint256 requestedAmount
-    )
+    function calculateThreshold(uint256 requestedAmount)
         public
         view
-        returns(uint256 threshold)
+        returns (uint256 threshold)
     {
         // get the balance of the vault, GTC. Using address(this) as a placeholder
         uint256 funds = token.balanceOf(address(this));
-
     }
 }

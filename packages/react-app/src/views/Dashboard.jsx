@@ -77,8 +77,6 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     }
   };
 
-  
-
   const getConvictionScoreForGaugeWithId = async gaugeId => {
     // fetch the current total conviction score for a gauge
     await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {

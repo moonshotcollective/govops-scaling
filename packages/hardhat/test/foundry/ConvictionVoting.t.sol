@@ -98,12 +98,10 @@ contract ConvictionVotingTest is Test, Ownable {
         return score;
     }
 
-    function testCalculateMinimumConviction(
-        uint256 gaugeId
-    )
+    function testCalculateMinimumConviction(uint256 gaugeId)
         external
         view
-        returns(uint256)
+        returns (uint256)
     {
         uint256 convictionReqd = 0;
 
