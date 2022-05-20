@@ -115,7 +115,7 @@ contract ConvictionVoting is Ownable {
         address user,
         uint256 gaugeId,
         uint256 amount
-    ) external {
+    ) external returns (uint256 totalConvictions) {
         Gauge storage gauge = gauges[gaugeId];
         if (gauge.id == 0) revert BadGaugeId();
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
@@ -127,6 +127,8 @@ contract ConvictionVoting is Ownable {
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
+
+        return convictionId;
     }
 
     /// @notice removes conviction by id(s)
