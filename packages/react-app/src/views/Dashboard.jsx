@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Input, List, notification, Row, Switch } from "antd";
+import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
@@ -69,25 +69,20 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
-  useEffect(() => {
-    const getGauges = () => {
-      readContracts?.ConvictionVoting?.gauges(currentGaugeId ?? 1).then(r => {
-        console.log("Gauges: ", r);
-        setGauges(r);
-      });
-    };
-
-    return () => {
-      getGauges();
-    };
-  }, [currentGaugeId]);
+  const submitConviction = action => {
+    if (action === true) {
+      addConviction();
+    } else if (action === false) {
+      // removeConviction
+    }
+  };
 
   useEffect(() => {
     const getConvictionScoreForGauge = async () => {
       // fetch the current total conviction score for a gauge
       await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId ?? 1).then(x => {
-        console.log("Gauges: ", x);
-        setScore({ id: 1, score: x.toString() });
+        console.log("Gauges: ", x.toString());
+        setScore({ id: currentGaugeId, score: x.toString() });
       });
     };
 
@@ -116,7 +111,9 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {currentGaugeId ?? "Not Selected"}</span>
           <br />
-          <Button className="mt-56">Add Gauge</Button>
+          <Button className="mt-56" onClick={() => addGauge()}>
+            Add Gauge
+          </Button>
         </Col>
         <Col span={12} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <Switch
@@ -126,11 +123,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             defaultChecked
             onChange={onSwitchChange}
           />
-          <span className="m-4">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
+          <span className="m-5">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
           <br />
           <label>Proposal Id: </label>
-          <Input
-            className="w-60 m-4"
+          <input
+            className="w-60 m-4 bg-transparent border-2 p-1"
             value={proposalId}
             onChange={e => {
               setProposalId(e.target.value);
@@ -138,8 +135,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <br />
           <label>Amount: </label>
-          <Input
-            className="w-60 m-4"
+          <input
+            className="w-60 m-4 bg-transparent border-2 p-1"
             value={amount}
             onChange={e => {
               setAmount(e.target.value);
@@ -155,7 +152,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <br /> */}
           {!approval > 0 ? (
-            <Button className="mt-10 bg-purple-600" loading={loading}>
+            <Button className="mt-10 bg-purple-600" loading={loading} onClick={() => submitConviction(action)}>
               Submit
             </Button>
           ) : (
@@ -174,6 +171,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             renderItem={item => (
               <List.Item>
                 <Card
+                  className="cursor-pointer"
                   title={item.id}
                   onClick={e => {
                     setProposalId(item.id);
