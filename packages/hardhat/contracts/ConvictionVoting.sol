@@ -194,22 +194,16 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    function getGauges()
-        public
-        view
-        returns(uint256, uint256)
-    {
-        
-    }
-
-    function getGaugeDetails(uint256 gaugeId)
+    function getGaugeDetails(
+        uint256 gaugeId
+    )
         public
         view
         returns(uint256)
     {
         Gauge storage gauge = gauges[gaugeId];
 
-        return gauge.id;
+        return gauge.totalCoviction;
     }
 
     function totalStaked() 
@@ -225,38 +219,43 @@ contract ConvictionVoting is Ownable {
     /// @notice get a users conviction score for a gauge
     /// @param gaugeId the id of the gauge
     /// @param user the address of the user
+    /// @return userCovictions the users convictions for a gauge
     function getConvictionsByUser(
         uint256 gaugeId,
         address user
     )
         public
         view
-        returns (uint256[] memory)
+        returns (uint256[] memory userCovictions)
     {
         Gauge storage gauge = gauges[gaugeId];
+
         return gauge.convictionsByUser[user];
     }
 
     /// @notice get a total conviction score for a gauge
     /// @param gaugeId the id of the gauge
+    /// @return convictionTotal the total conviction for that gauge
     function getTotalConvictionForGauge(
         uint256 gaugeId
     )
         public
         view
-        returns (uint256)
+        returns (uint256 convictionTotal)
     {
         Gauge storage gauge = gauges[gaugeId];
         Conviction storage convictions = gauge.convictions[gaugeId];
-        uint256 convictionTotalForGuage = 0;
+        convictionTotalForGuage = 0;
         //for(uint i = 0; i < gauge.convictions[gaugeId].length; i++) {
         // add them upp
         //}
 
-        return convictionTotalForGuage;
+        return convictionTotal;
     }
 
+    /// @notice Calculates the minimum conviction a user can commit
     /// @param gaugeId the id of the gauge
+    /// @return convictionReqd The amount of tokens required to add conviction to a gauge
     function calculateMinimumConviction(
         uint256 gaugeId
     )
