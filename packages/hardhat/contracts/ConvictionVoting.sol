@@ -56,7 +56,7 @@ contract ConvictionVoting is Ownable {
         uint256 timestamp;
     }
 
-    uint256 currentGaugeId;
+    uint256 public currentGaugeId;
 
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
@@ -64,7 +64,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Mapping of conviction scores for a user
     mapping(address => uint256) public scores;
 
-    IERC20 token;
+    IERC20 public token;
 
     event NewGauge(uint256 indexed id);
     event AddConviction(
@@ -130,6 +130,7 @@ contract ConvictionVoting is Ownable {
         uint256 gaugeId,
         uint256 count,
         bool oldestFirst,
+        address receiver,
         uint256[] calldata convictions
     ) external {
         Gauge storage gauge = gauges[gaugeId];
@@ -165,7 +166,23 @@ contract ConvictionVoting is Ownable {
                 convictions[:count]
             );
         }
-        token.safeTransfer(msg.sender, returnAmount);
+        token.safeTransfer(receiver, returnAmount);
+    }
+
+    /// @notice Remove all convictions for an address
+    /// @param gaugeId Gauge id to calculate score for
+    /// @param receiver Address to return tokens to
+    function removeAllConvictions(uint256 gaugeId, address receiver) external {
+        Gauge storage gauge = gauges[gaugeId];
+        if (gauge.id != 0) revert BadGaugeId();
+        uint256 returnAmount = 0;
+        uint256[] memory convictions = gauge.convictionsByUser[msg.sender];
+        for (uint256 i = 0; i < convictions.length; i++) {
+            returnAmount += gauge.convictions[convictions[i]].amount;
+            delete gauge.convictions[convictions[i]];
+        }
+        delete gauge.convictionsByUser[msg.sender];
+        token.safeTransfer(receiver, returnAmount);
     }
 
     /// @notice Calculate conviction score for a gauge
@@ -177,9 +194,14 @@ contract ConvictionVoting is Ownable {
         returns (uint256 score)
     {
         Gauge storage gauge = gauges[gaugeId];
-        for (uint256 i = 0; i < gauge.currentConvictionId; i++) {
-            uint256 x1 = gauge.convictions[i].amount.sqrtu();
-            uint256 x2 = (block.timestamp - gauge.convictions[i].timestamp)**2;
+        uint256 length = gauge.currentConvictionId;
+        for (uint256 i = 0; i < length; i++) {
+            Conviction memory conviction = gauge.convictions[i];
+            if (conviction.userAddress == address(0)) {
+                continue; // conviction was removed
+            }
+            uint256 x1 = conviction.amount.sqrtu();
+            uint256 x2 = (block.timestamp - conviction.timestamp)**2;
             score += x1 * x2;
         }
 
