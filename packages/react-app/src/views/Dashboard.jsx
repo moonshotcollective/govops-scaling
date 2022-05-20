@@ -1,4 +1,4 @@
-import { Button, Card, Col, Input, List, Row, Switch } from "antd";
+import { Button, Card, Col, Divider, Input, List, notification, Row, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
@@ -26,7 +26,45 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   };
 
   const addGauge = () => {
-    tx(writeContracts?.ConvictionVoting?.addGauge());
+    tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.success({
+          placement: "topRight",
+          message: "Gauge Added",
+        });
+      }
+    });
+  };
+
+  const addConviction = () => {
+    tx(writeContracts?.ConvictionVoting?.addConviction(address, currentGaugeId, amount), async update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.success({
+          placement: "topRight",
+          message: "Your Conviction is Noted",
+        });
+      }
+    });
   };
 
   useEffect(() => {
@@ -71,7 +109,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   return (
     <div style={{ margin: "20px" }}>
+      <Divider>Show Your Conviction</Divider>
       <Row align="center">
+        <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
+          <span>Current Gauge {currentGaugeId ?? "Not Selected"}</span>
+        </Col>
         <Col span={12} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <Switch
             className=""
@@ -107,6 +149,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           {!approval > 0 ? <Button loading={loading}>Submit</Button> : <Button loading={loading}>Approve</Button>}
         </Col>
       </Row>
+      <Divider>Proposals</Divider>
       <Row>
         <Col span={24}>
           <List
@@ -118,6 +161,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                   title={item.id}
                   onClick={e => {
                     setProposalId(item.id);
+                    setCurrentGaugeId(item.id);
                   }}
                 >
                   Score: {item.score}

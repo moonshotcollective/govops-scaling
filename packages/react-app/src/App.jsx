@@ -1,4 +1,4 @@
-import { Button, Col, Menu, Row } from "antd";
+import { Col, Menu, Row } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -17,11 +17,9 @@ import {
   Contract,
   Faucet,
   FaucetHint,
-  GasGauge,
   Header,
   NetworkDisplay,
   NetworkSwitch,
-  Ramp,
   ThemeSwitch,
 } from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
@@ -30,7 +28,7 @@ import externalContracts from "./contracts/external_contracts";
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, ExampleUI, Hints, Home, Subgraph } from "./views";
+import { Dashboard, Home, Subgraph } from "./views";
 
 const { ethers } = require("ethers");
 /// 📡 What chain are your contracts deployed to?
@@ -324,10 +322,10 @@ function App(props) {
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
-        <Row align="middle" gutter={[4, 4]}>
+        {/*  <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
-          </Col>
+          </Col> 
 
           <Col span={8} style={{ textAlign: "center", opacity: 0.8 }}>
             <GasGauge gasPrice={gasPrice} />
@@ -346,7 +344,7 @@ function App(props) {
               Support
             </Button>
           </Col>
-        </Row>
+        </Row>*/}
 
         <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
