@@ -57,6 +57,9 @@ contract ConvictionVoting is Ownable {
     }
 
     uint256 currentGaugeId;
+    uint256 convictionThreshold;
+    uint256 effectiveSupply;
+    uint256 minimumConviction;
 
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
@@ -85,8 +88,9 @@ contract ConvictionVoting is Ownable {
         uint256 indexed amount
     );
 
-    constructor(IERC20 newToken, address owner) {
-        token = newToken;
+    constructor(address newToken, address owner) {
+        token = IERC20(newToken);
+        currentGaugeId = 0;
         _transferOwnership(owner);
     }
 
@@ -109,7 +113,7 @@ contract ConvictionVoting is Ownable {
         uint256 amount
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        if (gauge.id != 0) revert BadGaugeId();
+        if (gauge.id == 0) revert BadGaugeId();
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
         Conviction storage convictions = gauge.convictions[convictionId];
         convictions.userAddress = user;
@@ -173,8 +177,8 @@ contract ConvictionVoting is Ownable {
     /// @notice Calculate conviction score for a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @return score
-    function getConvictionScore(uint256 gaugeId)
-        external
+    function calculateConvictionScoreForGauge(uint256 gaugeId)
+        public
         view
         returns (uint256 score)
     {
@@ -188,13 +192,27 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
+    function totalStaked() 
+        public
+        view
+        returns(uint256)
+    {
+        uint256 staked = token.balanceOf(address(this));
+
+        return staked;
+    }
+
     /// @notice get a users conviction score for a gauge
     /// @param gaugeId the id of the gauge
     /// @param user the address of the user
     function getIntArrayFromMappingForConvictionsByUser(
         uint256 gaugeId,
         address user
-    ) public view returns (uint256[] memory) {
+    )
+        public
+        view
+        returns (uint256[] memory)
+    {
         Gauge storage gauge = gauges[gaugeId];
         // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][_msgSender()];
         return gauge.convictionsByUser[user];
@@ -202,7 +220,9 @@ contract ConvictionVoting is Ownable {
 
     /// @notice get a total conviction score for a gauge
     /// @param gaugeId the id of the gauge
-    function getIntFromMappingForTotalConvictionForGauge(uint256 gaugeId)
+    function getIntFromMappingForTotalConvictionForGauge(
+        uint256 gaugeId
+    )
         public
         view
         returns (uint256)
@@ -215,5 +235,39 @@ contract ConvictionVoting is Ownable {
         //}
 
         return convictionTotalForGuage;
+    }
+
+    /// @param gaugeId the id of the gauge
+    function calculateMinimumConviction(
+        uint256 gaugeId
+    )
+        external
+        view
+        returns(uint256)
+    {
+        uint256 convictionReqd = 0;
+
+        return convictionReqd;
+    }
+
+    /// @notice playing with thresholds for proposals
+    /// @dev Formula: ρ * totalStaked / (1 - a) / (β - requestedAmount / total)**2
+    /// For the Solidity implementation we amplify ρ and β and simplify the formula:
+    /// wieght = ρ * D
+    /// maxRatio = β * D
+    /// decay = a * D
+    /// threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - requestedAmount * D) ** 2
+    /// @param requestedAmount Requested amount of tokens for a certain proposal
+    /// @return threshold The threshold a proposal's conviction should surpass in order to be able to execute it.
+    function calculateThreshold(
+        uint256 requestedAmount
+    )
+        public
+        view
+        returns(uint256 threshold)
+    {
+        // get the balance of the vault, GTC. Using address(this) as a placeholder
+        uint256 funds = token.balanceOf(address(this));
+
     }
 }
