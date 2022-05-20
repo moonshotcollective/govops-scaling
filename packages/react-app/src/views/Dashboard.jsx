@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [users, setUsers] = useState([
-    // mock users
+    // mock users - not sure what I was doing here yet...
     { address: address, score: 75 },
     { address: address, score: 57 },
   ]);
@@ -12,6 +12,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     // mock gauges
     { id: 1, score: 0 },
     { id: 2, score: 0 },
+    { id: 3, score: 0 },
+    { id: 4, score: 0 },
   ]);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
@@ -164,7 +166,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     setCurrentGaugeId(item.id);
                   }}
                 >
-                  Score: {item.score}
+                  Total Score: {item.score}
                 </Card>
               </List.Item>
             )}
