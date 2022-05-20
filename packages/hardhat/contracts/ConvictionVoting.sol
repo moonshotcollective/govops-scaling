@@ -24,6 +24,7 @@
             https://github.com/moonshotcollective
 */
 pragma solidity ^0.8.13;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -46,6 +47,7 @@ contract ConvictionVoting is Ownable {
     struct Gauge {
         uint256 id;
         uint256 currentConvictionId;
+        uint256 totalCoviction;
         mapping(uint256 => Conviction) convictions;
         mapping(address => uint256[]) convictionsByUser;
     }
@@ -192,6 +194,24 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
+    function getGauges()
+        public
+        view
+        returns(uint256, uint256)
+    {
+        
+    }
+
+    function getGaugeDetails(uint256 gaugeId)
+        public
+        view
+        returns(uint256)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+
+        return gauge.id;
+    }
+
     function totalStaked() 
         public
         view
@@ -205,7 +225,7 @@ contract ConvictionVoting is Ownable {
     /// @notice get a users conviction score for a gauge
     /// @param gaugeId the id of the gauge
     /// @param user the address of the user
-    function getIntArrayFromMappingForConvictionsByUser(
+    function getConvictionsByUser(
         uint256 gaugeId,
         address user
     )
@@ -214,13 +234,12 @@ contract ConvictionVoting is Ownable {
         returns (uint256[] memory)
     {
         Gauge storage gauge = gauges[gaugeId];
-        // uint256[] memory covictions = gauge.convictionsByUser[gaugeId][_msgSender()];
         return gauge.convictionsByUser[user];
     }
 
     /// @notice get a total conviction score for a gauge
     /// @param gaugeId the id of the gauge
-    function getIntFromMappingForTotalConvictionForGauge(
+    function getTotalConvictionForGauge(
         uint256 gaugeId
     )
         public

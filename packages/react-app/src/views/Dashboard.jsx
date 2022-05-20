@@ -7,7 +7,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     { address: address, score: 75 },
     { address: address, score: 57 },
   ]);
-  const [currentGaugeId, setCurrentGaugeId] = useState();
+  const [currentGaugeId, setCurrentGaugeId] = useState(0);
   const [gauges, setGauges] = useState([
     // mock gauges
     { id: 1, score: 0 },
@@ -21,14 +21,14 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [approval, setApproval] = useState(0);
   const [lengthOfTime, setLengthOfTime] = useState(0);
   const [proposalId, setProposalId] = useState();
-  const [score, setScore] = useState();
+  const [score, setScore] = useState([{ id: 1, score: 0 }]);
 
   const onSwitchChange = e => {
     setAction(e);
   };
 
-  const addGauge = () => {
-    tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
+  const addGauge = async () => {
+    await tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(
@@ -48,8 +48,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
-  const addConviction = () => {
-    tx(writeContracts?.ConvictionVoting?.addConviction(address, currentGaugeId, amount), async update => {
+  const addConviction = async () => {
+    await tx(writeContracts?.ConvictionVoting?.addConviction(address, currentGaugeId, amount), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(
@@ -69,31 +69,42 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
-  const submitConviction = action => {
+  const submitConviction = async action => {
     if (action === true) {
-      addConviction();
+      await addConviction();
     } else if (action === false) {
-      // removeConviction
+      // await removeConviction();
     }
   };
 
+  
+
+  const getConvictionScoreForGaugeWithId = async gaugeId => {
+    // fetch the current total conviction score for a gauge
+    await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
+      console.log("Score for gauge: ", x.toString());
+
+      return x.toString();
+    });
+  };
+
   useEffect(() => {
-    const getConvictionScoreForGauge = async () => {
+    const getConvictionScoreForGauge = async gaugeId => {
       // fetch the current total conviction score for a gauge
-      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId ?? 1).then(x => {
-        console.log("Gauges: ", x.toString());
-        setScore({ id: currentGaugeId, score: x.toString() });
+      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
+        console.log("Score for gauge: ", currentGaugeId, x.toString());
+        // setGauges(prevState => [{ id: currentGaugeId, score: x.toString() }]);
       });
     };
 
     return () => {
       getConvictionScoreForGauge();
     };
-  }, [currentGaugeId]);
+  }, [currentGaugeId, readContracts?.ConvictionVoting]);
 
   useEffect(() => {
-    const getApprovedAmount = () => {
-      readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
+    const getApprovedAmount = async () => {
+      await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
         console.log("Allowance for CV: ", r.toString());
         setApproval(r.toString());
       });
@@ -102,14 +113,14 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getApprovedAmount();
     };
-  }, [address]);
+  }, [address, readContracts?.ConvictionVoting, readContracts?.GTC]);
 
   return (
     <div style={{ margin: "20px" }}>
       <Divider>Show Your Conviction</Divider>
       <Row align="center">
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
-          <span>Current Gauge {currentGaugeId ?? "Not Selected"}</span>
+          <span>Current Gauge {currentGaugeId === 0 ? "Not Selected" : currentGaugeId}</span>
           <br />
           <Button className="mt-56" onClick={() => addGauge()}>
             Add Gauge
@@ -162,7 +173,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           )}
         </Col>
       </Row>
-      <Divider>Proposals</Divider>
+      <Divider>Gauges</Divider>
       <Row>
         <Col span={24}>
           <List
@@ -172,13 +183,13 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               <List.Item>
                 <Card
                   className="cursor-pointer"
-                  title={item.id}
+                  title={"Gauge Id: " + item.id}
                   onClick={e => {
                     setProposalId(item.id);
                     setCurrentGaugeId(item.id);
                   }}
                 >
-                  Total Score: {item.score}
+                  Total Gauge Score: {() => getConvictionScoreForGaugeWithId(item.id)}
                 </Card>
               </List.Item>
             )}
