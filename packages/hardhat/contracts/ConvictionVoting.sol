@@ -97,12 +97,18 @@ contract ConvictionVoting is Ownable {
     }
 
     /// @notice Adds a new gauge with no values
-    function addGauge() external onlyOwner {
+    function addGauge()
+        external
+        onlyOwner
+        returns(uint256 totalGauges)
+    {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
         gauge.id = current;
 
         emit NewGauge(current);
+
+        return currentGaugeId;
     }
 
     /// @notice Adds conviction to a gauge
@@ -245,7 +251,7 @@ contract ConvictionVoting is Ownable {
     {
         Gauge storage gauge = gauges[gaugeId];
         Conviction storage convictions = gauge.convictions[gaugeId];
-        convictionTotalForGuage = 0;
+        convictionTotal = 0;
         //for(uint i = 0; i < gauge.convictions[gaugeId].length; i++) {
         // add them upp
         //}
