@@ -120,7 +120,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {currentGaugeId === 0 ? "Not Selected" : currentGaugeId}</span>
           <br />
-          <Button className="mt-56" onClick={() => addGauge()}>
+          <Button className="mt-56 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
           </Button>
         </Col>
@@ -161,11 +161,15 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <br /> */}
           {!approval > 0 ? (
-            <Button className="mt-10 bg-purple-600" loading={loading} onClick={() => submitConviction(action)}>
+            <Button
+              className="mt-10 bg-purple-700 hover:bg-purple-300"
+              loading={loading}
+              onClick={() => submitConviction(action)}
+            >
               Submit
             </Button>
           ) : (
-            <Button className="mt-10 bg-purple-600" loading={loading}>
+            <Button className="mt-10 bg-purple-700 hover:bg-purple-300" loading={loading}>
               Approve
             </Button>
           )}
