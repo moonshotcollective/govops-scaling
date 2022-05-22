@@ -1,15 +1,46 @@
-type Purpose @entity {
-  id: ID!
-  sender: Sender!
-  purpose: String!
-  createdAt: BigInt!
-  transactionHash: String!
-}
+# type Purpose @entity {
+#   id: ID!
+#   sender: Sender!
+#   purpose: String!
+#   createdAt: BigInt!
+#   transactionHash: String!
+# }
 
 type Sender @entity {
   id: ID!
   address: Bytes!
   purposes: [Purpose!] @derivedFrom(field: "sender")
   createdAt: BigInt!
-  purposeCount: BigInt!
+  gaugeCount: BigInt!
+}
+
+type Voter @entity {
+  id: ID!
+  address: Bytes!
+  voteCount: BigInt!
+  totalStaked: BigInt!
+  votes: [Vote!]! @derivedFrom(field: "voter")
+}
+
+type Vote @entity {
+  id: ID!
+  voteId: BigInt!
+  voter: Voter!
+  amount: BigInt!
+  gaugeId: BigInt!
+  createdAt: BigInt!
+  transactionHash: String!
+}
+
+type RunningVoteRecord @entity {
+  id: ID!
+  voter: Voter!
+  votes: [Vote!]!
+  gaugeId: BigInt!
+  voteCount: BigInt!
+  totalStaked: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  initialTransactionHash: String!
+  latestTransactionHash: String!
 }

@@ -134,7 +134,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <span className="m-5">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
           <br />
-          <label>Proposal Id: </label>
+          <label>Gauge Id: </label>
           <input
             className="w-60 m-4 bg-transparent border-2 p-1"
             value={proposalId}
