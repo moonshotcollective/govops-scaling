@@ -1,8 +1,8 @@
 import { Skeleton, Typography } from "antd";
-import React from "react";
-import { useThemeSwitcher } from "react-css-theme-switcher";
-import Blockies from "react-blockies";
 import { useLookupAddress } from "eth-hooks/dapps/ens";
+import React from "react";
+import Blockies from "react-blockies";
+import { useThemeSwitcher } from "react-css-theme-switcher";
 
 // changed value={address} to address={address}
 
@@ -60,7 +60,7 @@ export default function Address(props) {
 
   if (props.minimized) {
     return (
-      <span style={{ verticalAlign: "middle" }}>
+      <span className="text-xs" style={{ verticalAlign: "middle" }}>
         <a
           style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
           target="_blank"
@@ -76,9 +76,12 @@ export default function Address(props) {
   return (
     <span>
       <span style={{ verticalAlign: "middle" }}>
-        <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
+        <Blockies seed={address.toLowerCase()} size={6} scale={props.fontSize ? props.fontSize / 7 : 4} />
       </span>
-      <span style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}>
+      <span
+        className="text-xs"
+        style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}
+      >
         {props.onChange ? (
           <Text editable={{ onChange: props.onChange }} copyable={{ text: address }}>
             <a

@@ -1,4 +1,4 @@
-import { Col, Menu, Row } from "antd";
+import { Button, Col, Menu, Row } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -11,15 +11,17 @@ import {
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
-// import "./App.css";
+import "./App.css";
 import {
   Account,
   Contract,
   Faucet,
   FaucetHint,
+  GasGauge,
   Header,
   NetworkDisplay,
   NetworkSwitch,
+  Ramp,
   ThemeSwitch,
 } from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
@@ -31,6 +33,25 @@ import { useStaticJsonRPC } from "./hooks";
 import { Dashboard, Home, Subgraph } from "./views";
 
 const { ethers } = require("ethers");
+/*
+    Welcome to 🏗 scaffold-eth !
+
+    Code:
+    https://github.com/scaffold-eth/scaffold-eth
+
+    Support:
+    https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA
+    or DM @austingriffith on twitter or telegram
+
+    You should get your own Alchemy.com & Infura.io ID and put it in `constants.js`
+    (this is your connection to the main Ethereum network for ENS etc.)
+
+
+    🌏 EXTERNAL CONTRACTS:
+    You can also bring in contract artifacts in `constants.js`
+    (and then use the `useExternalContractLoader()` hook!)
+*/
+
 /// 📡 What chain are your contracts deployed to?
 const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
@@ -322,10 +343,10 @@ function App(props) {
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
-        {/*  <Row align="middle" gutter={[4, 4]}>
+        {/* <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
-          </Col> 
+          </Col>
 
           <Col span={8} style={{ textAlign: "center", opacity: 0.8 }}>
             <GasGauge gasPrice={gasPrice} />
@@ -344,7 +365,7 @@ function App(props) {
               Support
             </Button>
           </Col>
-        </Row>*/}
+        </Row> */}
 
         <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
