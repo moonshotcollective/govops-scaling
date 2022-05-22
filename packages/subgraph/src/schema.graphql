@@ -14,6 +14,20 @@ type Sender @entity {
   gaugeCount: BigInt!
 }
 
+type Conviction @entity {
+  userAddress: String!
+  amount: BigInt!
+  timestamp: BigInt!
+}
+
+type Gauge @entity {
+  id: ID!
+  currentConvictionId: BigInt!
+  totalConvictionStaked: BigInt!
+  convictions: [Conviction!]! @derivedFrom(field: "userAddress")
+  convictionsByUser: [BigInt!]!
+}
+
 type Voter @entity {
   id: ID!
   address: Bytes!

@@ -1,9 +1,6 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
-import {
-  ConvictionVoting,
-  NewGauge,
-} from "../generated/ConvictionVoting/ConvictionVoting";
-import { Vote, Sender } from "../generated/schema";
+import { BigInt } from '@graphprotocol/graph-ts';
+import { NewGauge } from '../generated/ConvictionVoting/ConvictionVoting';
+import { Gauge, Sender } from '../generated/schema';
 
 export function handleGaugeCreated(event: NewGauge): void {
   let senderString = event.params.sender.toHexString();
@@ -19,8 +16,8 @@ export function handleGaugeCreated(event: NewGauge): void {
     sender.gaugeCount = sender.gaugeCount.plus(BigInt.fromI32(1));
   }
 
-  let vote = new Vote(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  let gauge = new Gauge(
+    event.transaction.hash.toHex() + '-' + event.logIndex.toString()
   );
 
   // purpose.purpose = event.params.purpose;
