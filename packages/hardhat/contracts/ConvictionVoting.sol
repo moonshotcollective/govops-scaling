@@ -198,6 +198,21 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
+    /// @notice Gets all the current active gauges
+    function getAllGauges()
+        external
+        view
+        // (Gauge[] memory) // can't return due to nested mapping..
+    {
+        Gauge[] storage Gauges;
+        // iterate the gauges based on the currentGaugeId for length
+        for(uint256 index = 0; index < currentGaugeId; index++) {
+            // Gauges.push(gauges[index]); // not supported.. wtf
+        }
+
+        // return Gauges;
+    }
+
     function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
         Gauge storage gauge = gauges[gaugeId];
 
