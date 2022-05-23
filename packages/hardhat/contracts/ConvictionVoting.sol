@@ -58,10 +58,10 @@ contract ConvictionVoting is Ownable {
         uint256 timestamp;
     }
 
-    uint256 currentGaugeId;
-    uint256 convictionThreshold;
-    uint256 effectiveSupply;
-    uint256 minimumConviction;
+    uint256 public currentGaugeId;
+    uint256 public convictionThreshold;
+    uint256 public effectiveSupply;
+    uint256 public minimumConviction;
 
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;

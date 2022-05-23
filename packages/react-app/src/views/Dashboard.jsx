@@ -10,10 +10,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [currentGaugeId, setCurrentGaugeId] = useState(0);
   const [gauges, setGauges] = useState([
     // mock gauges
-    { id: 1, score: 0 },
-    { id: 2, score: 0 },
-    { id: 3, score: 0 },
-    { id: 4, score: 0 },
+    // { id: 1, score: 0 },
+    // { id: 2, score: 0 },
+    // { id: 3, score: 0 },
+    // { id: 4, score: 0 },
   ]);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
@@ -77,7 +77,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     }
   };
 
-  const getConvictionScoreForGaugeWithId = async gaugeId => {
+  const getConvictionScoreForGaugeWithId = async () => {
     // fetch the current total conviction score for a gauge
     await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
       console.log("Score for gauge: ", x.toString());
@@ -91,7 +91,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
       // fetch the current total conviction score for a gauge
       await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
         console.log("Score for gauge: ", currentGaugeId, x.toString());
-        // setGauges(prevState => [{ id: currentGaugeId, score: x.toString() }]);
+        // setGauges([{ id: currentGaugeId, score: x.toString() }]);
       });
     };
 
@@ -112,6 +112,23 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
       getApprovedAmount();
     };
   }, [address, readContracts?.ConvictionVoting, readContracts?.GTC]);
+
+  useEffect(() => {
+    const getGaugeInfo = async () => {
+      await readContracts?.ConvictionVoting?.currentGaugeId().then(async r => {
+        for (let index = 1; index < r.toString(); index++) {
+          await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(rslt => {
+            console.log(rslt.toString());
+            setGauges([{ id: index, score: rslt.toString() }]);
+          });
+        }
+      });
+    };
+
+    return () => {
+      getGaugeInfo();
+    };
+  }, [address, readContracts?.ConvictionVoting]);
 
   return (
     <div style={{ margin: "20px" }}>
