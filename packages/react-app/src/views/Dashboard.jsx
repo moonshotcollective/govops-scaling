@@ -2,7 +2,7 @@ import { Button, Card, Col, Divider, List, notification, Row, Switch } from "ant
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
-  const [currentGaugeId, setCurrentGaugeId] = useState(0);
+  const [currentGaugeId, setCurrentGaugeId] = useState();
   const [gauges, setGauges] = useState([
     // mock gauges
     // { id: 1, score: 0 },
@@ -81,20 +81,6 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
-  // useEffect(() => {
-  //   const getConvictionScoreForGauge = async gaugeId => {
-  //     // fetch the current total conviction score for a gauge
-  //     await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
-  //       console.log("Score for gauge: ", currentGaugeId, x.toString());
-  //       // setGauges([{ id: currentGaugeId, score: x.toString() }]);
-  //     });
-  //   };
-
-  //   return () => {
-  //     getConvictionScoreForGauge();
-  //   };
-  // }, [currentGaugeId, readContracts?.ConvictionVoting]);
-
   useEffect(() => {
     const getApprovedAmount = async () => {
       await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
@@ -110,12 +96,14 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   useEffect(() => {
     const getGaugeInfo = async () => {
-      await readContracts?.ConvictionVoting?.currentGaugeId().then(async r => {
-        for (let index = 1; index < r.toString(); index++) {
-          await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(rslt => {
-            console.log("Score for Gauge ", `${index}: `, rslt.toString());
+      await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
+        for (let index = 1; index < gaugeId.toString(); index++) {
+          await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(score => {
+            console.log("Score for Gauge ", `${index}: `, score.toString());
             // load up the gauges with the id and the score
-            setGauges(prevState => [...prevState, { id: index, score: rslt.toString() }]);
+            setGauges(prevState => {
+              return [...prevState, { id: index, score: score.toString() }];
+            });
           });
         }
       });
@@ -124,7 +112,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getGaugeInfo();
     };
-  }, [address, readContracts?.ConvictionVoting]);
+  }, [address, currentGaugeId, readContracts?.ConvictionVoting]);
 
   return (
     <div style={{ margin: "20px" }}>
@@ -151,7 +139,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <label>Gauge Id: </label>
           <input
             className="w-60 m-4 bg-transparent border-2 p-1"
-            value={proposalId}
+            value={currentGaugeId}
             onChange={e => {
               setCurrentGaugeId(e.target.value);
             }}
