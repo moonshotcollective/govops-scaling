@@ -69,7 +69,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Mapping of conviction scores for a user
     mapping(address => uint256) public scores;
 
-    IERC20 token;
+    IERC20 public token;
 
     event NewGauge(uint256 indexed id);
     event AddConviction(

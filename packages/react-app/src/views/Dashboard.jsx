@@ -2,11 +2,6 @@ import { Button, Card, Col, Divider, List, notification, Row, Switch } from "ant
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
-  const [users, setUsers] = useState([
-    // mock users - not sure what I was doing here yet...
-    { address: address, score: 75 },
-    { address: address, score: 57 },
-  ]);
   const [currentGaugeId, setCurrentGaugeId] = useState(0);
   const [gauges, setGauges] = useState([
     // mock gauges
@@ -86,19 +81,19 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
-  useEffect(() => {
-    const getConvictionScoreForGauge = async gaugeId => {
-      // fetch the current total conviction score for a gauge
-      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
-        console.log("Score for gauge: ", currentGaugeId, x.toString());
-        // setGauges([{ id: currentGaugeId, score: x.toString() }]);
-      });
-    };
+  // useEffect(() => {
+  //   const getConvictionScoreForGauge = async gaugeId => {
+  //     // fetch the current total conviction score for a gauge
+  //     await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
+  //       console.log("Score for gauge: ", currentGaugeId, x.toString());
+  //       // setGauges([{ id: currentGaugeId, score: x.toString() }]);
+  //     });
+  //   };
 
-    return () => {
-      getConvictionScoreForGauge();
-    };
-  }, [currentGaugeId, readContracts?.ConvictionVoting]);
+  //   return () => {
+  //     getConvictionScoreForGauge();
+  //   };
+  // }, [currentGaugeId, readContracts?.ConvictionVoting]);
 
   useEffect(() => {
     const getApprovedAmount = async () => {
@@ -118,8 +113,9 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
       await readContracts?.ConvictionVoting?.currentGaugeId().then(async r => {
         for (let index = 1; index < r.toString(); index++) {
           await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(rslt => {
-            console.log(rslt.toString());
-            setGauges([{ id: index, score: rslt.toString() }]);
+            console.log("Score for Gauge ", `${index}: `, rslt.toString());
+            // load up the gauges with the id and the score
+            setGauges(prevState => [...prevState, { id: index, score: rslt.toString() }]);
           });
         }
       });
@@ -137,6 +133,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {currentGaugeId === 0 ? "Not Selected" : currentGaugeId}</span>
           <br />
+          <div className="mt-4">a actual gauge here</div>
           <Button className="mt-56 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
           </Button>
@@ -156,7 +153,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             className="w-60 m-4 bg-transparent border-2 p-1"
             value={proposalId}
             onChange={e => {
-              setProposalId(e.target.value);
+              setCurrentGaugeId(e.target.value);
             }}
           />
           <br />
@@ -204,11 +201,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                   className="cursor-pointer"
                   title={"Gauge Id: " + item.id}
                   onClick={e => {
-                    setProposalId(item.id);
                     setCurrentGaugeId(item.id);
                   }}
                 >
-                  Total Gauge Score: {() => getConvictionScoreForGaugeWithId(item.id)}
+                  Total Gauge Score: {item.score}
                 </Card>
               </List.Item>
             )}
