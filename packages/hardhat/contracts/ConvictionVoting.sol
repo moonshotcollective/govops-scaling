@@ -124,6 +124,7 @@ contract ConvictionVoting is Ownable {
         convictions.amount = amount;
         convictions.timestamp = block.timestamp;
         gauge.convictionsByUser[user].push(convictionId);
+        gauge.totalCovictionStaked += amount;
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
@@ -178,6 +179,20 @@ contract ConvictionVoting is Ownable {
             );
         }
         token.safeTransfer(_msgSender(), returnAmount);
+    }
+
+    function totalStakedForGauge(
+        uint256 gaugeId
+    )
+        public
+        view
+        returns(uint256 totalStaked)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+
+        totalStaked = gauge.totalCovictionStaked;
+
+        return totalStaked;
     }
 
     /// @notice Calculate conviction score for a gauge
