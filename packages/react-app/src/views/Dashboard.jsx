@@ -1,4 +1,5 @@
 import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
@@ -102,7 +103,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             console.log("Score for Gauge ", `${index}: `, score.toString());
             // load up the gauges with the id and the score
             setGauges(prevState => {
-              return [...prevState, { id: index, score: score.toString() }];
+              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 8) }];
             });
           });
         }
