@@ -1,33 +1,33 @@
 import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
-import React, { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { Gauge } from "../components";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
-  const [users, setUsers] = useState([
-    // mock users - not sure what I was doing here yet...
-    { address: address, score: 75 },
-    { address: address, score: 57 },
-  ]);
-  const [currentGaugeId, setCurrentGaugeId] = useState(0);
+  const [currentGaugeId, setCurrentGaugeId] = useState();
+  const [gaugeId, setGaugeId] = useState();
   const [gauges, setGauges] = useState([
     // mock gauges
-    { id: 1, score: 0 },
-    { id: 2, score: 0 },
-    { id: 3, score: 0 },
-    { id: 4, score: 0 },
+    // { id: 1, score: 0 },
+    // { id: 2, score: 0 },
+    // { id: 3, score: 0 },
+    // { id: 4, score: 0 },
   ]);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
+  const [loadingGauge, setLoadingGauge] = useState(false);
   const [loading, setLoading] = useState(false);
   const [approval, setApproval] = useState(0);
   const [lengthOfTime, setLengthOfTime] = useState(0);
-  const [proposalId, setProposalId] = useState();
-  const [score, setScore] = useState([{ id: 1, score: 0 }]);
+  const [score, setScore] = useState(0);
+  const [gtcBalance, setGtcBalance] = useState(0);
 
   const onSwitchChange = e => {
     setAction(e);
   };
 
   const addGauge = async () => {
+    setLoadingGauge(true);
     await tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
@@ -46,10 +46,12 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         });
       }
     });
+    setLoadingGauge(false);
   };
 
   const addConviction = async () => {
-    await tx(writeContracts?.ConvictionVoting?.addConviction(address, currentGaugeId, amount), async update => {
+    setLoading(true);
+    await tx(writeContracts?.ConvictionVoting?.addConviction(address, gaugeId, amount), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(
@@ -67,6 +69,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         });
       }
     });
+    setLoading(false);
   };
 
   const submitConviction = async action => {
@@ -77,50 +80,93 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     }
   };
 
-  const getConvictionScoreForGaugeWithId = async gaugeId => {
+  const getConvictionScoreForGaugeWithId = async id => {
     // fetch the current total conviction score for a gauge
-    await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
+    await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(id).then(x => {
       console.log("Score for gauge: ", x.toString());
+      setScore(x.toString());
 
       return x.toString();
     });
   };
 
-  useEffect(() => {
-    const getConvictionScoreForGauge = async gaugeId => {
-      // fetch the current total conviction score for a gauge
-      await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(currentGaugeId).then(x => {
-        console.log("Score for gauge: ", currentGaugeId, x.toString());
-        // setGauges(prevState => [{ id: currentGaugeId, score: x.toString() }]);
-      });
-    };
+  const approveGtc = async () => {
+    await tx(writeContracts?.GTC?.approve(readContracts?.ConvictionVoting?.address, amount));
+  };
 
-    return () => {
-      getConvictionScoreForGauge();
-    };
-  }, [currentGaugeId, readContracts?.ConvictionVoting]);
+  const getApprovedAmount = async () => {
+    await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
+      console.log("Allowance for CV: ", r.toString());
+      setApproval(r.toString());
+    });
+  };
 
   useEffect(() => {
-    const getApprovedAmount = async () => {
-      await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
-        console.log("Allowance for CV: ", r.toString());
-        setApproval(r.toString());
-      });
-    };
-
     return () => {
       getApprovedAmount();
     };
   }, [address, readContracts?.ConvictionVoting, readContracts?.GTC]);
+
+  useEffect(() => {
+    const getGtcBalance = () => {
+      readContracts?.GTC?.balanceOf(address).then(result => {
+        setGtcBalance(result.toString());
+      });
+    };
+
+    return () => {
+      getGtcBalance();
+    };
+  }, [address, readContracts?.GTC]);
+
+  useEffect(() => {
+    const getCurrentGaugeId = async () => {
+      await readContracts?.ConvictionVoting?.currentGaugeId().then(result => {
+        setCurrentGaugeId(result.toString());
+      });
+    };
+
+    return () => {
+      getCurrentGaugeId();
+    };
+  }, [address, readContracts?.ConvictionVoting]);
+
+  useLayoutEffect(() => {
+    let getGaugeInfo;
+    getGaugeInfo = async () => {
+      await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
+        for (let index = 1; index < gaugeId.toString(); index++) {
+          await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(score => {
+            console.log("Score for Gauge ", `${index}: `, score.toString());
+            // load up the gauges with the id and the score
+            // { id: 0, score: 0 } sample
+
+            setGauges(prevState => {
+              // not working quite right... keeps repeating...
+              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 8) }];
+            });
+          });
+        }
+      });
+    };
+
+    return () => {
+      getGaugeInfo();
+    };
+  }, [address, gaugeId, readContracts?.ConvictionVoting]);
 
   return (
     <div style={{ margin: "20px" }}>
       <Divider>Show Your Conviction</Divider>
       <Row align="center">
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
-          <span>Current Gauge {currentGaugeId === 0 ? "Not Selected" : currentGaugeId}</span>
+          <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
-          <Button className="mt-56" onClick={() => addGauge()}>
+          <div className="">
+            Score:{" " + ethers.utils.formatUnits(score, 8)}
+            <Gauge value={ethers.utils.formatUnits(score, 8)} className="mt-6" />
+          </div>
+          <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
           </Button>
         </Col>
@@ -137,9 +183,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <label>Gauge Id: </label>
           <input
             className="w-60 m-4 bg-transparent border-2 p-1"
-            value={proposalId}
+            value={gaugeId}
             onChange={e => {
-              setProposalId(e.target.value);
+              setGaugeId(e.target.value);
+              getConvictionScoreForGaugeWithId(e.target.value);
             }}
           />
           <br />
@@ -161,11 +208,21 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           />
           <br /> */}
           {!approval > 0 ? (
-            <Button className="mt-10 bg-purple-600" loading={loading} onClick={() => submitConviction(action)}>
+            <Button
+              className="mt-10 bg-purple-700 hover:bg-purple-300"
+              loading={loading}
+              onClick={() => submitConviction(action)}
+            >
               Submit
             </Button>
           ) : (
-            <Button className="mt-10 bg-purple-600" loading={loading}>
+            <Button
+              className="mt-10 bg-purple-700 hover:bg-purple-300"
+              loading={loading}
+              onClick={() => {
+                approveGtc();
+              }}
+            >
               Approve
             </Button>
           )}
@@ -183,11 +240,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                   className="cursor-pointer"
                   title={"Gauge Id: " + item.id}
                   onClick={e => {
-                    setProposalId(item.id);
-                    setCurrentGaugeId(item.id);
+                    setGaugeId(item.id);
+                    getConvictionScoreForGaugeWithId(item.id);
                   }}
                 >
-                  Total Gauge Score: {() => getConvictionScoreForGaugeWithId(item.id)}
+                  Total Gauge Score: {item.score}
                 </Card>
               </List.Item>
             )}

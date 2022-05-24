@@ -58,10 +58,10 @@ contract ConvictionVoting is Ownable {
         uint256 timestamp;
     }
 
-    uint256 currentGaugeId;
-    uint256 convictionThreshold;
-    uint256 effectiveSupply;
-    uint256 minimumConviction;
+    uint256 public currentGaugeId;
+    uint256 public convictionThreshold;
+    uint256 public effectiveSupply;
+    uint256 public minimumConviction;
 
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
@@ -69,7 +69,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Mapping of conviction scores for a user
     mapping(address => uint256) public scores;
 
-    IERC20 token;
+    IERC20 public token;
 
     event NewGauge(uint256 indexed id);
     event AddConviction(
@@ -124,6 +124,7 @@ contract ConvictionVoting is Ownable {
         convictions.amount = amount;
         convictions.timestamp = block.timestamp;
         gauge.convictionsByUser[user].push(convictionId);
+        gauge.totalCovictionStaked += amount;
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
@@ -180,6 +181,22 @@ contract ConvictionVoting is Ownable {
         token.safeTransfer(_msgSender(), returnAmount);
     }
 
+    /// @notice Get the score for a gauge
+    /// @param gaugeId the id of the gauge
+    function totalStakedForGauge(
+        uint256 gaugeId
+    )
+        public
+        view
+        returns(uint256 totalStaked)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+
+        totalStaked = gauge.totalCovictionStaked;
+
+        return totalStaked;
+    }
+
     /// @notice Calculate conviction score for a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @return score
@@ -196,6 +213,21 @@ contract ConvictionVoting is Ownable {
         }
 
         return score;
+    }
+
+    /// @notice Gets all the current active gauges
+    function getAllGauges()
+        external
+        view
+        // (Gauge[] memory) // can't return due to nested mapping..
+    {
+        Gauge[] storage Gauges;
+        // iterate the gauges based on the currentGaugeId for length
+        for(uint256 index = 0; index < currentGaugeId; index++) {
+            // Gauges.push(gauges[index]); // not supported.. wtf
+        }
+
+        // return Gauges;
     }
 
     function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
