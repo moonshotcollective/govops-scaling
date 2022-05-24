@@ -131,6 +131,12 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     };
   }, [address, readContracts?.ConvictionVoting]);
 
+  const handleUpdatedGauges = (id, updatedGauge) => {
+    const updatedObject = gauges.map(gauge => (gauge.id === id ? updatedGauge : gauge));
+
+    setGauges(updatedObject);
+  };
+
   useLayoutEffect(() => {
     let getGaugeInfo;
     getGaugeInfo = async () => {
@@ -235,7 +241,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             grid={{ gutter: 16, column: 4 }}
             dataSource={gauges}
             renderItem={item => (
-              <List.Item>
+              <List.Item key={item.id}>
                 <Card
                   className="cursor-pointer"
                   title={"Gauge Id: " + item.id}
