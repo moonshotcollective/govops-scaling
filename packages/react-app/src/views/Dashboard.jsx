@@ -51,7 +51,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const addConviction = async () => {
     setLoading(true);
-    await tx(writeContracts?.ConvictionVoting?.addConviction(address, currentGaugeId, amount), async update => {
+    await tx(writeContracts?.ConvictionVoting?.addConviction(address, gaugeId, amount), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(
@@ -90,14 +90,14 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
-  useEffect(() => {
-    const getApprovedAmount = async () => {
-      await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
-        console.log("Allowance for CV: ", r.toString());
-        setApproval(r.toString());
-      });
-    };
+  const getApprovedAmount = async () => {
+    await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
+      console.log("Allowance for CV: ", r.toString());
+      setApproval(r.toString());
+    });
+  };
 
+  useEffect(() => {
     return () => {
       getApprovedAmount();
     };
@@ -139,7 +139,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
             setGauges(prevState => {
               // not working quite right...
-              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 8) }];
+              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 6) }];
             });
           });
         }
@@ -159,8 +159,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Score:{" " + ethers.utils.formatUnits(score, 8)}
-            <Gauge className="mt-6" />
+            Score:{" " + ethers.utils.formatUnits(score, 6)}
+            <Gauge value={ethers.utils.formatUnits(score, 6)} className="mt-6" />
           </div>
           <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge

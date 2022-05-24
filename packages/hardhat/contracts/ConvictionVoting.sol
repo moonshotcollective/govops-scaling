@@ -181,6 +181,8 @@ contract ConvictionVoting is Ownable {
         token.safeTransfer(_msgSender(), returnAmount);
     }
 
+    /// @notice Get the score for a gauge
+    /// @param gaugeId the id of the gauge
     function totalStakedForGauge(
         uint256 gaugeId
     )

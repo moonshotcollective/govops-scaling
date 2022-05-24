@@ -3,7 +3,7 @@ import { interpolateRgb } from "d3-interpolate";
 import React from "react";
 import LiquidFillGauge from "react-liquid-gauge";
 
-const Gauge = ({}) => {
+const Gauge = ({ value }) => {
   const startColor = "#6495ed"; // cornflowerblue
   const endColor = "#dc143c"; // crimson
   const radius = 100;
@@ -36,7 +36,7 @@ const Gauge = ({}) => {
         style={{ margin: "0 auto" }}
         width={radius * 2}
         height={radius * 2}
-        value={54}
+        value={value}
         percent="%"
         textSize={1}
         textOffsetX={0}
