@@ -90,6 +90,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     });
   };
 
+  const approveGtc = async () => {
+    await tx(writeContracts?.GTC?.approve(readContracts?.ConvictionVoting?.address, amount));
+  };
+
   const getApprovedAmount = async () => {
     await readContracts?.GTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(r => {
       console.log("Allowance for CV: ", r.toString());
@@ -138,8 +142,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             // { id: 0, score: 0 } sample
 
             setGauges(prevState => {
-              // not working quite right...
-              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 6) }];
+              // not working quite right... keeps repeating...
+              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 8) }];
             });
           });
         }
@@ -159,8 +163,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Score:{" " + ethers.utils.formatUnits(score, 6)}
-            <Gauge value={ethers.utils.formatUnits(score, 6)} className="mt-6" />
+            Score:{" " + ethers.utils.formatUnits(score, 8)}
+            <Gauge value={ethers.utils.formatUnits(score, 8)} className="mt-6" />
           </div>
           <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
@@ -212,7 +216,13 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               Submit
             </Button>
           ) : (
-            <Button className="mt-10 bg-purple-700 hover:bg-purple-300" loading={loading}>
+            <Button
+              className="mt-10 bg-purple-700 hover:bg-purple-300"
+              loading={loading}
+              onClick={() => {
+                approveGtc();
+              }}
+            >
               Approve
             </Button>
           )}
