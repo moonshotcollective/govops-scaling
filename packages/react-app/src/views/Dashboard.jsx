@@ -1,6 +1,7 @@
 import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { Gauge } from "../components";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [currentGaugeId, setCurrentGaugeId] = useState();
@@ -19,6 +20,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [approval, setApproval] = useState(0);
   const [lengthOfTime, setLengthOfTime] = useState(0);
   const [score, setScore] = useState(0);
+  const [gtcBalance, setGtcBalance] = useState(0);
 
   const onSwitchChange = e => {
     setAction(e);
@@ -102,6 +104,18 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   }, [address, readContracts?.ConvictionVoting, readContracts?.GTC]);
 
   useEffect(() => {
+    const getGtcBalance = () => {
+      readContracts?.GTC?.balanceOf(address).then(result => {
+        setGtcBalance(result.toString());
+      });
+    };
+
+    return () => {
+      getGtcBalance();
+    };
+  }, [address, readContracts?.GTC]);
+
+  useEffect(() => {
     const getCurrentGaugeId = async () => {
       await readContracts?.ConvictionVoting?.currentGaugeId().then(result => {
         setCurrentGaugeId(result.toString());
@@ -144,8 +158,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
-          <div className="mt-4">Score:{" " + ethers.utils.formatUnits(score, 8)}</div>
-          <Button loading={loadingGauge} className="mt-56 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
+          <div className="">
+            Score:{" " + ethers.utils.formatUnits(score, 8)}
+            <Gauge className="mt-6" />
+          </div>
+          <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
           </Button>
         </Col>
@@ -165,6 +182,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             value={gaugeId}
             onChange={e => {
               setGaugeId(e.target.value);
+              getConvictionScoreForGaugeWithId(e.target.value);
             }}
           />
           <br />
