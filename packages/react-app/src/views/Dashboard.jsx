@@ -72,11 +72,40 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     setLoading(false);
   };
 
+  const removeConviction = async id => {
+    await tx(
+      writeContracts?.ConvictionVoting?.removeConvictionByIds(
+        2, // gaugeId
+        1, // count
+        true, // oldest first
+        [1, 3, 5], // convictions
+      ),
+      async update => {
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          console.log(" 🍾 Transaction " + update.hash + " finished!");
+          console.log(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+          notification.success({
+            placement: "topRight",
+            message: "Your Conviction has been removed",
+          });
+        }
+      },
+    );
+  };
+
   const submitConviction = async action => {
     if (action === true) {
       await addConviction();
     } else if (action === false) {
-      // await removeConviction();
+      await removeConviction();
     }
   };
 
@@ -131,24 +160,16 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     };
   }, [address, readContracts?.ConvictionVoting]);
 
-  // const handleUpdatedGauges = (id, updatedGauge) => {
-  //   const updatedObject = gauges.map(gauge => (gauge.id === id ? updatedGauge : gauge));
-
-  //   setGauges(updatedObject);
-  // };
-
+  // todo: trying to get this to load on the page load... random shit...
   useLayoutEffect(() => {
-    let getGaugeInfo;
-    getGaugeInfo = async () => {
+    const getGaugeInfo = async () => {
       await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
         for (let index = 1; index < gaugeId.toString(); index++) {
           await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(score => {
             console.log("Score for Gauge ", `${index}: `, score.toString());
             // load up the gauges with the id and the score
             // { id: 0, score: 0 } sample
-
             setGauges(prevState => {
-              // not working quite right... keeps repeating...
               return [
                 ...prevState.slice(0, index - 1),
                 { id: index, score: ethers.utils.formatUnits(score.toString(), 10) },
@@ -189,6 +210,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             onChange={onSwitchChange}
           />
           <span className="m-5">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
+          <span>GTC {ethers.utils.formatEther(gtcBalance.toString().slice(0, 8))}</span>
           <br />
           <label>Gauge Id: </label>
           <input
