@@ -131,11 +131,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     };
   }, [address, readContracts?.ConvictionVoting]);
 
-  const handleUpdatedGauges = (id, updatedGauge) => {
-    const updatedObject = gauges.map(gauge => (gauge.id === id ? updatedGauge : gauge));
+  // const handleUpdatedGauges = (id, updatedGauge) => {
+  //   const updatedObject = gauges.map(gauge => (gauge.id === id ? updatedGauge : gauge));
 
-    setGauges(updatedObject);
-  };
+  //   setGauges(updatedObject);
+  // };
 
   useLayoutEffect(() => {
     let getGaugeInfo;
@@ -149,7 +149,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
             setGauges(prevState => {
               // not working quite right... keeps repeating...
-              return [...prevState, { id: index, score: ethers.utils.formatUnits(score.toString(), 8) }];
+              return [
+                ...prevState.slice(0, index - 1),
+                { id: index, score: ethers.utils.formatUnits(score.toString(), 10) },
+                ...prevState.slice(index + gaugeId, prevState.length),
+              ];
             });
           });
         }
@@ -159,7 +163,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getGaugeInfo();
     };
-  }, [address, gaugeId, readContracts?.ConvictionVoting]);
+  }, [approval, address, gaugeId, readContracts?.ConvictionVoting]);
 
   return (
     <div style={{ margin: "20px" }}>
@@ -169,8 +173,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Score:{" " + ethers.utils.formatUnits(score, 8)}
-            <Gauge value={ethers.utils.formatUnits(score, 8)} className="mt-6" />
+            Score:{" " + ethers.utils.formatUnits(score, 10)}
+            <Gauge value={ethers.utils.formatUnits(score, 10)} className="mt-6" />
           </div>
           <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
