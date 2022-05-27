@@ -6,13 +6,9 @@ import { Gauge } from "../components";
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [currentGaugeId, setCurrentGaugeId] = useState();
   const [gaugeId, setGaugeId] = useState();
-  const [gauges, setGauges] = useState([
-    // mock gauges
-    // { id: 1, score: 0 },
-    // { id: 2, score: 0 },
-    // { id: 3, score: 0 },
-    // { id: 4, score: 0 },
-  ]);
+  const [user, setUser] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
+  const [userScore, setUserScore] = useState(0);
+  const [gauges, setGauges] = useState([]);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
   const [loadingGauge, setLoadingGauge] = useState(false);
@@ -47,6 +43,12 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
       }
     });
     setLoadingGauge(false);
+  };
+
+  const getConvictionScoreForUser = async () => {
+    await readContracts?.ConvictionVoting?.getConvictionScore(gaugeId, address).then(result => {
+      console.log("User score for gauge", result);
+    });
   };
 
   const addConviction = async () => {
@@ -139,7 +141,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   useEffect(() => {
     const getGtcBalance = () => {
-      readContracts?.GTC?.balanceOf(address).then(result => {
+      readContracts?.GTC?.balanceOf(address ? address : "").then(result => {
         setGtcBalance(result.toString());
       });
     };
@@ -162,7 +164,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   }, [address, readContracts?.ConvictionVoting]);
 
   // todo: trying to get this to load on the page load... random shit...
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getGaugeInfo = async () => {
       await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
         console.log("Gauge: ", gaugeId.toString());
@@ -170,11 +172,25 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
             console.log("Score for Gauge ", `${index}: `, score.toString());
             // load up the gauges with the id and the score
-            // { id: 0, score: 0 } sample
+            // [{ id: 0, score: 0 }] sample
             setGauges(prevState => {
               return [
                 ...prevState.slice(0, index - 1),
                 { id: index, score: ethers.utils.formatUnits(score.toString(), 16) },
+                ...prevState.slice(index + gaugeId, prevState.length),
+              ];
+            });
+          });
+          await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
+            console.log("user score", userScore.toString());
+            // [{ address: address, gauges: [{ id: 1, score: 0 }] }]
+            setUser(prevState => {
+              return [
+                ...prevState.slice(0, index - 1),
+                {
+                  address: address,
+                  gauges: [{ ...gauges }],
+                },
                 ...prevState.slice(index + gaugeId, prevState.length),
               ];
             });

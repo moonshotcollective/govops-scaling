@@ -257,21 +257,6 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    /// @notice Gets all the current active gauges
-    function getAllGauges()
-        external
-        view
-        // (Gauge[] memory) // can't return due to nested mapping..
-    {
-        Gauge[] storage Gauges;
-        // iterate the gauges based on the currentGaugeId for length
-        for(uint256 index = 0; index < currentGaugeId; index++) {
-            // Gauges.push(gauges[index]); // not supported.. wtf
-        }
-
-        // return Gauges;
-    }
-
     function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
         Gauge storage gauge = gauges[gaugeId];
 
@@ -298,23 +283,6 @@ contract ConvictionVoting is Ownable {
         return gauge.convictionsByUser[user];
     }
 
-    /// @notice get a total conviction score for a gauge
-    /// @param gaugeId the id of the gauge
-    /// @return convictionTotal the total conviction for that gauge
-    function getTotalConvictionForGauge(uint256 gaugeId)
-        external
-        view
-        returns (uint256 convictionTotal)
-    {
-        Gauge storage gauge = gauges[gaugeId];
-        Conviction storage convictions = gauge.convictions[gaugeId];
-        convictionTotal = 0;
-        //for(uint i = 0; i < gauge.convictions[gaugeId].length; i++) {
-        // add them upp
-        //}
-
-        return convictionTotal;
-    }
 
     /// @notice Calculates the minimum conviction a user can commit
     /// @param gaugeId the id of the gauge
