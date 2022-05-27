@@ -51,34 +51,38 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const addConviction = async () => {
     setLoading(true);
-    await tx(writeContracts?.ConvictionVoting?.addConviction(address, gaugeId, amount), async update => {
-      if (update && (update.status === "confirmed" || update.status === 1)) {
-        console.log(" 🍾 Transaction " + update.hash + " finished!");
-        console.log(
-          " ⛽️ " +
-            update.gasUsed +
-            "/" +
-            (update.gasLimit || update.gas) +
-            " @ " +
-            parseFloat(update.gasPrice) / 1000000000 +
-            " gwei",
-        );
-        notification.success({
-          placement: "topRight",
-          message: "Your Conviction is Noted",
-        });
-      }
-    });
+    await tx(
+      writeContracts?.ConvictionVoting?.addConviction(address, gaugeId, ethers.utils.parseEther(amount)),
+      async update => {
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          console.log(" 🍾 Transaction " + update.hash + " finished!");
+          console.log(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+          notification.success({
+            placement: "topRight",
+            message: "Your Conviction is Noted",
+          });
+        }
+      },
+    );
     setLoading(false);
   };
 
   const removeConviction = async id => {
     await tx(
       writeContracts?.ConvictionVoting?.removeConvictionByIds(
-        2, // gaugeId
+        gaugeId, // gaugeId
         1, // count
         true, // oldest first
-        [1, 3, 5], // convictions
+        address,
+        [1], // convictions
       ),
       async update => {
         if (update && (update.status === "confirmed" || update.status === 1)) {
@@ -94,7 +98,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           );
           notification.success({
             placement: "topRight",
-            message: "Your Conviction has been removed",
+            message: "Your Conviction has been removed for Gauge",
           });
         }
       },
@@ -111,7 +115,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const getConvictionScoreForGaugeWithId = async id => {
     // fetch the current total conviction score for a gauge
-    await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(id).then(x => {
+    await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(id).then(x => {
       console.log("Score for gauge: ", x.toString());
       setScore(x.toString());
 
@@ -120,7 +124,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   };
 
   const approveGtc = async () => {
-    await tx(writeContracts?.GTC?.approve(readContracts?.ConvictionVoting?.address, amount));
+    await tx(writeContracts?.GTC?.approve(readContracts?.ConvictionVoting?.address, ethers.utils.parseEther(amount)));
   };
 
   const getApprovedAmount = async () => {
@@ -164,27 +168,29 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   useLayoutEffect(() => {
     const getGaugeInfo = async () => {
       await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
-        for (let index = 1; index < gaugeId.toString(); index++) {
-          await readContracts?.ConvictionVoting?.calculateConvictionScoreForGauge(index).then(score => {
+        console.log("Gauge: ", gaugeId.toString());
+        for (let index = 1; index <= gaugeId.toString(); index++) {
+          await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
             console.log("Score for Gauge ", `${index}: `, score.toString());
             // load up the gauges with the id and the score
             // { id: 0, score: 0 } sample
             setGauges(prevState => {
               return [
                 ...prevState.slice(0, index - 1),
-                { id: index, score: ethers.utils.formatUnits(score.toString(), 10) },
+                { id: index, score: ethers.utils.formatUnits(score.toString(), 16) },
                 ...prevState.slice(index + gaugeId, prevState.length),
               ];
             });
           });
         }
+        console.log(gauges);
       });
     };
 
     return () => {
       getGaugeInfo();
     };
-  }, [approval, address, gaugeId, readContracts?.ConvictionVoting]);
+  }, [approval, address, gaugeId, readContracts?.ConvictionVoting, currentGaugeId]);
 
   return (
     <div style={{ margin: "20px" }}>
@@ -194,8 +200,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Score:{" " + ethers.utils.formatUnits(score, 10)}
-            <Gauge value={ethers.utils.formatUnits(score, 10)} className="mt-6" />
+            Score:{" " + ethers.utils.formatUnits(score, 16)}
+            <Gauge value={ethers.utils.formatUnits(score, 16)} className="mt-6" />
           </div>
           <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
             Add Gauge
@@ -210,7 +216,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             onChange={onSwitchChange}
           />
           <span className="m-5">{action === true ? "Stake" : "Unstake"} Your Conviction</span>
-          <span>GTC {ethers.utils.formatEther(gtcBalance.toString().slice(0, 8))}</span>
+          <span>GTC {ethers.utils.formatEther(gtcBalance.toString())}</span>
           <br />
           <label>Gauge Id: </label>
           <input
@@ -222,14 +228,20 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             }}
           />
           <br />
-          <label>Amount: </label>
-          <input
-            className="w-60 m-4 bg-transparent border-2 p-1"
-            value={amount}
-            onChange={e => {
-              setAmount(e.target.value);
-            }}
-          />
+          {action === false ? (
+            <div></div>
+          ) : (
+            <div>
+              <label>Amount: </label>
+              <input
+                className="w-60 m-4 bg-transparent border-2 p-1"
+                value={amount}
+                onChange={e => {
+                  setAmount(e.target.value);
+                }}
+              />
+            </div>
+          )}
           <br />
           {/* <label>Length of Time: </label>
           <Input

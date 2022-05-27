@@ -145,8 +145,8 @@ contract ConvictionVoting is Ownable {
         uint256[] calldata convictions
     ) external {
         Gauge storage gauge = gauges[gaugeId];
-        if (gauge.id != 0) revert BadGaugeId();
-        if (count != 0) revert EmptyCount();
+        if (gauge.id == 0) revert BadGaugeId();
+        if (count == 0) revert EmptyCount();
         uint256 returnAmount = 0;
         if (oldestFirst) {
             for (uint256 i = 0; i <= count; i++) {
@@ -215,8 +215,8 @@ contract ConvictionVoting is Ownable {
     /// @notice Calculate conviction score for a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @return score Calculated score
-    function getConvictionScore(uint256 gaugeId)
-        external
+    function getConvictionScoreForGauge(uint256 gaugeId)
+        public
         view
         returns (uint256 score)
     {
