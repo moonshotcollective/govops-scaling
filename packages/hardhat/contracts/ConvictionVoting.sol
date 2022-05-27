@@ -142,7 +142,7 @@ contract ConvictionVoting is Ownable {
         uint256 count,
         bool oldestFirst,
         address receiver,
-        uint256[] calldata convictions
+        uint256[] calldata convictions // where does this come from?
     ) external {
         Gauge storage gauge = gauges[gaugeId];
         if (gauge.id == 0) revert BadGaugeId();
@@ -185,7 +185,7 @@ contract ConvictionVoting is Ownable {
     /// @param receiver Address to return tokens to
     function removeAllConvictions(uint256 gaugeId, address receiver) external {
         Gauge storage gauge = gauges[gaugeId];
-        if (gauge.id != 0) revert BadGaugeId();
+        if (gauge.id == 0) revert BadGaugeId();
         uint256 returnAmount = 0;
         uint256[] memory convictions = gauge.convictionsByUser[msg.sender];
         for (uint256 i = 0; i < convictions.length; i++) {
@@ -201,7 +201,7 @@ contract ConvictionVoting is Ownable {
     function totalStakedForGauge(
         uint256 gaugeId
     )
-        public
+        external
         view
         returns(uint256 totalStaked)
     {
@@ -216,7 +216,7 @@ contract ConvictionVoting is Ownable {
     /// @param gaugeId Gauge id to calculate score for
     /// @return score Calculated score
     function getConvictionScoreForGauge(uint256 gaugeId)
-        public
+        external
         view
         returns (uint256 score)
     {
@@ -289,7 +289,7 @@ contract ConvictionVoting is Ownable {
     /// @param user the address of the user
     /// @return userCovictions the users convictions for a gauge
     function getConvictionsByUser(uint256 gaugeId, address user)
-        public
+        external
         view
         returns (uint256[] memory userCovictions)
     {
@@ -302,7 +302,7 @@ contract ConvictionVoting is Ownable {
     /// @param gaugeId the id of the gauge
     /// @return convictionTotal the total conviction for that gauge
     function getTotalConvictionForGauge(uint256 gaugeId)
-        public
+        external
         view
         returns (uint256 convictionTotal)
     {
@@ -339,7 +339,7 @@ contract ConvictionVoting is Ownable {
     /// @param requestedAmount Requested amount of tokens for a certain proposal
     /// @return threshold The threshold a proposal's conviction should surpass in order to be able to execute it.
     function calculateThreshold(uint256 requestedAmount)
-        public
+        external
         view
         returns (uint256 threshold)
     {

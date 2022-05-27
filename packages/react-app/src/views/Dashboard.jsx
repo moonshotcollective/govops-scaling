@@ -77,12 +77,9 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const removeConviction = async id => {
     await tx(
-      writeContracts?.ConvictionVoting?.removeConvictionByIds(
+      writeContracts?.ConvictionVoting?.removeAllConvictions(
         gaugeId, // gaugeId
-        1, // count
-        true, // oldest first
-        address,
-        [1], // convictions
+        address, // the reciver of the tokens...
       ),
       async update => {
         if (update && (update.status === "confirmed" || update.status === 1)) {
