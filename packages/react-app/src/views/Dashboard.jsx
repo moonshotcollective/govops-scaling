@@ -260,6 +260,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                 value={amount}
                 onChange={e => {
                   setAmount(e.target.value);
+                  getApprovedAmount();
                 }}
               />
             </div>
@@ -273,7 +274,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             }}
           />
           <br /> */}
-          {!approval > 0 ? (
+          {approval > 0 ? (
             <Button
               className="mt-10 bg-purple-700 hover:bg-purple-300"
               loading={loading}
