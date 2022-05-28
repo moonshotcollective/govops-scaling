@@ -1,12 +1,12 @@
 import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
 import { ethers } from "ethers";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Gauge } from "../components";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [currentGaugeId, setCurrentGaugeId] = useState();
   const [gaugeId, setGaugeId] = useState();
-  const [user, setUser] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
+  const [users, setUsers] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
   const [userScore, setUserScore] = useState(0);
   const [gauges, setGauges] = useState([]);
   const [action, setAction] = useState(true);
@@ -176,7 +176,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             setGauges(prevState => {
               return [
                 ...prevState.slice(0, index - 1),
-                { id: index, score: ethers.utils.formatUnits(score.toString(), 16) },
+                { id: index, score: ethers.utils.formatUnits(score.toString(), 20) },
                 ...prevState.slice(index + gaugeId, prevState.length),
               ];
             });
@@ -184,7 +184,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
             console.log("user score", userScore.toString());
             // [{ address: address, gauges: [{ id: 1, score: 0 }] }]
-            setUser(prevState => {
+            setUsers(prevState => {
               return [
                 ...prevState.slice(0, index - 1),
                 {
@@ -196,7 +196,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             });
           });
         }
-        console.log(gauges);
+        console.log(users);
       });
     };
 
@@ -213,12 +213,20 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Score:{" " + ethers.utils.formatUnits(score, 16)}
-            <Gauge value={ethers.utils.formatUnits(score, 16)} className="mt-6" />
+            Score:{" " + ethers.utils.formatUnits(score, 20)}
+            <Gauge value={ethers.utils.formatUnits(score, 20)} className="mt-6" />
           </div>
-          <Button loading={loadingGauge} className="mt-5 bg-purple-700 hover:bg-purple-300" onClick={() => addGauge()}>
-            Add Gauge
-          </Button>
+          {address == "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B" ? (
+            <Button
+              loading={loadingGauge}
+              className="mt-5 bg-purple-700 hover:bg-purple-300"
+              onClick={() => addGauge()}
+            >
+              Add Gauge
+            </Button>
+          ) : (
+            <div></div>
+          )}
         </Col>
         <Col span={12} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <Switch
