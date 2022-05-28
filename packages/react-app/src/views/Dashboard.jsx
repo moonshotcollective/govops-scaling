@@ -71,6 +71,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             placement: "topRight",
             message: "Your Conviction is Noted",
           });
+          setAmount(0);
         }
       },
     );
