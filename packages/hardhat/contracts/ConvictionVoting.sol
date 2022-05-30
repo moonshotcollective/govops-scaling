@@ -84,11 +84,6 @@ contract ConvictionVoting is Ownable {
         address indexed user,
         uint256 amount
     );
-    event RemoveConviction(
-        uint256 indexed gaugeId,
-        address indexed user,
-        uint256 indexed amount
-    );
 
     constructor(address newToken, address owner) {
         token = IERC20(newToken);
@@ -125,8 +120,6 @@ contract ConvictionVoting is Ownable {
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
-
-        return convictionId;
     }
 
     /// @notice removes conviction by id(s)
@@ -267,7 +260,7 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    /// @notice Calculate conviction score for an user on a guauge
+    /// @notice Calculate conviction score for an user on a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @param user User address to calculate score for
     /// @return score Calculated score
