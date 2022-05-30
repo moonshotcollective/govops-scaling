@@ -12,6 +12,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
   const [loadingGauge, setLoadingGauge] = useState(false);
+  const [loadingApprove, setloadingApprove] = useState(false);
   const [loading, setLoading] = useState(false);
   const [approval, setApproval] = useState(0);
   const [lengthOfTime, setLengthOfTime] = useState(0);
@@ -72,6 +73,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             message: "Your Conviction is Noted",
           });
           setAmount(0);
+          getGaugeInfo();
         }
       },
     );
@@ -100,6 +102,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             placement: "topRight",
             message: "Your Conviction has been removed for Gauge",
           });
+          getGaugeInfo();
         }
       },
     );
@@ -108,8 +111,12 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const submitConviction = async action => {
     if (action === true) {
       await addConviction();
+      getApprovedAmount();
+      getGtcBalance();
     } else if (action === false) {
       await removeConviction();
+      getApprovedAmount();
+      getGtcBalance();
     }
   };
 
@@ -124,7 +131,11 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   };
 
   const approveGtc = async () => {
+    setloadingApprove(true);
     await tx(writeContracts?.GTC?.approve(readContracts?.ConvictionVoting?.address, ethers.utils.parseEther(amount)));
+    getApprovedAmount();
+    getGtcBalance();
+    setloadingApprove(false);
   };
 
   const getApprovedAmount = async () => {
@@ -140,13 +151,13 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     };
   }, [address, readContracts?.ConvictionVoting, readContracts?.GTC]);
 
-  useEffect(() => {
-    const getGtcBalance = () => {
-      readContracts?.GTC?.balanceOf(address ? address : "").then(result => {
-        setGtcBalance(result.toString());
-      });
-    };
+  const getGtcBalance = () => {
+    readContracts?.GTC?.balanceOf(address ? address : "").then(result => {
+      setGtcBalance(result.toString());
+    });
+  };
 
+  useEffect(() => {
     return () => {
       getGtcBalance();
     };
@@ -165,42 +176,41 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   }, [address, readContracts?.ConvictionVoting]);
 
   // todo: trying to get this to load on the page load... random shit...
+  const getGaugeInfo = async () => {
+    await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
+      console.log("Gauge: ", gaugeId.toString());
+      for (let index = 1; index <= gaugeId.toString(); index++) {
+        await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
+          console.log("Score for Gauge ", `${index}: `, score.toString());
+          // load up the gauges with the id and the score
+          // [{ id: 0, score: 0 }] sample
+          setGauges(prevState => {
+            return [
+              ...prevState.slice(0, index - 1),
+              { id: index, score: ethers.utils.formatUnits(score.toString(), 20) },
+              ...prevState.slice(index + gaugeId, prevState.length),
+            ];
+          });
+        });
+        await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
+          console.log("user score", userScore.toString());
+          // [{ address: address, gauges: [{ id: 1, score: 0 }] }]
+          setUsers(prevState => {
+            return [
+              ...prevState.slice(0, index - 1),
+              {
+                address: address,
+                gauges: [{ ...gauges }],
+              },
+              ...prevState.slice(index + gaugeId, prevState.length),
+            ];
+          });
+        });
+      }
+      console.log(users);
+    });
+  };
   useEffect(() => {
-    const getGaugeInfo = async () => {
-      await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
-        console.log("Gauge: ", gaugeId.toString());
-        for (let index = 1; index <= gaugeId.toString(); index++) {
-          await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
-            console.log("Score for Gauge ", `${index}: `, score.toString());
-            // load up the gauges with the id and the score
-            // [{ id: 0, score: 0 }] sample
-            setGauges(prevState => {
-              return [
-                ...prevState.slice(0, index - 1),
-                { id: index, score: ethers.utils.formatUnits(score.toString(), 20) },
-                ...prevState.slice(index + gaugeId, prevState.length),
-              ];
-            });
-          });
-          await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
-            console.log("user score", userScore.toString());
-            // [{ address: address, gauges: [{ id: 1, score: 0 }] }]
-            setUsers(prevState => {
-              return [
-                ...prevState.slice(0, index - 1),
-                {
-                  address: address,
-                  gauges: [{ ...gauges }],
-                },
-                ...prevState.slice(index + gaugeId, prevState.length),
-              ];
-            });
-          });
-        }
-        console.log(users);
-      });
-    };
-
     return () => {
       getGaugeInfo();
     };
@@ -274,7 +284,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             }}
           />
           <br /> */}
-          {approval > 0 ? (
+          {approval > amount ? (
             <Button
               className="mt-10 bg-purple-700 hover:bg-purple-300"
               loading={loading}
@@ -285,7 +295,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           ) : (
             <Button
               className="mt-10 bg-purple-700 hover:bg-purple-300"
-              loading={loading}
+              loading={loadingApprove}
               onClick={() => {
                 approveGtc();
               }}

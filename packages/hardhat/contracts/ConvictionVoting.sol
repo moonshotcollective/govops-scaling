@@ -190,6 +190,7 @@ contract ConvictionVoting is Ownable {
         uint256[] memory convictions = gauge.convictionsByUser[msg.sender];
         for (uint256 i = 0; i < convictions.length; i++) {
             returnAmount += gauge.convictions[convictions[i]].amount;
+            gauge.totalCovictionStaked -= returnAmount;
             delete gauge.convictions[convictions[i]];
         }
         delete gauge.convictionsByUser[msg.sender];
@@ -267,6 +268,15 @@ contract ConvictionVoting is Ownable {
         uint256 staked = token.balanceOf(address(this));
 
         return staked;
+    }
+
+    function totalStakedForGaugeByUser(uint256 gaugeId)
+        external
+        view
+        returns(uint256 totalStaked)
+    {
+        Gauge storage gauge = gauges[gaugeId]; 
+
     }
 
     /// @notice get a users conviction score for a gauge
