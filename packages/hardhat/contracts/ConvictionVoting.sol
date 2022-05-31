@@ -84,33 +84,25 @@ contract ConvictionVoting is Ownable {
         address indexed user,
         uint256 amount
     );
-    event RemoveConviction(
-        uint256 indexed gaugeId,
-        address indexed user,
-        uint256 indexed amount
-    );
 
     constructor(address newToken, address owner) {
         token = IERC20(newToken);
-        currentGaugeId = 0;
         _transferOwnership(owner);
     }
 
-    /// @notice Adds a new gauge with no values
-    function addGauge() external onlyOwner returns (uint256 totalGauges) {
+    /// @notice Adds a new gauge with no convictions
+    function addGauge() external onlyOwner {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
         gauge.id = current;
 
         emit NewGauge(current);
-
-        return currentGaugeId;
     }
 
     /// @notice Adds conviction to a gauge
-    /// @param user the address of the user adding conviction
-    /// @param gaugeId the id of the guage adding conviction to
-    /// @param amount the amount of GTC being convicted => **not the weight of it**
+    /// @param user The address of the user adding conviction
+    /// @param gaugeId The ID of the gauge where the user is adding their conviction
+    /// @param amount The amount of GTC being added as conviction (not the weight/score)
     function addConviction(
         address user,
         uint256 gaugeId,
@@ -128,15 +120,14 @@ contract ConvictionVoting is Ownable {
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
-
-        return convictionId;
     }
 
     /// @notice removes conviction by id(s)
-    /// @param gaugeId the id of the gauge
-    /// @param count ...
-    /// @param oldestFirst should we use the oldest first?
-    /// @param convictions array of conviction values
+    /// @param gaugeId The ID of the gauge
+    /// @param count Number of convictions to remove
+    /// @param oldestFirst Start removing from the left of the conviction array
+    /// @param convictions Array of current conviction values
+    /// @dev We use the existing array as calldata to remove some pesky SLOADs, take care to be accurate!
     function removeConvictionByIds(
         uint256 gaugeId,
         uint256 count,
@@ -180,6 +171,42 @@ contract ConvictionVoting is Ownable {
         token.safeTransfer(receiver, returnAmount);
     }
 
+    /// @notice Remove conviction by amount
+    /// @param gaugeId The ID of the gauge
+    /// @param receiver Address to refund convicted tokens
+    /// @param convictions Array of current conviction values
+    /// @dev We use the existing array as calldata to remove some pesky SLOADs, take care to be accurate!
+    function removeConvictionByAmount(
+        uint256 gaugeId,
+        uint256 amount,
+        address receiver,
+        uint256[] calldata convictions
+    ) external {
+        Gauge storage gauge = gauges[gaugeId];
+        if (gauge.id != 0) revert BadGaugeId();
+        uint256 convictionRemoved = 0;
+        uint256 idx = 0;
+        for (uint256 i = 0; i < convictions.length; i++) {
+            Conviction memory conviction = gauge.convictions[convictions[i]];
+            require(conviction.userAddress == msg.sender, "ONLY_VOTER");
+            convictionRemoved += conviction.amount;
+            if (convictionRemoved == amount) {
+                delete gauge.convictions[convictions[i]];
+                idx = i;
+                break;
+            } else if (convictionRemoved > amount) {
+                gauge.convictions[convictions[i]].amount =
+                    convictionRemoved -
+                    amount;
+                idx = i + 1;
+                break;
+            }
+            delete gauge.convictions[convictions[i]];
+        }
+        gauge.convictionsByUser[msg.sender] = uint256[](convictions[:idx]);
+        token.safeTransfer(receiver, amount);
+    }
+
     /// @notice Remove all convictions for an address
     /// @param gaugeId Gauge id to calculate score for
     /// @param receiver Address to return tokens to
@@ -204,7 +231,7 @@ contract ConvictionVoting is Ownable {
     )
         external
         view
-        returns(uint256 totalStaked)
+        returns (uint256 totalStaked)
     {
         Gauge storage gauge = gauges[gaugeId];
 
@@ -236,7 +263,7 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    /// @notice Calculate conviction score for an user on a guauge
+    /// @notice Calculate conviction score for an user on a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @param user User address to calculate score for
     /// @return score Calculated score
@@ -256,6 +283,21 @@ contract ConvictionVoting is Ownable {
         }
 
         return score;
+    }
+
+    /// @notice Gets all the current active gauges
+    function getAllGauges()
+        external
+        view
+    // (Gauge[] memory) // can't return due to nested mapping..
+    {
+        Gauge[] storage Gauges;
+        // iterate the gauges based on the currentGaugeId for length
+        for (uint256 index = 0; index < currentGaugeId; index++) {
+            // Gauges.push(gauges[index]); // not supported.. wtf
+        }
+
+        // return Gauges;
     }
 
     function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
@@ -292,10 +334,44 @@ contract ConvictionVoting is Ownable {
         returns (uint256[] memory userCovictions)
     {
         Gauge storage gauge = gauges[gaugeId];
-
         return gauge.convictionsByUser[user];
     }
 
+    /// @notice Get a user's staked amount
+    /// @param gaugeId the ID of the gauge
+    /// @param user The address of the user
+    /// @return stake The user's total stake for a gauge in token units
+    function getStakeByUser(uint256 gaugeId, address user)
+        public
+        view
+        returns (uint256 memory stake)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+        uint256[] memory convictionIds = gauge.convictionsByUser[user];
+        uint256 length = convictionIds.length;
+        for (uint256 i = 0; i < length; ++i) {
+            Conviction memory conviction = gauge.convictions[convictionIds[i]];
+            stake += conviction.amount;
+        }
+    }
+
+    /// @notice get a total conviction score for a gauge
+    /// @param gaugeId the id of the gauge
+    /// @return convictionTotal the total conviction for that gauge
+    function getTotalConvictionForGauge(uint256 gaugeId)
+        public
+        view
+        returns (uint256 convictionTotal)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+        Conviction storage convictions = gauge.convictions[gaugeId];
+        convictionTotal = 0;
+        //for(uint i = 0; i < gauge.convictions[gaugeId].length; i++) {
+        // add them upp
+        //}
+
+        return convictionTotal;
+    }
 
     /// @notice Calculates the minimum conviction a user can commit
     /// @param gaugeId the id of the gauge
