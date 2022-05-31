@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [gaugeId, setGaugeId] = useState();
   const [users, setUsers] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
   const [userScore, setUserScore] = useState(0);
+  const [userStake, setUserStake] = useState(0);
   const [gauges, setGauges] = useState([]);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
@@ -184,22 +186,37 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const getGaugeInfo = async () => {
     await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
       console.log("Gauge: ", gaugeId.toString());
+      let usrScore;
       for (let index = 1; index <= gaugeId.toString(); index++) {
         await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
           console.log("Score for Gauge ", `${index}: `, score.toString());
           // load up the gauges with the id and the score
-          // [{ id: 0, score: 0 }] sample
+          // [{ id: 0, score: 0, userStake: 0 }] sample
+          usrScore = score;
           setGauges(prevState => {
             return [
               ...prevState.slice(0, index - 1),
-              { id: index, score: ethers.utils.formatUnits(score.toString(), 20) },
+              { id: index, score: ethers.utils.formatUnits(score.toString(), 20), userStake: 0 },
+              ...prevState.slice(index + gaugeId, prevState.length),
+            ];
+          });
+        });
+        await readContracts?.ConvictionVoting?.getStakeByUser(index, address).then(result => {
+          setGauges(prevState => {
+            return [
+              ...prevState.slice(0, index - 1),
+              {
+                id: index,
+                score: ethers.utils.formatUnits(usrScore.toString(), 20),
+                userStake: ethers.utils.formatEther(result.toString()),
+              },
               ...prevState.slice(index + gaugeId, prevState.length),
             ];
           });
         });
         await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
           console.log("user score", userScore.toString());
-          // [{ address: address, gauges: [{ id: 1, score: 0 }] }]
+          // [{ address: address, gauges: [{ id: 1, score: 0, userStake: 0 }] }]
           setUsers(prevState => {
             return [
               ...prevState.slice(0, index - 1),
@@ -219,28 +236,40 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getGaugeInfo();
     };
-  }, [approval, address, gaugeId, readContracts?.ConvictionVoting, currentGaugeId]);
+  }, [gaugeId]);
 
   const getTotalStakedForGaugeForUser = async id => {
-    await readContracts?.ConvictionVoting?.totalStakedForGaugeByUser(id).then(result => {
-      console.log("Staked for a gauge by user: ", result.toString());
+    let stake;
+    await readContracts?.ConvictionVoting?.getStakeByUser(id, address).then(result => {
+      setUserStake(result);
+      console.log("Staked for a gauge by user: ", ethers.utils.formatEther(result.toString()).toString());
+
+      stake = result;
     });
+
+    return stake;
   };
 
-  getTotalStakedForGaugeForUser(1);
+  // getTotalStakedForGaugeForUser(1);
 
   return (
     <div style={{ margin: "20px" }}>
       <Divider>Show Your Conviction</Divider>
       <Button
-        onClick={() => { mintGtc() }}
-      >GTC Faucet</Button>
+        onClick={() => {
+          mintGtc();
+        }}
+      >
+        GTC Faucet
+      </Button>
       <Row align="center">
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
             Score:{" " + ethers.utils.formatUnits(score, 20)}
+            <br />
+            GTC Staked:{" " + ethers.utils.formatEther(userStake)}
             <Gauge value={ethers.utils.formatUnits(score, 20)} className="mt-6" />
           </div>
           {address == "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B" ? (
@@ -273,6 +302,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             onChange={e => {
               setGaugeId(e.target.value);
               getConvictionScoreForGaugeWithId(e.target.value);
+              getTotalStakedForGaugeForUser(e.target.value);
             }}
           />
           <br />
@@ -346,11 +376,12 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                   onClick={e => {
                     setGaugeId(item.id);
                     getConvictionScoreForGaugeWithId(item.id);
+                    getTotalStakedForGaugeForUser(item.id);
                   }}
                 >
                   Total Gauge Score: {item.score}
                   <br />
-                  GTC Staked:
+                  Your GTC Staked: {item.userStake}
                 </Card>
               </List.Item>
             )}

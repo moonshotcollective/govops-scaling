@@ -285,21 +285,6 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    /// @notice Gets all the current active gauges
-    function getAllGauges()
-        external
-        view
-    // (Gauge[] memory) // can't return due to nested mapping..
-    {
-        Gauge[] storage Gauges;
-        // iterate the gauges based on the currentGaugeId for length
-        for (uint256 index = 0; index < currentGaugeId; index++) {
-            // Gauges.push(gauges[index]); // not supported.. wtf
-        }
-
-        // return Gauges;
-    }
-
     function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
         Gauge storage gauge = gauges[gaugeId];
 
@@ -310,18 +295,6 @@ contract ConvictionVoting is Ownable {
         uint256 staked = token.balanceOf(address(this));
 
         return staked;
-    }
-
-    function totalStakedForGaugeByUser(uint256 gaugeId)
-        external
-        view
-        returns(uint256 totalStaked)
-    {
-        Gauge storage gauge = gauges[gaugeId];
-        
-        totalStaked = 0;
-
-        return totalStaked;
     }
 
     /// @notice get a users conviction score for a gauge
