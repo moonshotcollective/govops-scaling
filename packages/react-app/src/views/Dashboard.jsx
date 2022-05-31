@@ -285,15 +285,17 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             </div>
           )}
           <br />
-          {/* <label>Length of Time: </label>
-          <Input
-            value={lengthOfTime}
-            onChange={e => {
-              setLengthOfTime(e.target.value);
-            }}
-          />
-          <br /> */}
-          {approval > amount ? (
+          {approval < amount ? (
+            <Button
+              className="mt-10 bg-purple-700 hover:bg-purple-300"
+              loading={loadingApprove}
+              onClick={() => {
+                approveGtc();
+              }}
+            >
+              Approve
+            </Button>
+          ) : action === "Stake" && approval >= amount ? (
             <Button
               className="mt-10 bg-purple-700 hover:bg-purple-300"
               loading={loading}
@@ -304,13 +306,22 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           ) : (
             <Button
               className="mt-10 bg-purple-700 hover:bg-purple-300"
-              loading={loadingApprove}
-              onClick={() => {
-                approveGtc();
-              }}
+              loading={loading}
+              onClick={() => submitConviction(action)}
             >
-              Approve
+              Submit
             </Button>
+          )}
+          {action === "Unstake" ? (
+            <Button
+              className="mt-10 bg-purple-700 hover:bg-purple-300"
+              loading={loading}
+              onClick={() => submitConviction(action)}
+            >
+              Submit
+            </Button>
+          ) : (
+            <div></div>
           )}
         </Col>
       </Row>
