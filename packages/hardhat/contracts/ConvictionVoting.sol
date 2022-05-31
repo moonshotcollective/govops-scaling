@@ -344,7 +344,7 @@ contract ConvictionVoting is Ownable {
     function getStakeByUser(uint256 gaugeId, address user)
         public
         view
-        returns (uint256 memory stake)
+        returns (uint256 stake)
     {
         Gauge storage gauge = gauges[gaugeId];
         uint256[] memory convictionIds = gauge.convictionsByUser[user];

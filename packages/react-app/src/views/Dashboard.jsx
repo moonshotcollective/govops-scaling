@@ -123,7 +123,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const getConvictionScoreForGaugeWithId = async id => {
     // fetch the current total conviction score for a gauge
-    await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(id).then(x => {
+    await readContracts?.ConvictionVoting?.getConvictionScore(id, address).then(x => {
       console.log("Score for gauge: ", x.toString());
       setScore(x.toString());
 
@@ -137,6 +137,10 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     getApprovedAmount();
     getGtcBalance();
     setloadingApprove(false);
+  };
+
+  const mintGtc = async () => {
+    await tx(writeContracts?.GTC?.faucetMint());
   };
 
   const getApprovedAmount = async () => {
@@ -228,6 +232,9 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   return (
     <div style={{ margin: "20px" }}>
       <Divider>Show Your Conviction</Divider>
+      <Button
+        onClick={() => { mintGtc() }}
+      >GTC Faucet</Button>
       <Row align="center">
         <Col span={6} style={{ border: "1px solid", margin: "20px", padding: "25px" }}>
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
