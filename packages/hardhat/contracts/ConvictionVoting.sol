@@ -275,8 +275,11 @@ contract ConvictionVoting is Ownable {
         view
         returns(uint256 totalStaked)
     {
-        Gauge storage gauge = gauges[gaugeId]; 
+        Gauge storage gauge = gauges[gaugeId];
+        
+        totalStaked = 0;
 
+        return totalStaked;
     }
 
     /// @notice get a users conviction score for a gauge

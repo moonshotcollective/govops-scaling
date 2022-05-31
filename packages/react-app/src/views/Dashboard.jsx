@@ -44,6 +44,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
       }
     });
     setLoadingGauge(false);
+    getGaugeInfo();
   };
 
   const getConvictionScoreForUser = async () => {
@@ -216,6 +217,14 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     };
   }, [approval, address, gaugeId, readContracts?.ConvictionVoting, currentGaugeId]);
 
+  const getTotalStakedForGaugeForUser = async id => {
+    await readContracts?.ConvictionVoting?.totalStakedForGaugeByUser(id).then(result => {
+      console.log("Staked for a gauge by user: ", result.toString());
+    });
+  };
+
+  getTotalStakedForGaugeForUser(1);
+
   return (
     <div style={{ margin: "20px" }}>
       <Divider>Show Your Conviction</Divider>
@@ -322,6 +331,8 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                   }}
                 >
                   Total Gauge Score: {item.score}
+                  <br />
+                  GTC Staked:
                 </Card>
               </List.Item>
             )}
