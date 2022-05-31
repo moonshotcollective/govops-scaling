@@ -1,4 +1,6 @@
 {
-  "localhost_ConvictionVotingAddress": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-  "localhost_GTCAddress": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+  "localhost_ConvictionVotingAddress": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  "localhost_GTCAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "goerli_ConvictionVotingAddress": "0xFe4bd1426754366CCe7f99dbC31f5c3e84F66874",
+  "goerli_GTCAddress": "0xA277C69C40442919f0A71707E67B8D194fa012Eb"
 }

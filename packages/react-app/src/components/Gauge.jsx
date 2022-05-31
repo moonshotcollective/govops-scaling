@@ -37,7 +37,7 @@ const Gauge = ({ value }) => {
         width={radius * 2}
         height={radius * 2}
         value={value}
-        percent="%"
+        percent=""
         textSize={1}
         textOffsetX={0}
         textOffsetY={0}
