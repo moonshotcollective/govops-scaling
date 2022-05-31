@@ -851,7 +851,7 @@
       "chainId": "31337",
       "contracts": {
         "ConvictionVoting": {
-          "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+          "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
           "abi": [
             {
               "inputs": [
@@ -974,31 +974,6 @@
               "type": "event"
             },
             {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint256",
-                  "name": "gaugeId",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "user",
-                  "type": "address"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "uint256",
-                  "name": "amount",
-                  "type": "uint256"
-                }
-              ],
-              "name": "RemoveConviction",
-              "type": "event"
-            },
-            {
               "inputs": [
                 {
                   "internalType": "address",
@@ -1030,13 +1005,7 @@
             {
               "inputs": [],
               "name": "addGauge",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "totalGauges",
-                  "type": "uint256"
-                }
-              ],
+              "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
             },
@@ -1147,6 +1116,13 @@
               "type": "function"
             },
             {
+              "inputs": [],
+              "name": "getAllGauges",
+              "outputs": [],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [
                 {
                   "internalType": "uint256",
@@ -1233,6 +1209,49 @@
               "type": "function"
             },
             {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "gaugeId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "user",
+                  "type": "address"
+                }
+              ],
+              "name": "getStakeByUser",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "stake",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "gaugeId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getTotalConvictionForGauge",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "convictionTotal",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [],
               "name": "minimumConviction",
               "outputs": [
@@ -1272,6 +1291,34 @@
                 }
               ],
               "name": "removeAllConvictions",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "gaugeId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "receiver",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256[]",
+                  "name": "convictions",
+                  "type": "uint256[]"
+                }
+              ],
+              "name": "removeConvictionByAmount",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
