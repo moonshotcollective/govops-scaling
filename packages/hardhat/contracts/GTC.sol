@@ -9,6 +9,6 @@ contract GTC is ERC20 {
     }
 
     function faucetMint() public {
-        _mint(msg.sender, 10000 ether);
+        _mint(msg.sender, 100000000 ether);
     }
 }
