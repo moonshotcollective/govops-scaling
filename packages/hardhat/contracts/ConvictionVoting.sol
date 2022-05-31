@@ -319,8 +319,25 @@ contract ConvictionVoting is Ownable {
         returns (uint256[] memory userCovictions)
     {
         Gauge storage gauge = gauges[gaugeId];
-
         return gauge.convictionsByUser[user];
+    }
+
+    /// @notice Get a user's staked amount
+    /// @param gaugeId the ID of the gauge
+    /// @param user The address of the user
+    /// @return stake The user's total stake for a gauge in token units
+    function getStakeByUser(uint256 gaugeId, address user)
+        public
+        view
+        returns (uint256 memory stake)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+        uint256[] memory convictionIds = gauge.convictionsByUser[user];
+        uint256 length = convictionIds.length;
+        for (uint256 i = 0; i < length; ++i) {
+            Conviction memory conviction = gauge.convictions[convictionIds[i]];
+            stake += conviction.amount;
+        }
     }
 
     /// @notice get a total conviction score for a gauge
