@@ -11,6 +11,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [userScore, setUserScore] = useState(0);
   const [userStake, setUserStake] = useState(0);
   const [gauges, setGauges] = useState([]);
+  const [totalStakedForGauge, setTotalStakedForGauge] = useState(0);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
   const [loadingGauge, setLoadingGauge] = useState(false);
@@ -125,11 +126,20 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const getConvictionScoreForGaugeWithId = async id => {
     // fetch the current total conviction score for a gauge
-    await readContracts?.ConvictionVoting?.getConvictionScore(id, address).then(x => {
+    await readContracts?.ConvictionVoting?.getTotalConvictionForGauge(id).then(x => {
       console.log("Score for gauge: ", x.toString());
       setScore(x.toString());
 
       return x.toString();
+    });
+  };
+
+  const getConvictionScoreForUserGauge = async id => {
+    await readContracts?.ConvictionVoting?.getConvictionScore(id, address).then(result => {
+      console.log("Result of score: ", result);
+      setUserScore(result.toString());
+
+      return result.toString();
     });
   };
 
@@ -191,12 +201,18 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
         await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
           console.log("Score for Gauge ", `${index}: `, score.toString());
           // load up the gauges with the id and the score
-          // [{ id: 0, score: 0, userStake: 0 }] sample
+          // [{ id: 0, score: 0, totalStaked: 0, userStake: 0, userScore: 0 }] sample
           usrScore = score;
           setGauges(prevState => {
             return [
               ...prevState.slice(0, index - 1),
-              { id: index, score: ethers.utils.formatUnits(score.toString(), 20), userStake: 0 },
+              {
+                id: index,
+                score: ethers.utils.formatUnits(score.toString(), 20),
+                totalStaked: 0,
+                userStake: 0,
+                userScore: 0,
+              },
               ...prevState.slice(index + gaugeId, prevState.length),
             ];
           });
@@ -207,13 +223,27 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               ...prevState.slice(0, index - 1),
               {
                 id: index,
-                score: ethers.utils.formatUnits(usrScore.toString(), 20),
                 userStake: ethers.utils.formatEther(result.toString()),
+                userScore: ethers.utils.formatUnits(userScore, 20),
               },
               ...prevState.slice(index + gaugeId, prevState.length),
             ];
           });
         });
+        // await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(staked => {
+        //   setTotalStakedForGauge(staked.toString());
+
+        //   setGauges(prevState => {
+        //     return [
+        //       ...prevState.slice(0, index - 1),
+        //       {
+        //         id: index,
+        //         totalStaked: ethers.utils.formatEther(staked.toString()),
+        //       },
+        //       ...prevState.slice(index + gaugeId, prevState.length),
+        //     ];
+        //   });
+        // });
         await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
           console.log("user score", userScore.toString());
           // [{ address: address, gauges: [{ id: 1, score: 0, userStake: 0 }] }]
@@ -252,8 +282,15 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   // getTotalStakedForGaugeForUser(1);
 
+  const getTotalStakedForGauge = async id => {
+    await readContracts?.ConvictionVoting?.getGaugeDetails(id).then(result => {
+      console.log("Gauge total staked: ", result.toString());
+      setTotalStakedForGauge(result.toString());
+    });
+  };
+
   return (
-    <div style={{ margin: "20px" }}>
+    <div style={{ margin: "20px", marginBotton: "50px" }}>
       <Divider>Show Your Conviction</Divider>
       <Button
         onClick={() => {
@@ -267,10 +304,12 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Score:{" " + ethers.utils.formatUnits(score, 20)}
+            Total Score:{" " + ethers.utils.formatUnits(score, 20).slice(0, 9)}
             <br />
-            GTC Staked:{" " + ethers.utils.formatEther(userStake)}
-            <Gauge value={ethers.utils.formatUnits(score, 20)} className="mt-6" />
+            Total GTC Staked:{" " + ethers.utils.formatEther(totalStakedForGauge)}
+            <br />
+            User Staked GTC:{" " + ethers.utils.formatEther(userStake)}
+            <Gauge value={ethers.utils.formatUnits(score, 20).slice(0, 9)} className="mt-6" />
           </div>
           {address == "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B" ? (
             <Button
@@ -303,6 +342,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               setGaugeId(e.target.value);
               getConvictionScoreForGaugeWithId(e.target.value);
               getTotalStakedForGaugeForUser(e.target.value);
+              getConvictionScoreForUserGauge(e.target.value);
             }}
           />
           <br />
@@ -377,11 +417,16 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     setGaugeId(item.id);
                     getConvictionScoreForGaugeWithId(item.id);
                     getTotalStakedForGaugeForUser(item.id);
+                    getTotalStakedForGauge(item.id);
                   }}
                 >
                   Total Gauge Score: {item.score}
                   <br />
+                  Total Staked For Gauge: {item.totalStaked}
+                  <br />
                   Your GTC Staked: {item.userStake}
+                  <br />
+                  Your Gauge Score: {item.userScore}
                 </Card>
               </List.Item>
             )}
