@@ -126,11 +126,9 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const getConvictionScoreForGaugeWithId = async id => {
     // fetch the current total conviction score for a gauge
-    await readContracts?.ConvictionVoting?.getTotalConvictionForGauge(id).then(x => {
+    await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(id).then(x => {
       console.log("Score for gauge: ", x.toString());
       setScore(x.toString());
-
-      return x.toString();
     });
   };
 
@@ -138,8 +136,6 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     await readContracts?.ConvictionVoting?.getConvictionScore(id, address).then(result => {
       console.log("Result of score: ", result);
       setUserScore(result.toString());
-
-      return result.toString();
     });
   };
 
@@ -196,37 +192,32 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const getGaugeInfo = async () => {
     await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
       console.log("Gauge: ", gaugeId.toString());
-      let usrScore;
       for (let index = 1; index <= gaugeId.toString(); index++) {
-        await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(score => {
+        await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(async score => {
           console.log("Score for Gauge ", `${index}: `, score.toString());
           // load up the gauges with the id and the score
           // [{ id: 0, score: 0, totalStaked: 0, userStake: 0, userScore: 0 }] sample
-          usrScore = score;
-          setGauges(prevState => {
-            return [
-              ...prevState.slice(0, index - 1),
-              {
-                id: index,
-                score: ethers.utils.formatUnits(score.toString(), 20),
-              },
-              ...prevState.slice(index + gaugeId, prevState.length),
-            ];
+          await readContracts?.ConvictionVoting?.getStakeByUser(index, address).then(async result => {
+            await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(async userStake => {
+              await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
+                setGauges(prevState => {
+                  return [
+                    ...prevState.slice(0, index - 1),
+                    {
+                      id: index,
+                      score: ethers.utils.formatUnits(score.toString(), 20),
+                      totalStaked: ethers.utils.formatEther(userStake.toString()),
+                      userStake: ethers.utils.formatEther(result.toString()),
+                      userScore: ethers.utils.formatUnits(userScore, 20),
+                    },
+                    ...prevState.slice(index + gaugeId, prevState.length),
+                  ];
+                });
+              });
+            });
           });
         });
-        await readContracts?.ConvictionVoting?.getStakeByUser(index, address).then(result => {
-          setGauges(prevState => {
-            return [
-              ...prevState.slice(0, index - 1),
-              {
-                id: index,
-                userStake: ethers.utils.formatEther(result.toString()),
-                userScore: ethers.utils.formatUnits(userScore, 20),
-              },
-              ...prevState.slice(index + gaugeId, prevState.length),
-            ];
-          });
-        });
+
         await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
           console.log("user score", userScore.toString());
           // [{ address: address, gauges: [{ id: 1, score: 0, userStake: 0 }] }]
@@ -399,6 +390,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     setGaugeId(item.id);
                     getConvictionScoreForGaugeWithId(item.id);
                     getTotalStakedForGaugeForUser(item.id);
+                    getConvictionScoreForUserGauge(item.id);
                     getTotalStakedForGauge(item.id);
                   }}
                 >
