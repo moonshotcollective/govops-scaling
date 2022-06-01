@@ -7,7 +7,7 @@ import { Gauge } from "../components";
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [currentGaugeId, setCurrentGaugeId] = useState();
   const [gaugeId, setGaugeId] = useState();
-  const [users, setUsers] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
+  const [user, setUser] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
   const [userScore, setUserScore] = useState(0);
   const [userStake, setUserStake] = useState(0);
   const [gauges, setGauges] = useState([]);
@@ -213,27 +213,22 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     ...prevState.slice(index + gaugeId, prevState.length),
                   ];
                 });
+                setUser(prevState => {
+                  return [
+                    ...prevState.slice(0, index - 1),
+                    {
+                      address: address,
+                      gauges: [{ ...gauges }],
+                    },
+                    ...prevState.slice(index + gaugeId, prevState.length),
+                  ];
+                });
               });
             });
           });
         });
-
-        await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
-          console.log("user score", userScore.toString());
-          // [{ address: address, gauges: [{ id: 1, score: 0, userStake: 0 }] }]
-          setUsers(prevState => {
-            return [
-              ...prevState.slice(0, index - 1),
-              {
-                address: address,
-                gauges: [{ ...gauges }],
-              },
-              ...prevState.slice(index + gaugeId, prevState.length),
-            ];
-          });
-        });
       }
-      console.log(users);
+      console.log("User array: ", user);
     });
   };
   useEffect(() => {
