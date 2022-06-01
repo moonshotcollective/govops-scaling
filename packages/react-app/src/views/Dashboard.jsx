@@ -209,9 +209,6 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               {
                 id: index,
                 score: ethers.utils.formatUnits(score.toString(), 20),
-                totalStaked: 0,
-                userStake: 0,
-                userScore: 0,
               },
               ...prevState.slice(index + gaugeId, prevState.length),
             ];
@@ -230,20 +227,6 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             ];
           });
         });
-        // await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(staked => {
-        //   setTotalStakedForGauge(staked.toString());
-
-        //   setGauges(prevState => {
-        //     return [
-        //       ...prevState.slice(0, index - 1),
-        //       {
-        //         id: index,
-        //         totalStaked: ethers.utils.formatEther(staked.toString()),
-        //       },
-        //       ...prevState.slice(index + gaugeId, prevState.length),
-        //     ];
-        //   });
-        // });
         await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
           console.log("user score", userScore.toString());
           // [{ address: address, gauges: [{ id: 1, score: 0, userStake: 0 }] }]
@@ -279,8 +262,6 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
     return stake;
   };
-
-  // getTotalStakedForGaugeForUser(1);
 
   const getTotalStakedForGauge = async id => {
     await readContracts?.ConvictionVoting?.getGaugeDetails(id).then(result => {
@@ -343,6 +324,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               getConvictionScoreForGaugeWithId(e.target.value);
               getTotalStakedForGaugeForUser(e.target.value);
               getConvictionScoreForUserGauge(e.target.value);
+              getTotalStakedForGauge(e.target.value);
             }}
           />
           <br />
