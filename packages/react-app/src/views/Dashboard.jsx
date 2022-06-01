@@ -240,7 +240,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getGaugeInfo();
     };
-  }, [gaugeId]);
+  }, [gaugeId, score]);
 
   const getTotalStakedForGaugeForUser = async id => {
     let stake;
@@ -262,7 +262,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   };
 
   return (
-    <div style={{ margin: "20px", marginBotton: "50px" }}>
+    <div style={{ margin: "20px", marginBotton: "50px", paddingBottom: "50px" }}>
       <Divider>Show Your Conviction</Divider>
       <Button
         onClick={() => {
