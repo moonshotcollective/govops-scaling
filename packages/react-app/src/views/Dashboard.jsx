@@ -198,7 +198,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           // load up the gauges with the id and the score
           // [{ id: 0, score: 0, totalStaked: 0, userStake: 0, userScore: 0 }] sample
           await readContracts?.ConvictionVoting?.getStakeByUser(index, address).then(async result => {
-            await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(async userStake => {
+            await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(async gaugeStake => {
               await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
                 setGauges(prevState => {
                   return [
@@ -206,7 +206,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     {
                       id: index,
                       score: ethers.utils.formatUnits(score.toString(), 20),
-                      totalStaked: ethers.utils.formatEther(userStake.toString()),
+                      totalStaked: ethers.utils.formatEther(gaugeStake.toString()),
                       userStake: ethers.utils.formatEther(result.toString()),
                       userScore: ethers.utils.formatUnits(userScore, 20),
                     },
