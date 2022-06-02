@@ -6,7 +6,7 @@ import { Gauge } from "../components";
 
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [currentGaugeId, setCurrentGaugeId] = useState();
-  const [gaugeId, setGaugeId] = useState();
+  const [gaugeId, setGaugeId] = useState(1);
   const [user, setUser] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
   const [userScore, setUserScore] = useState(0);
   const [userStake, setUserStake] = useState(0);
