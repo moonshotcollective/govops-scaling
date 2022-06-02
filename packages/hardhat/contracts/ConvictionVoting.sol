@@ -226,6 +226,7 @@ contract ConvictionVoting is Ownable {
 
     /// @notice Get the score for a gauge
     /// @param gaugeId the id of the gauge
+    /// @return totalStaked Total staked for specified gauge
     function totalStakedForGauge(
         uint256 gaugeId
     )
@@ -242,7 +243,7 @@ contract ConvictionVoting is Ownable {
 
     /// @notice Calculate conviction score for a gauge
     /// @param gaugeId Gauge id to calculate score for
-    /// @return score Calculated score
+    /// @return score Total calculated score for gauge
     function getConvictionScoreForGauge(uint256 gaugeId)
         external
         view
@@ -266,7 +267,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Calculate conviction score for an user on a gauge
     /// @param gaugeId Gauge id to calculate score for
     /// @param user User address to calculate score for
-    /// @return score Calculated score
+    /// @return score Calculated score for specified user
     function getConvictionScore(uint256 gaugeId, address user)
         external
         view
@@ -289,12 +290,6 @@ contract ConvictionVoting is Ownable {
         Gauge storage gauge = gauges[gaugeId];
 
         return gauge.totalCovictionStaked;
-    }
-
-    function totalStaked() public view returns (uint256) {
-        uint256 staked = token.balanceOf(address(this));
-
-        return staked;
     }
 
     /// @notice get a users conviction score for a gauge
@@ -326,24 +321,6 @@ contract ConvictionVoting is Ownable {
             Conviction memory conviction = gauge.convictions[convictionIds[i]];
             stake += conviction.amount;
         }
-    }
-
-    /// @notice get a total conviction score for a gauge
-    /// @param gaugeId the id of the gauge
-    /// @return convictionTotal the total conviction for that gauge
-    function getTotalConvictionForGauge(uint256 gaugeId)
-        public
-        view
-        returns (uint256 convictionTotal)
-    {
-        Gauge storage gauge = gauges[gaugeId];
-        Conviction storage convictions = gauge.convictions[gaugeId];
-        convictionTotal = 0;
-        //for(uint i = 0; i < gauge.convictions[gaugeId].length; i++) {
-        // add them upp
-        //}
-
-        return convictionTotal;
     }
 
     /// @notice Calculates the minimum conviction a user can commit
