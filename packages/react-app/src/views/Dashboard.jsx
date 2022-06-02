@@ -1,5 +1,6 @@
 /* eslint-disable no-loop-func */
-import { Button, Card, Col, Divider, List, notification, Row, Switch } from "antd";
+import { Button, Card, Col, Divider, List, notification, Row, Statistic, Switch } from "antd";
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Gauge } from "../components";
@@ -235,7 +236,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     return () => {
       getGaugeInfo();
     };
-  }, [gaugeId, score]);
+  }, [gaugeId, score, address]);
 
   const getTotalStakedForGaugeForUser = async id => {
     let stake;
@@ -271,11 +272,24 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <span>Current Gauge {gaugeId === 0 ? "Not Selected" : gaugeId}</span>
           <br />
           <div className="">
-            Total Score:{" " + ethers.utils.formatUnits(score, 20).slice(0, 9)}
-            <br />
-            Total GTC Staked:{" " + ethers.utils.formatEther(totalStakedForGauge)}
-            <br />
-            User Staked GTC:{" " + ethers.utils.formatEther(userStake)}
+            <Statistic
+              title="Gauge Score"
+              value={ethers.utils.formatUnits(score, 20)}
+              precision={8}
+              valueStyle={{ color: "purple", margin: "1px" }}
+            />
+            <Statistic
+              title="Total GTC Staked"
+              value={ethers.utils.formatEther(totalStakedForGauge)}
+              precision={8}
+              valueStyle={{ color: "purple", margin: "1px" }}
+            />
+            <Statistic
+              title="User Staked GTC"
+              value={ethers.utils.formatEther(userStake)}
+              precision={8}
+              valueStyle={{ color: "purple", margin: "1px" }}
+            />
             <Gauge value={ethers.utils.formatUnits(score, 20).slice(0, 9)} className="mt-6" />
           </div>
           {address == "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B" ? (
@@ -389,13 +403,25 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     getTotalStakedForGauge(item.id);
                   }}
                 >
-                  Total Gauge Score: {item.score}
-                  <br />
-                  Total Staked For Gauge: {item.totalStaked}
-                  <br />
-                  Your GTC Staked: {item.userStake}
-                  <br />
-                  Your Gauge Score: {item.userScore}
+                  <Statistic title="Gauge Score" value={item.score} precision={8} valueStyle={{ color: "yellow" }} />
+                  <Statistic
+                    title="Gauge Stake"
+                    value={item.totalStaked}
+                    precision={8}
+                    valueStyle={{ color: "yellow" }}
+                  />
+                  <Statistic
+                    title="Your GTC Staked"
+                    value={item.userStake}
+                    precision={8}
+                    valueStyle={{ color: "yellow" }}
+                  />
+                  <Statistic
+                    title="Your Gauge Score"
+                    value={item.userScore}
+                    precision={8}
+                    valueStyle={{ color: "yellow" }}
+                  />
                 </Card>
               </List.Item>
             )}
