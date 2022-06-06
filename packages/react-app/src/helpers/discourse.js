@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const server = "https://localhost:4001/api/";
+const server = "http://localhost:4001/api/";
 
 const requestConfig = {
   headers: {
@@ -12,11 +12,11 @@ const requestConfig = {
 };
 
 // Fetch a single Post
-export const getSinglePost = async id => {
+export const getSinglePost = async ({ id }) => {
   const params = new URLSearchParams([["id", id]]);
   try {
     console.log("Sending request for post info");
-    const res = await axios.get(server, requestConfig, { params });
+    const res = await axios.get(server + "posts", requestConfig, { params });
     console.log(res);
     return res;
   } catch (e) {
@@ -25,7 +25,7 @@ export const getSinglePost = async id => {
 };
 
 // Fetch all relplies for a single Post
-export const getRepliesToPost = async id => {
+export const getRepliesToPost = async ({ id }) => {
   const params = new URLSearchParams([["id", id]]);
   try {
     const res = await axios.get(server + ".json", requestConfig, { params });

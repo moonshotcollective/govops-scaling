@@ -1,12 +1,12 @@
 const axios = require("axios");
 
-const server = "https://cors-anywhere.herokuapp.com/https://gov.gitcoin.co/";
+const server = "https://gov.gitcoin.co/";
 // "https://gov.gitcoin.co/posts/{id}.json";
 
 const requestConfig = {
   headers: {
     "Api-Key": "d51045979bec5317b4c3b628320a47d0186e6156d0d9aac1313c1dfadb12a60e",
-    "Api-Username": "kbw",
+    "Api-Username": "All User",
     "Access-Control-Allow-Origin": "*",
     Accept: "application/json",
   },
@@ -32,7 +32,7 @@ app.get("/api", (req, res) => {
 });
 
 app.get("/api/posts/", async (req, res) => {
-  const params = new URLSearchParams([["id", id]]);
+  const params = new URLSearchParams([["id", req.body.id]]);
   try {
     const res = await axios.get(server + "posts/", requestConfig, { params });
     console.log(res);
