@@ -30,7 +30,7 @@ import externalContracts from "./contracts/external_contracts";
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, Home, Subgraph } from "./views";
+import { Dashboard, Home, Subgraph, Proposals, Stewards } from "./views";
 
 const { ethers } = require("ethers");
 /*
@@ -263,6 +263,15 @@ function App(props) {
         <Menu.Item key="/dashboard">
           <Link to="/dashboard">My Dashboard</Link>
         </Menu.Item>
+        {/* <Menu.Item key="/main">
+          <Link to="/main">Main</Link>
+        </Menu.Item> */}
+         <Menu.Item key="/proposals">
+          <Link to="/proposals">Proposals</Link>
+        </Menu.Item>
+        <Menu.Item key="/stewards">
+          <Link to="/stewards">Stewards</Link>
+        </Menu.Item>
         <Menu.Item key="/debug">
           <Link to="/debug">Debug Contracts</Link>
         </Menu.Item>
@@ -278,6 +287,15 @@ function App(props) {
         </Route>
         <Route exact path="/dashboard">
           <Dashboard readContracts={readContracts} writeContracts={writeContracts} address={address} tx={tx} />
+        </Route>
+        {/* <Route exact path="/main">
+          <Main />
+        </Route> */}
+         <Route exact path="/proposals">
+          <Proposals />
+        </Route>
+        <Route exact path="/stewards">
+          <Stewards />
         </Route>
         <Route exact path="/debug">
           <Contract
