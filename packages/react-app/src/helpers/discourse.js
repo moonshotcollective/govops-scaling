@@ -15,6 +15,7 @@ const requestConfig = {
 export const getSinglePost = async id => {
   const params = new URLSearchParams([["id", id]]);
   try {
+    console.log("Sending request for post info");
     const res = await axios.get(server, requestConfig, { params });
     console.log(res);
     return res;
