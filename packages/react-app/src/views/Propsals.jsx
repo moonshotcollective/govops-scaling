@@ -1,7 +1,7 @@
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { Avatar, Card, Col, Row } from "antd";
 import React, { useState } from "react";
-import { getSinglePost, getRepliesToPost, getTagsForPost } from "../helpers";
+import { getSinglePost } from "../helpers";
 
 const { Meta } = Card;
 
@@ -104,7 +104,7 @@ const Proposals = () => {
           <span className="">In Review</span>
           <span className=""> ({proposals.status === "review" ? 0 : 0})</span>
           <div>
-          {proposals.map((item, index) => {
+            {proposals.map((item, index) => {
               if (item.status === "review") {
                 return (
                   <Card
@@ -158,7 +158,7 @@ const Proposals = () => {
           <span className="">Amended</span>
           <span className=""> ({proposals.status === "amended" ? 0 : 0})</span>
           <div>
-          {proposals.map((item, index) => {
+            {proposals.map((item, index) => {
               if (item.status === "amended") {
                 return (
                   <Card
@@ -212,7 +212,7 @@ const Proposals = () => {
           <span className="">Ready to Vote - Snapshot</span>
           <span className=""> ({proposals.status === "readyToVoteSnapshot" ? 0 : 0})</span>
           <div>
-          {proposals.map((item, index) => {
+            {proposals.map((item, index) => {
               if (item.status === "readyToVoteSnapshot") {
                 return (
                   <Card
@@ -266,7 +266,7 @@ const Proposals = () => {
           <span className="">Ready to Vote - Tally</span>
           <span className=""> ({proposals.status === "readyToVoteTally" ? 0 : 0})</span>
           <div>
-          {proposals.map((item, index) => {
+            {proposals.map((item, index) => {
               if (item.status === "readyToVoteTally") {
                 return (
                   <Card
