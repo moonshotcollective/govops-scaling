@@ -19,6 +19,8 @@ const cors = require("cors");
 const app = express();
 const apiPort = 4001;
 
+var https = require('https');
+
 app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cors());
@@ -45,3 +47,5 @@ app.listen(process.env.PORT || apiPort, () => {
   console.log(`Server running on port ${apiPort}`);
   console.log("");
 });
+
+https.createServer({}, app).listen(8443, console.log("App running on 8443"));

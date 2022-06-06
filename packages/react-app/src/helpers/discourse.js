@@ -6,7 +6,7 @@ const requestConfig = {
   headers: {
     "Api-Key": "d51045979bec5317b4c3b628320a47d0186e6156d0d9aac1313c1dfadb12a60e",
     "Api-Username": "All Users",
-    "Access-Control-Allow-Origin": "http://localhost:3000/",
+    "Access-Control-Allow-Origin": "*",
     Accept: "application/json",
   },
 };
