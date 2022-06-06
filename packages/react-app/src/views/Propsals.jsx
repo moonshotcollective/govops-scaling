@@ -34,7 +34,7 @@ const Proposals = () => {
         { comment: "", by: "" },
       ],
       lastComment: { comment: "Leeeeettttt's Goooo", by: "gtchase" },
-      status: status[0],
+      status: status[1],
     },
   ]);
 
@@ -48,74 +48,273 @@ const Proposals = () => {
       <Row className="p-1 align-middle h-screen">
         <Col className="p-1 m-1 border-2 text-left " span={4}>
           <span className="">Posted</span>
-          <span className=""> ({proposals.status === "posted" ? 0 : proposals.length})</span>
+          <span className=""> ({proposals.status === "posted" ? 0 : 1})</span>
           <div>
             {proposals.map((item, index) => {
-              return (
-                <Card
-                  title={proposals[index].title}
-                  type="inner"
-                  bordered={true}
-                  style={{}}
-                  actions={[
-                    <SettingOutlined
-                      key="setting"
-                      onClick={() => {
-                        console.log("Settings clicked");
-                      }}
-                    />,
-                    <EditOutlined
-                      key="edit"
-                      onClick={() => {
-                        console.log("Edit clicked");
-                      }}
-                    />,
-                    <EllipsisOutlined
-                      key="ellipsis"
-                      onClick={() => {
-                        console.log("Elipses clicked");
-                      }}
-                    />,
-                  ]}
-                >
-                  <Meta
-                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                    title={item.title}
-                    description="This is the description"
-                  />
-                  Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                  <br />
-                  Posted: {item.posted}
-                  <br />
-                  Version: {item.version}
-                  <br />
-                  {item.comments.length} comments
-                  <br />
-                  Last comment: {item.lastComment.by}
-                </Card>
-              );
+              if (item.status === "posted") {
+                return (
+                  <Card
+                    title={proposals[index].title}
+                    type="inner"
+                    bordered={true}
+                    style={{}}
+                    actions={[
+                      <SettingOutlined
+                        key="setting"
+                        onClick={() => {
+                          console.log("Settings clicked");
+                        }}
+                      />,
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => {
+                          console.log("Edit clicked");
+                        }}
+                      />,
+                      <EllipsisOutlined
+                        key="ellipsis"
+                        onClick={() => {
+                          console.log("Elipses clicked");
+                        }}
+                      />,
+                    ]}
+                  >
+                    <Meta
+                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                      title={item.title}
+                      description="description"
+                    />
+                    {/* Add score here */}
+                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
+                    <br />
+                    Posted: {item.posted}
+                    <br />
+                    Version: {item.version}
+                    <br />
+                    {item.comments.length} comments
+                    <br />
+                    Last comment: {item.lastComment.by}
+                  </Card>
+                );
+              }
             })}
           </div>
         </Col>
         <Col className="p-1 m-1 border-2 text-left" span={4}>
           <span className="">In Review</span>
           <span className=""> ({proposals.status === "review" ? 0 : 0})</span>
-          <div></div>
+          <div>
+          {proposals.map((item, index) => {
+              if (item.status === "review") {
+                return (
+                  <Card
+                    title={proposals[index].title}
+                    type="inner"
+                    bordered={true}
+                    style={{}}
+                    actions={[
+                      <SettingOutlined
+                        key="setting"
+                        onClick={() => {
+                          console.log("Settings clicked");
+                        }}
+                      />,
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => {
+                          console.log("Edit clicked");
+                        }}
+                      />,
+                      <EllipsisOutlined
+                        key="ellipsis"
+                        onClick={() => {
+                          console.log("Elipses clicked");
+                        }}
+                      />,
+                    ]}
+                  >
+                    <Meta
+                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                      title={item.title}
+                      description="description"
+                    />
+                    {/* Add score here */}
+                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
+                    <br />
+                    Posted: {item.posted}
+                    <br />
+                    Version: {item.version}
+                    <br />
+                    {item.comments.length} comments
+                    <br />
+                    Last comment: {item.lastComment.by}
+                  </Card>
+                );
+              }
+            })}
+          </div>
         </Col>
         <Col className="p-1 m-1 border-2 text-left" span={4}>
           <span className="">Amended</span>
           <span className=""> ({proposals.status === "amended" ? 0 : 0})</span>
-          <div></div>
+          <div>
+          {proposals.map((item, index) => {
+              if (item.status === "amended") {
+                return (
+                  <Card
+                    title={proposals[index].title}
+                    type="inner"
+                    bordered={true}
+                    style={{}}
+                    actions={[
+                      <SettingOutlined
+                        key="setting"
+                        onClick={() => {
+                          console.log("Settings clicked");
+                        }}
+                      />,
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => {
+                          console.log("Edit clicked");
+                        }}
+                      />,
+                      <EllipsisOutlined
+                        key="ellipsis"
+                        onClick={() => {
+                          console.log("Elipses clicked");
+                        }}
+                      />,
+                    ]}
+                  >
+                    <Meta
+                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                      title={item.title}
+                      description="description"
+                    />
+                    {/* Add score here */}
+                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
+                    <br />
+                    Posted: {item.posted}
+                    <br />
+                    Version: {item.version}
+                    <br />
+                    {item.comments.length} comments
+                    <br />
+                    Last comment: {item.lastComment.by}
+                  </Card>
+                );
+              }
+            })}
+          </div>
         </Col>
         <Col className="p-1 m-1 border-2 text-left" span={4}>
           <span className="">Ready to Vote - Snapshot</span>
           <span className=""> ({proposals.status === "readyToVoteSnapshot" ? 0 : 0})</span>
-          <div></div>
+          <div>
+          {proposals.map((item, index) => {
+              if (item.status === "readyToVoteSnapshot") {
+                return (
+                  <Card
+                    title={proposals[index].title}
+                    type="inner"
+                    bordered={true}
+                    style={{}}
+                    actions={[
+                      <SettingOutlined
+                        key="setting"
+                        onClick={() => {
+                          console.log("Settings clicked");
+                        }}
+                      />,
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => {
+                          console.log("Edit clicked");
+                        }}
+                      />,
+                      <EllipsisOutlined
+                        key="ellipsis"
+                        onClick={() => {
+                          console.log("Elipses clicked");
+                        }}
+                      />,
+                    ]}
+                  >
+                    <Meta
+                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                      title={item.title}
+                      description="description"
+                    />
+                    {/* Add score here */}
+                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
+                    <br />
+                    Posted: {item.posted}
+                    <br />
+                    Version: {item.version}
+                    <br />
+                    {item.comments.length} comments
+                    <br />
+                    Last comment: {item.lastComment.by}
+                  </Card>
+                );
+              }
+            })}
+          </div>
         </Col>
         <Col className="p-1 m-1 border-2 text-left" span={4}>
           <span className="">Ready to Vote - Tally</span>
           <span className=""> ({proposals.status === "readyToVoteTally" ? 0 : 0})</span>
-          <div></div>
+          <div>
+          {proposals.map((item, index) => {
+              if (item.status === "readyToVoteTally") {
+                return (
+                  <Card
+                    title={proposals[index].title}
+                    type="inner"
+                    bordered={true}
+                    style={{}}
+                    actions={[
+                      <SettingOutlined
+                        key="setting"
+                        onClick={() => {
+                          console.log("Settings clicked");
+                        }}
+                      />,
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => {
+                          console.log("Edit clicked");
+                        }}
+                      />,
+                      <EllipsisOutlined
+                        key="ellipsis"
+                        onClick={() => {
+                          console.log("Elipses clicked");
+                        }}
+                      />,
+                    ]}
+                  >
+                    <Meta
+                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                      title={item.title}
+                      description="description"
+                    />
+                    {/* Add score here */}
+                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
+                    <br />
+                    Posted: {item.posted}
+                    <br />
+                    Version: {item.version}
+                    <br />
+                    {item.comments.length} comments
+                    <br />
+                    Last comment: {item.lastComment.by}
+                  </Card>
+                );
+              }
+            })}
+          </div>
         </Col>
       </Row>
     </div>

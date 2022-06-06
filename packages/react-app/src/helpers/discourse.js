@@ -1,10 +1,15 @@
 import axios from "axios";
 
-const server = "https://tdao-api.herokuapp.com/";
-// "https://{defaultHost}/posts/{id}.json";
+const server = "https://gov.gitcoin.co/posts/";
+// "https://gov.gitcoin.co/posts/{id}.json";
 
 const requestConfig = {
-  headers: { "Api-Key": "", "Api-Username": "" },
+  headers: {
+    "Api-Key": "d51045979bec5317b4c3b628320a47d0186e6156d0d9aac1313c1dfadb12a60e",
+    "Api-Username": "All Users",
+    "Access-Control-Allow-Origin": "http://localhost:3000/",
+    Accept: "application/json",
+  },
 };
 
 // Fetch a single Post
@@ -23,7 +28,7 @@ export const getSinglePost = async id => {
 export const getRepliesToPost = async id => {
   const params = new URLSearchParams([["id", id]]);
   try {
-    const res = await axios.get(server, requestConfig, { params });
+    const res = await axios.get(server + ".json", requestConfig, { params });
     // console.log(res);
     return res;
   } catch (e) {
