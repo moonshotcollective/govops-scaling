@@ -13,6 +13,6 @@ export default function Header({ link, title, subTitle }) {
 
 Header.defaultProps = {
   link: "https://github.com/moonshotcollective/conviction-voting",
-  title: "🗳 GTC Conviction Voting",
+  title: "🗳 GTC GovOps",
   subTitle: "",
 };
