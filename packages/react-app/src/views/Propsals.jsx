@@ -39,7 +39,7 @@ const Proposals = () => {
   ]);
 
   // testing Discourse api calls to the console
-  getSinglePost(10567).then(result => {
+  getSinglePost(10567).then(async result => {
     console.log("test", result);
   });
 
@@ -96,6 +96,8 @@ const Proposals = () => {
                     Last comment: {item.lastComment.by}
                   </Card>
                 );
+              } else {
+                return <></>;
               }
             })}
           </div>
@@ -150,6 +152,8 @@ const Proposals = () => {
                     Last comment: {item.lastComment.by}
                   </Card>
                 );
+              } else {
+                return <></>;
               }
             })}
           </div>
@@ -204,6 +208,8 @@ const Proposals = () => {
                     Last comment: {item.lastComment.by}
                   </Card>
                 );
+              } else {
+                return <></>;
               }
             })}
           </div>
@@ -258,6 +264,8 @@ const Proposals = () => {
                     Last comment: {item.lastComment.by}
                   </Card>
                 );
+              } else {
+                return <></>;
               }
             })}
           </div>
@@ -312,6 +320,8 @@ const Proposals = () => {
                     Last comment: {item.lastComment.by}
                   </Card>
                 );
+              } else {
+                return <></>;
               }
             })}
           </div>
