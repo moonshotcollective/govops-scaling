@@ -24,7 +24,6 @@
             https://github.com/moonshotcollective
 */
 pragma solidity ^0.8.13;
-pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -47,7 +46,8 @@ contract ConvictionVoting is Ownable {
     struct Gauge {
         uint256 id;
         uint256 currentConvictionId;
-        uint256 totalCovictionStaked;
+        uint256 totalStake;
+        uint256 threshold;
         mapping(uint256 => Conviction) convictions;
         mapping(address => uint256[]) convictionsByUser;
     }
@@ -99,6 +99,16 @@ contract ConvictionVoting is Ownable {
         emit NewGauge(current);
     }
 
+    /// @notice Adds a new gauge with a threshold
+    function addGauge(uint256 threshold) external onlyOwner {
+        uint256 current = ++currentGaugeId;
+        Gauge storage gauge = gauges[current]; // gauges start from 1...
+        gauge.id = current;
+        gauge.threshold = threshold;
+
+        emit NewGauge(current);
+    }
+
     /// @notice Adds conviction to a gauge
     /// @param user The address of the user adding conviction
     /// @param gaugeId The ID of the gauge where the user is adding their conviction
@@ -116,7 +126,7 @@ contract ConvictionVoting is Ownable {
         convictions.amount = amount;
         convictions.timestamp = block.timestamp;
         gauge.convictionsByUser[user].push(convictionId);
-        gauge.totalCovictionStaked += amount;
+        gauge.totalStake += amount;
         token.safeTransferFrom(user, address(this), amount);
 
         emit AddConviction(gaugeId, convictionId, user, amount);
@@ -217,7 +227,7 @@ contract ConvictionVoting is Ownable {
         uint256[] memory convictions = gauge.convictionsByUser[msg.sender];
         for (uint256 i = 0; i < convictions.length; i++) {
             returnAmount += gauge.convictions[convictions[i]].amount;
-            gauge.totalCovictionStaked -= returnAmount;
+            gauge.totalStake -= returnAmount;
             delete gauge.convictions[convictions[i]];
         }
         delete gauge.convictionsByUser[msg.sender];
@@ -236,7 +246,7 @@ contract ConvictionVoting is Ownable {
     {
         Gauge storage gauge = gauges[gaugeId];
 
-        totalStaked = gauge.totalCovictionStaked;
+        totalStaked = gauge.totalStake;
 
         return totalStaked;
     }
@@ -245,7 +255,7 @@ contract ConvictionVoting is Ownable {
     /// @param gaugeId Gauge id to calculate score for
     /// @return score Total calculated score for gauge
     function getConvictionScoreForGauge(uint256 gaugeId)
-        external
+        public
         view
         returns (uint256 score)
     {
@@ -289,7 +299,7 @@ contract ConvictionVoting is Ownable {
     function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
         Gauge storage gauge = gauges[gaugeId];
 
-        return gauge.totalCovictionStaked;
+        return gauge.totalStake;
     }
 
     /// @notice get a users conviction score for a gauge
@@ -336,21 +346,32 @@ contract ConvictionVoting is Ownable {
         return convictionReqd;
     }
 
-    /// @notice playing with thresholds for proposals
-    /// @dev Formula: ρ * totalStaked / (1 - a) / (β - requestedAmount / total)**2
-    /// For the Solidity implementation we amplify ρ and β and simplify the formula:
-    /// wieght = ρ * D
-    /// maxRatio = β * D
-    /// decay = a * D
-    /// threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - requestedAmount * D) ** 2
-    /// @param requestedAmount Requested amount of tokens for a certain proposal
-    /// @return threshold The threshold a proposal's conviction should surpass in order to be able to execute it.
-    function calculateThreshold(uint256 requestedAmount)
+    /// @notice Returns the current conviction score as a percentage of the defined threshold at two decimal places
+    /// @dev If the calculated percetage is 0.05% This function will return 5, if less than 0.01% it will return 0.
+    /// @param gaugeId the id of the gauge
+    /// @return uint256 The percentage of current conviction score / threshold
+    function percentOfThreshold(uint256 gaugeId)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 multiplier = 10000;
+        if (gauge.threshold == 0) {
+            return multiplier; // gauges with no thresholds are always executable, might want to distinguish in UI
+        }
+        Gauge storage gauge = gauges[gaugeId];
+        uint256 totalScore = getConvictionScoreForGauge(gaugeId);
+        return (totalScore * multiplier) / gauge.threshold;
+    }
+
+    /// @notice Returns if gauge is executable
+    /// @param gaugeId the id of the gauge
+    /// @return bool If the gauge is executable
+    function isGaugeExecutable(uint256 gaugeId)
         external
         view
-        returns (uint256 threshold)
+        returns (bool)
     {
-        // get the balance of the vault, GTC. Using address(this) as a placeholder
-        uint256 funds = token.balanceOf(address(this));
+        return percentOfThreshold(gaugeId) >= 10000;
     }
 }
