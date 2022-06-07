@@ -117,13 +117,14 @@ contract ConvictionVoting is Ownable {
         address user,
         uint256 gaugeId,
         uint256 amount
-    ) external returns (uint256 totalConvictions) {
+    ) external {
         Gauge storage gauge = gauges[gaugeId];
         if (gauge.id == 0) revert BadGaugeId();
         uint256 convictionId = gauge.currentConvictionId++; // convictionId starts from 0...
         Conviction storage convictions = gauge.convictions[convictionId];
         convictions.userAddress = user;
         convictions.amount = amount;
+        // solhint-disable-next-line not-rely-on-time
         convictions.timestamp = block.timestamp;
         gauge.convictionsByUser[user].push(convictionId);
         gauge.totalStake += amount;
@@ -264,6 +265,7 @@ contract ConvictionVoting is Ownable {
             uint256 x1 = uint256(
                 ABDKMath64x64.sqrtu(gauge.convictions[i].amount)
             );
+            // solhint-disable-next-line not-rely-on-time
             uint256 x2 = (block.timestamp - gauge.convictions[i].timestamp)**2;
             score += x1 * x2;
         }
@@ -316,14 +318,13 @@ contract ConvictionVoting is Ownable {
         }
     }
 
+    // solhint-disable-next-line not-rely-on-time
+
     /// @notice Calculates the minimum conviction a user can commit
-    /// @param gaugeId the id of the gauge
     /// @return convictionReqd The amount of tokens required to add conviction to a gauge
-    function calculateMinimumConviction(uint256 gaugeId)
-        external
-        view
-        returns (uint256)
-    {
+    function calculateMinimumConviction(
+        uint256 /* gaugeId */
+    ) external pure returns (uint256) {
         uint256 convictionReqd = 0;
 
         return convictionReqd;
@@ -352,6 +353,7 @@ contract ConvictionVoting is Ownable {
                 continue; // conviction was removed
             }
             uint256 x1 = conviction.amount.sqrtu();
+            // solhint-disable-next-line not-rely-on-time
             uint256 x2 = (block.timestamp - conviction.timestamp)**2;
             score += x1 * x2;
         }
