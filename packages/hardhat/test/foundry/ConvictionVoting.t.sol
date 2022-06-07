@@ -82,7 +82,9 @@ contract ConvictionVotingTest is Test, Ownable {
         emit AddConviction(gaugeId, convictionId, user, amount);
     }
 
-    function testRemoveAllConvictions(uint256 gaugeId, address receiver) external {
+    function testRemoveAllConvictions(uint256 gaugeId, address receiver)
+        external
+    {
         Gauge storage gauge = gauges[gaugeId];
         if (gauge.id == 0) revert BadGaugeId();
         uint256 returnAmount = 0;
@@ -123,7 +125,11 @@ contract ConvictionVotingTest is Test, Ownable {
         return convictionReqd;
     }
 
-    function testGetGaugeDetails(uint256 gaugeId) public view returns (uint256) {
+    function testGetGaugeDetails(uint256 gaugeId)
+        public
+        view
+        returns (uint256)
+    {
         Gauge storage gauge = gauges[gaugeId];
 
         return gauge.totalCovictionStaked;

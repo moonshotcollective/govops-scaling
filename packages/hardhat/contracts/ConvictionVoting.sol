@@ -237,9 +237,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Get the score for a gauge
     /// @param gaugeId the id of the gauge
     /// @return totalStaked Total staked for specified gauge
-    function totalStakedForGauge(
-        uint256 gaugeId
-    )
+    function totalStakedForGauge(uint256 gaugeId)
         external
         view
         returns (uint256 totalStaked)
@@ -249,29 +247,6 @@ contract ConvictionVoting is Ownable {
         totalStaked = gauge.totalStake;
 
         return totalStaked;
-    }
-
-    /// @notice Calculate conviction score for a gauge
-    /// @param gaugeId Gauge id to calculate score for
-    /// @return score Total calculated score for gauge
-    function getConvictionScoreForGauge(uint256 gaugeId)
-        public
-        view
-        returns (uint256 score)
-    {
-        Gauge storage gauge = gauges[gaugeId];
-        uint256 length = gauge.currentConvictionId;
-        for (uint256 i = 0; i < length; i++) {
-            Conviction memory conviction = gauge.convictions[i];
-            if (conviction.userAddress == address(0)) {
-                continue; // conviction was removed
-            }
-            uint256 x1 = conviction.amount.sqrtu();
-            uint256 x2 = (block.timestamp - conviction.timestamp)**2;
-            score += x1 * x2;
-        }
-
-        return score;
     }
 
     /// @notice Calculate conviction score for an user on a gauge
@@ -296,10 +271,18 @@ contract ConvictionVoting is Ownable {
         return score;
     }
 
-    function getGaugeDetails(uint256 gaugeId) public view returns (uint256) {
+    function getGaugeDetails(uint256 gaugeId)
+        external
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         Gauge storage gauge = gauges[gaugeId];
 
-        return gauge.totalStake;
+        return (gauge.currentConvictionId, gauge.totalStake, gauge.threshold);
     }
 
     /// @notice get a users conviction score for a gauge
@@ -320,7 +303,7 @@ contract ConvictionVoting is Ownable {
     /// @param user The address of the user
     /// @return stake The user's total stake for a gauge in token units
     function getStakeByUser(uint256 gaugeId, address user)
-        public
+        external
         view
         returns (uint256 stake)
     {
@@ -346,32 +329,47 @@ contract ConvictionVoting is Ownable {
         return convictionReqd;
     }
 
+    /// @notice Returns if gauge is executable
+    /// @param gaugeId the id of the gauge
+    /// @return bool If the gauge is executable
+    function isGaugeExecutable(uint256 gaugeId) external view returns (bool) {
+        return percentOfThreshold(gaugeId) >= 10000;
+    }
+
+    /// @notice Calculate conviction score for a gauge
+    /// @param gaugeId Gauge id to calculate score for
+    /// @return score Total calculated score for gauge
+    function getConvictionScoreForGauge(uint256 gaugeId)
+        public
+        view
+        returns (uint256 score)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+        uint256 length = gauge.currentConvictionId;
+        for (uint256 i = 0; i < length; i++) {
+            Conviction memory conviction = gauge.convictions[i];
+            if (conviction.userAddress == address(0)) {
+                continue; // conviction was removed
+            }
+            uint256 x1 = conviction.amount.sqrtu();
+            uint256 x2 = (block.timestamp - conviction.timestamp)**2;
+            score += x1 * x2;
+        }
+
+        return score;
+    }
+
     /// @notice Returns the current conviction score as a percentage of the defined threshold at two decimal places
     /// @dev If the calculated percetage is 0.05% This function will return 5, if less than 0.01% it will return 0.
     /// @param gaugeId the id of the gauge
     /// @return uint256 The percentage of current conviction score / threshold
-    function percentOfThreshold(uint256 gaugeId)
-        public
-        view
-        returns (uint256)
-    {
+    function percentOfThreshold(uint256 gaugeId) public view returns (uint256) {
         uint256 multiplier = 10000;
+        Gauge storage gauge = gauges[gaugeId];
         if (gauge.threshold == 0) {
             return multiplier; // gauges with no thresholds are always executable, might want to distinguish in UI
         }
-        Gauge storage gauge = gauges[gaugeId];
         uint256 totalScore = getConvictionScoreForGauge(gaugeId);
         return (totalScore * multiplier) / gauge.threshold;
-    }
-
-    /// @notice Returns if gauge is executable
-    /// @param gaugeId the id of the gauge
-    /// @return bool If the gauge is executable
-    function isGaugeExecutable(uint256 gaugeId)
-        external
-        view
-        returns (bool)
-    {
-        return percentOfThreshold(gaugeId) >= 10000;
     }
 }
