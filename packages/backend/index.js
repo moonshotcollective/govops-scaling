@@ -4,15 +4,6 @@ require("dotenv").config();
 const server = "https://gov.gitcoin.co/";
 // "https://gov.gitcoin.co/posts/{id}.json";
 
-const requestConfig = {
-  headers: {
-    "Api-Key": process.env.API_KEY,
-    "Api-Username": process.env.API_USERNAME,
-    "Access-Control-Allow-Origin": "*",
-    Accept: "application/json",
-  },
-};
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -27,37 +18,66 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cors());
 app.use(bodyParser.json());
 
+const instance = axios.create({
+  baseUrl: server,
+  headers: {
+    "Api-Key": process.env.API_KEY,
+    "Api-Username": process.env.API_USERNAME,
+    "Access-Control-Allow-Origin": "*",
+    Accept: "application/json",
+  },
+});
+
 app.get("/api", (req, res) => {
   res.send({ name: "GTC Govrnance API", version: "v1.0" });
   console.log("root path working");
 });
 
 // Get single post
-app.get("/api/post/", (req, res) => {
-  console.log("Fetching post ", req.query.ID);
-  axios
-    .get(server + `posts/${req.query.ID}.json`, requestConfig)
-    .then((response) => {
-      console.log("returning post ", req.query.ID);
-      console.log(response);
-      return response;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+app.get("/api/post/", async (req, res) => {
+  try {
+    console.log("Fetching post ", req.query.ID);
+    const response = await instance.get(server + `posts/${req.query.ID}.json`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Get latest posts
 app.get("/api/posts/", async (req, res) => {
-  const response = await axios.get(server + `posts/`, requestConfig);
-  console.log(response.data.latest_posts);
-  return response;
+  try {
+    const res = await instance.get(server + `posts/`);
+    console.log(res.data.latest_posts);
+    const result = {
+      status: res.status + "-" + res.statusText,
+      headers: res.headers,
+      data: res.data,
+    };
+    return result;
+  } catch (error) {
+    if (error.response) {
+      // get response with a status code not in range 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // no response
+      console.log(error.request);
+    } else {
+      // Something wrong in setting up the request
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  }
+  return res;
 });
 
 // Fetch all relplies for a single Post
 app.get("/api/post/replies/", (req, res) => {
-  axios
-    .get(server + `posts/${req.query.ID}.json`, requestConfig)
+  instance
+    .get(server + `posts/${req.query.ID}.json`)
     .then((response) => {
       console.log(response);
     })

@@ -292,7 +292,7 @@ function App(props) {
           <Main />
         </Route> */}
          <Route exact path="/proposals">
-          <Proposals />
+          <Proposals address={address} />
         </Route>
         <Route exact path="/stewards">
           <Stewards />

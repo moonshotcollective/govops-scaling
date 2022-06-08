@@ -8,7 +8,7 @@ const server = "http://localhost:4001/api/";
 
 const { Meta } = Card;
 
-const Proposals = () => {
+const Proposals = ({ address }) => {
   const status = ["posted", "review", "amended", "readyToVoteSnapshot", "readyToVoteTally", "misc"];
 
   const [latestPosts, setLatestPosts] = useState();
@@ -47,7 +47,7 @@ const Proposals = () => {
   const getLatestPosts = async () => {
     console.log("Fetching latest posts");
     try {
-      let response = await axios.get(server + "posts/");
+      const { response } = await axios.get(server + "posts/");
       console.log(response);
       let data = response.data.latest_posts;
       return data;
@@ -56,18 +56,14 @@ const Proposals = () => {
     }
   };
 
-  getLatestPosts().then(result => {
-    console.log("test response: ", result);
-    setLatestPosts(result);
-  });
+  getLatestPosts();
 
-  // Promise.resolve(
-  //   getLatestPosts().then(results => {
-  //     console.log("Results: ", results);
-  //     setLatestPosts(results);
-  //     console.log("Latest posts: ", latestPosts);
-  //   }),
-  // );
+  // useEffect(() => {
+  //   getLatestPosts().then(result => {
+  //     console.log("test response: ", result);
+  //     setLatestPosts(result);
+  //   });
+  // }, [address]);
 
   return (
     <div>
