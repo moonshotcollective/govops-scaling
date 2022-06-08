@@ -1,12 +1,17 @@
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { Avatar, Card, Col, Row } from "antd";
+// import { getLatestPosts } from "../helpers";
+import axios from "axios";
 import React, { useState } from "react";
-import { getSinglePost } from "../helpers";
+
+const server = "http://localhost:4001/api/";
 
 const { Meta } = Card;
 
 const Proposals = () => {
   const status = ["posted", "review", "amended", "readyToVoteSnapshot", "readyToVoteTally", "misc"];
+
+  const [latestPosts, setLatestPosts] = useState();
   const [proposals, setProposals] = useState([
     {
       id: 1,
@@ -39,9 +44,37 @@ const Proposals = () => {
   ]);
 
   // testing Discourse api calls to the console
-  getSinglePost("10567").then(async result => {
-    console.log("test", result);
+  const getLatestPosts = async () => {
+    console.log("Fetching latest posts");
+    try {
+      const response = await axios.get(server + "posts/");
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const latest = getLatestPosts().then(result => {
+    console.log("Result: ", result);
   });
+
+  console.log("Latest: ", latest);
+  Promise.resolve(latest).then(result => {
+    console.log("Result: ", result);
+  });
+
+  // getLatestPosts().then(result => {
+  //   console.log("test response: ", result);
+  // });
+
+  // Promise.resolve(
+  //   getLatestPosts().then(results => {
+  //     console.log("Results: ", results);
+  //     setLatestPosts(results);
+  //     console.log("Latest posts: ", latestPosts);
+  //   }),
+  // );
 
   return (
     <div>
