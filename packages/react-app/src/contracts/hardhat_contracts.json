@@ -5,7 +5,7 @@
       "chainId": "5",
       "contracts": {
         "ConvictionVoting": {
-          "address": "0xbd2c9dEa2Bdb49dD41481496fbcD18c93Ef57fa3",
+          "address": "0xE01aA77856eb9945535B791B42EC44f422433FbC",
           "abi": [
             {
               "inputs": [
@@ -146,13 +146,7 @@
                 }
               ],
               "name": "addConviction",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "totalConvictions",
-                  "type": "uint256"
-                }
-              ],
+              "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
             },
@@ -167,7 +161,20 @@
               "inputs": [
                 {
                   "internalType": "uint256",
-                  "name": "gaugeId",
+                  "name": "threshold",
+                  "type": "uint256"
+                }
+              ],
+              "name": "addGauge",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
                   "type": "uint256"
                 }
               ],
@@ -179,26 +186,7 @@
                   "type": "uint256"
                 }
               ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "requestedAmount",
-                  "type": "uint256"
-                }
-              ],
-              "name": "calculateThreshold",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "threshold",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
+              "stateMutability": "pure",
               "type": "function"
             },
             {
@@ -262,7 +250,12 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "totalCovictionStaked",
+                  "name": "totalStake",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "threshold",
                   "type": "uint256"
                 }
               ],
@@ -350,6 +343,16 @@
                   "internalType": "uint256",
                   "name": "",
                   "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",
@@ -387,12 +390,12 @@
                   "type": "uint256"
                 }
               ],
-              "name": "getTotalConvictionForGauge",
+              "name": "isGaugeExecutable",
               "outputs": [
                 {
-                  "internalType": "uint256",
-                  "name": "convictionTotal",
-                  "type": "uint256"
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
                 }
               ],
               "stateMutability": "view",
@@ -419,6 +422,25 @@
                   "internalType": "address",
                   "name": "",
                   "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "gaugeId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "percentOfThreshold",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",
@@ -543,19 +565,6 @@
               "type": "function"
             },
             {
-              "inputs": [],
-              "name": "totalStaked",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
               "inputs": [
                 {
                   "internalType": "uint256",
@@ -590,7 +599,7 @@
           ]
         },
         "GTC": {
-          "address": "0xA277C69C40442919f0A71707E67B8D194fa012Eb",
+          "address": "0x4f87dfB82Bc6e14B8D6912284E8Ac700c8305902",
           "abi": [
             {
               "inputs": [
@@ -891,7 +900,7 @@
       "chainId": "31337",
       "contracts": {
         "ConvictionVoting": {
-          "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+          "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
           "abi": [
             {
               "inputs": [
@@ -1032,18 +1041,18 @@
                 }
               ],
               "name": "addConviction",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "totalConvictions",
-                  "type": "uint256"
-                }
-              ],
+              "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
             },
             {
-              "inputs": [],
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "threshold",
+                  "type": "uint256"
+                }
+              ],
               "name": "addGauge",
               "outputs": [],
               "stateMutability": "nonpayable",
@@ -1053,7 +1062,7 @@
               "inputs": [
                 {
                   "internalType": "uint256",
-                  "name": "gaugeId",
+                  "name": "",
                   "type": "uint256"
                 }
               ],
@@ -1065,26 +1074,7 @@
                   "type": "uint256"
                 }
               ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "requestedAmount",
-                  "type": "uint256"
-                }
-              ],
-              "name": "calculateThreshold",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "threshold",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
+              "stateMutability": "pure",
               "type": "function"
             },
             {
@@ -1148,17 +1138,15 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "totalCovictionStaked",
+                  "name": "totalStake",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "threshold",
                   "type": "uint256"
                 }
               ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "getAllGauges",
-              "outputs": [],
               "stateMutability": "view",
               "type": "function"
             },
@@ -1243,6 +1231,16 @@
                   "internalType": "uint256",
                   "name": "",
                   "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",
@@ -1280,12 +1278,12 @@
                   "type": "uint256"
                 }
               ],
-              "name": "getTotalConvictionForGauge",
+              "name": "isGaugeExecutable",
               "outputs": [
                 {
-                  "internalType": "uint256",
-                  "name": "convictionTotal",
-                  "type": "uint256"
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
                 }
               ],
               "stateMutability": "view",
@@ -1312,6 +1310,25 @@
                   "internalType": "address",
                   "name": "",
                   "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "gaugeId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "percentOfThreshold",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",
@@ -1436,19 +1453,6 @@
               "type": "function"
             },
             {
-              "inputs": [],
-              "name": "totalStaked",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
               "inputs": [
                 {
                   "internalType": "uint256",
@@ -1457,25 +1461,6 @@
                 }
               ],
               "name": "totalStakedForGauge",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "totalStaked",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "gaugeId",
-                  "type": "uint256"
-                }
-              ],
-              "name": "totalStakedForGaugeByUser",
               "outputs": [
                 {
                   "internalType": "uint256",

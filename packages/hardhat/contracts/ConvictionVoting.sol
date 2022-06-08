@@ -91,16 +91,17 @@ contract ConvictionVoting is Ownable {
     }
 
     /// @notice Adds a new gauge with no convictions
-    function addGauge() external onlyOwner {
-        uint256 current = ++currentGaugeId;
-        Gauge storage gauge = gauges[current]; // gauges start from 1...
-        gauge.id = current;
+    // function addGauge() external onlyOwner {
+    //     uint256 current = ++currentGaugeId;
+    //     Gauge storage gauge = gauges[current]; // gauges start from 1...
+    //     gauge.id = current;
 
-        emit NewGauge(current);
-    }
+    //     emit NewGauge(current);
+    // }
 
     /// @notice Adds a new gauge with a threshold
-    function addGauge(uint256 threshold) external onlyOwner {
+    /// @param threshold the value of the threshold requested
+    function addGauge(uint256 threshold) public onlyOwner {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
         gauge.id = current;
@@ -316,6 +317,8 @@ contract ConvictionVoting is Ownable {
             Conviction memory conviction = gauge.convictions[convictionIds[i]];
             stake += conviction.amount;
         }
+
+        return stake;
     }
 
     // solhint-disable-next-line not-rely-on-time

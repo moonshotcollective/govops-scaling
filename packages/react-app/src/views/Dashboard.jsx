@@ -1,6 +1,5 @@
 /* eslint-disable no-loop-func */
-import { Button, Card, Col, Divider, List, notification, Row, Statistic, Switch } from "antd";
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Divider, Input, List, notification, Row, Statistic, Switch } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Gauge } from "../components";
@@ -13,6 +12,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const [userStake, setUserStake] = useState(0);
   const [gauges, setGauges] = useState([]);
   const [totalStakedForGauge, setTotalStakedForGauge] = useState(0);
+  const [thresholdForGauge, setThresholdForGauge] = useState(0);
   const [action, setAction] = useState(true);
   const [amount, setAmount] = useState(0);
   const [loadingGauge, setLoadingGauge] = useState(false);
@@ -27,9 +27,9 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     setAction(e);
   };
 
-  const addGauge = async () => {
+  const addGauge = async threshold => {
     setLoadingGauge(true);
-    await tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
+    await tx(writeContracts?.ConvictionVoting?.addGauge(threshold), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(
@@ -125,17 +125,17 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     }
   };
 
-  const getConvictionScoreForGaugeWithId = async id => {
-    // fetch the current total conviction score for a gauge
-    await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(id).then(x => {
-      console.log("Score for gauge: ", x.toString());
-      setScore(x.toString());
-    });
-  };
+  // const getConvictionScoreForGaugeWithId = async id => {
+  //   // fetch the current total conviction score for a gauge
+  //   await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(id).then(x => {
+  //     console.log("Score for gauge: ", x.toString());
+  //     setScore(x.toString());
+  //   });
+  // };
 
   const getConvictionScoreForUserGauge = async id => {
     await readContracts?.ConvictionVoting?.getConvictionScore(id, address).then(result => {
-      console.log("Result of score: ", result);
+      console.log("Result of score: ", result.toString());
       setUserScore(result.toString());
     });
   };
@@ -194,42 +194,46 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     await readContracts?.ConvictionVoting?.currentGaugeId().then(async gaugeId => {
       console.log("Gauge: ", gaugeId.toString());
       for (let index = 1; index <= gaugeId.toString(); index++) {
-        await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(async score => {
-          console.log("Score for Gauge ", `${index}: `, score.toString());
-          // load up the gauges with the id and the score
-          // [{ id: 0, score: 0, totalStaked: 0, userStake: 0, userScore: 0 }] sample
-          await readContracts?.ConvictionVoting?.getStakeByUser(index, address).then(async result => {
-            await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(async gaugeStake => {
-              await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
-                setGauges(prevState => {
-                  return [
-                    ...prevState.slice(0, index - 1),
-                    {
-                      id: index,
-                      score: ethers.utils.formatUnits(score.toString(), 20),
-                      totalStaked: ethers.utils.formatEther(gaugeStake.toString()),
-                      userStake: ethers.utils.formatEther(result.toString()),
-                      userScore: ethers.utils.formatUnits(userScore, 20),
-                    },
-                    ...prevState.slice(index + gaugeId, prevState.length),
-                  ];
-                });
-                setUser(prevState => {
-                  return [
-                    ...prevState.slice(0, index - 1),
-                    {
-                      address: address,
-                      gauges: [{ ...gauges }],
-                    },
-                    ...prevState.slice(index + gaugeId, prevState.length),
-                  ];
-                });
+        //await readContracts?.ConvictionVoting?.getConvictionScoreForGauge(index).then(async score => {
+        //console.log("Score for Gauge ", `${index}: `, score.toString());
+        // load up the gauges with the id and the score
+        // [{ id: 0, score: 0, totalStaked: 0, userStake: 0, userScore: 0 }] sample
+        await readContracts?.ConvictionVoting?.getStakeByUser(index, address).then(async result => {
+          console.log("result: ", result);
+          await readContracts?.ConvictionVoting?.getGaugeDetails(index).then(async gaugeDetails => {
+            console.log("Gauge details: ", gaugeDetails);
+            await readContracts?.ConvictionVoting?.getConvictionScore(index, address).then(userScore => {
+              setGauges(prevState => {
+                return [
+                  ...prevState.slice(0, index - 1),
+                  {
+                    id: index,
+                    score: ethers.utils.formatUnits(score.toString(), 20),
+                    totalStaked: ethers.utils.formatEther(gaugeDetails[1].toString()),
+                    threshold: gaugeDetails[2],
+                    userStake: ethers.utils.formatEther(result.toString()),
+                    userScore: ethers.utils.formatUnits(userScore, 20),
+                  },
+                  ...prevState.slice(index + gaugeId, prevState.length),
+                ];
+              });
+              setUser(prevState => {
+                return [
+                  ...prevState.slice(0, index - 1),
+                  {
+                    address: address,
+                    gauges: [{ ...gauges }],
+                  },
+                  ...prevState.slice(index + gaugeId, prevState.length),
+                ];
               });
             });
           });
         });
+        //});
       }
       console.log("User array: ", user);
+      console.log("Gauge array: ", gauges);
     });
   };
   useEffect(() => {
@@ -253,9 +257,13 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
   const getTotalStakedForGauge = async id => {
     await readContracts?.ConvictionVoting?.getGaugeDetails(id).then(result => {
       console.log("Gauge total staked: ", result.toString());
-      setTotalStakedForGauge(result.toString());
+      setTotalStakedForGauge(result[1].toString());
     });
   };
+
+  useEffect(() => {
+    getTotalStakedForGauge();
+  }, [address, gauges]);
 
   return (
     <div style={{ margin: "20px", marginBotton: "50px", paddingBottom: "50px" }}>
@@ -293,13 +301,20 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             <Gauge value={ethers.utils.formatUnits(score, 20).slice(0, 9)} className="mt-6" />
           </div>
           {address == "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B" ? (
-            <Button
-              loading={loadingGauge}
-              className="mt-5 bg-purple-700 hover:bg-purple-300"
-              onClick={() => addGauge()}
-            >
-              Add Gauge
-            </Button>
+            <>
+              <Input
+                onChange={event => {
+                  setThresholdForGauge(event.target.value);
+                }}
+              />
+              <Button
+                loading={loadingGauge}
+                className="mt-5 bg-purple-700 hover:bg-purple-300"
+                onClick={() => addGauge(thresholdForGauge)}
+              >
+                Add Gauge
+              </Button>
+            </>
           ) : (
             <div></div>
           )}
@@ -321,7 +336,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
             value={gaugeId}
             onChange={e => {
               setGaugeId(e.target.value);
-              getConvictionScoreForGaugeWithId(e.target.value);
+              // getConvictionScoreForGaugeWithId(e.target.value);
               getTotalStakedForGaugeForUser(e.target.value);
               getConvictionScoreForUserGauge(e.target.value);
               getTotalStakedForGauge(e.target.value);
@@ -397,7 +412,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                   title={"Gauge Id: " + item.id}
                   onClick={e => {
                     setGaugeId(item.id);
-                    getConvictionScoreForGaugeWithId(item.id);
+                    //getConvictionScoreForGaugeWithId(item.id);
                     getTotalStakedForGaugeForUser(item.id);
                     getConvictionScoreForUserGauge(item.id);
                     getTotalStakedForGauge(item.id);
