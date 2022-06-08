@@ -47,26 +47,19 @@ const Proposals = () => {
   const getLatestPosts = async () => {
     console.log("Fetching latest posts");
     try {
-      const response = await axios.get(server + "posts/");
+      let response = await axios.get(server + "posts/");
       console.log(response);
-      return response;
+      let data = response.data.latest_posts;
+      return data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const latest = getLatestPosts().then(result => {
-    console.log("Result: ", result);
+  getLatestPosts().then(result => {
+    console.log("test response: ", result);
+    setLatestPosts(result);
   });
-
-  console.log("Latest: ", latest);
-  Promise.resolve(latest).then(result => {
-    console.log("Result: ", result);
-  });
-
-  // getLatestPosts().then(result => {
-  //   console.log("test response: ", result);
-  // });
 
   // Promise.resolve(
   //   getLatestPosts().then(results => {

@@ -33,9 +33,9 @@ app.get("/api", (req, res) => {
 });
 
 // Get single post
-app.get("/api/post/", async (req, res) => {
+app.get("/api/post/", (req, res) => {
   console.log("Fetching post ", req.query.ID);
-  await axios
+  axios
     .get(server + `posts/${req.query.ID}.json`, requestConfig)
     .then((response) => {
       console.log("returning post ", req.query.ID);
@@ -49,23 +49,14 @@ app.get("/api/post/", async (req, res) => {
 
 // Get latest posts
 app.get("/api/posts/", async (req, res) => {
-  await axios
-    .get(server + `posts/`, requestConfig)
-    .then((response) => {
-      console.log("returning latest posts");
-      console.log(response);
-      return response;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-
-  return res;
+  const response = await axios.get(server + `posts/`, requestConfig);
+  console.log(response.data.latest_posts);
+  return response;
 });
 
 // Fetch all relplies for a single Post
-app.get("/api/post/replies/", async (req, res) => {
-  await axios
+app.get("/api/post/replies/", (req, res) => {
+  axios
     .get(server + `posts/${req.query.ID}.json`, requestConfig)
     .then((response) => {
       console.log(response);
