@@ -20,7 +20,7 @@ const cors = require("cors");
 const app = express();
 const apiPort = 4001;
 
-var https = require('https');
+// var https = require('https');
 
 app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
@@ -32,16 +32,27 @@ app.get("/api", (req, res) => {
   console.log("root path working");
 });
 
+app.get("/api/post/", async (req, res) => {
+  console.log("Fetching post ", req.query.ID);
+  await axios
+    .get(server + `posts/${req.query.ID}.json`, requestConfig)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 app.get("/api/posts/", async (req, res) => {
-  const params = new URLSearchParams([["id", 10567]]);
-  try {
-    const res = await axios.get(server + "posts/", requestConfig, { params });
-    console.log(res);
-    return res;
-  } catch (e) {
-    console.error(e);
-  }
-  console.log("Returning Post: ");
+  await axios
+    .get(server + `posts/`, requestConfig)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 app.listen(process.env.PORT || apiPort, () => {
@@ -49,4 +60,4 @@ app.listen(process.env.PORT || apiPort, () => {
   console.log("");
 });
 
-https.createServer({}, app).listen(8443, console.log("App running on 8443"));
+// https.createServer({}, app).listen(8443, console.log("App running on 8443"));

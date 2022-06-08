@@ -39,7 +39,7 @@ const Proposals = () => {
   ]);
 
   // testing Discourse api calls to the console
-  getSinglePost(10567).then(async result => {
+  getSinglePost("10567").then(async result => {
     console.log("test", result);
   });
 

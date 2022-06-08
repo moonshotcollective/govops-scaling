@@ -10,16 +10,17 @@ const requestConfig = {
 };
 
 // Fetch a single Post
-export const getSinglePost = async ({ id }) => {
-  const params = new URLSearchParams([["id", id]]);
-  try {
-    console.log("Sending request for post info");
-    const res = await axios.get(server + "posts/", requestConfig, { params });
-    console.log(res);
-    return res;
-  } catch (e) {
-    console.error(e);
-  }
+export const getSinglePost = async id => {
+  // const params = new URLSearchParams([["ID", id]]);
+  console.log("Fetching single post");
+  await axios
+    .get(server + "post/", { params: { ID: id } })
+    .then(response => {
+      console.log(response);
+    })
+    .catch(error => {
+      console.error(error);
+    });
 };
 
 // Fetch all relplies for a single Post
@@ -27,7 +28,7 @@ export const getRepliesToPost = async ({ id }) => {
   const params = new URLSearchParams([["id", id]]);
   try {
     const res = await axios.get(server + ".json", requestConfig, { params });
-    // console.log(res);
+    console.log(res);
     return res;
   } catch (e) {
     console.log(e);
