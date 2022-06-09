@@ -48,8 +48,8 @@ const Proposals = ({ address }) => {
     console.log("Fetching latest posts");
     try {
       const response = await axios.get(server + "posts/");
-      console.log(response);
-      let data = response;
+      let data = response.data.data;
+      console.log("Data: ", data);
       return data;
     } catch (error) {
       console.log(error);

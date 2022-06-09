@@ -18,7 +18,6 @@ export const getLatestPosts = async () => {
   console.log("Fetching latest posts");
   try {
     const response = await axios.get(server + "posts/");
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);

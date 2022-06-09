@@ -39,7 +39,7 @@ app.get("/api/post/", async (req, res) => {
     console.log("Fetching post ", req.query.ID);
     const response = await instance.get(server + `posts/${req.query.ID}.json`);
     console.log(response);
-    return response;
+    res.send(response);
   } catch (error) {
     console.log(error);
   }
@@ -48,15 +48,15 @@ app.get("/api/post/", async (req, res) => {
 // Get latest posts
 app.get("/api/posts/", async (req, res) => {
   try {
-    const res = await instance.get(server + `posts/`);
+    const response = await instance.get(server + `posts/`);
     const result = {
-      status: res.status + "-" + res.statusText,
-      headers: res.headers,
-      data: res.data,
+      status: response.status + "-" + response.statusText,
+      headers: response.headers,
+      data: response.data,
     };
     console.log(result.data.latest_posts);
 
-    return result;
+    return res.send(result);
   } catch (error) {
     if (error.response) {
       // get response with a status code not in range 2xx
@@ -72,7 +72,6 @@ app.get("/api/posts/", async (req, res) => {
     }
     console.log(error.config);
   }
-  return res;
 });
 
 // Fetch all relplies for a single Post
