@@ -1,8 +1,7 @@
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { Avatar, Card, Col, Row } from "antd";
-// import { getLatestPosts } from "../helpers";
-import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getLatestPosts, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
@@ -12,6 +11,7 @@ const Proposals = ({ address }) => {
   const status = ["posted", "review", "amended", "readyToVoteSnapshot", "readyToVoteTally", "misc"];
 
   const [latestPosts, setLatestPosts] = useState();
+  const [currentPost, setCurrentPost] = useState();
   const [proposals, setProposals] = useState([
     {
       id: 1,
@@ -43,32 +43,45 @@ const Proposals = ({ address }) => {
     },
   ]);
 
-  // testing Discourse api calls to the console
-  const getLatestPosts = async () => {
-    console.log("Fetching latest posts");
-    try {
-      const response = await axios.get(server + "posts/");
-      let data = response.data.data;
-      console.log("Data: ", data);
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
+  useEffect(() => {
+    getLatestPosts().then(result => {
+      console.log("test response: ", result.data.data);
+      setLatestPosts(result.data.data);
+    });
+  }, [address]);
+
+  const getPost = id => {
+    getSinglePost(id).then(res => {
+      setCurrentPost(res.data.data);
+    });
   };
 
-  getLatestPosts();
-
-  // useEffect(() => {
-  //   getLatestPosts().then(result => {
-  //     console.log("test response: ", result);
-  //     setLatestPosts(result);
-  //   });
-  // }, [address]);
+  // Auth errors...
+  // getPost();
 
   return (
     <div>
-      <Row className="p-1 align-middle h-screen">
-        <Col className="p-1 m-1 border-2 text-left " span={4}>
+      <Row className="p-1">
+        <Col className="p-1 m-1 border-2" span={11}>
+          <Row>
+            <Col span={8}>
+              <span className="text-left text-6xl">Proposals</span>
+            </Col>
+            <Col span={8}></Col>
+            <Col span={8}></Col>
+          </Row>
+          <Row>
+            <Col span={8}></Col>
+            <Col span={8}></Col>
+            <Col span={8}></Col>
+          </Row>
+        </Col>
+        <Col className="p-1 m-1 border-2" span={11}>
+          sorting/filters
+        </Col>
+      </Row>
+      <Row className="p-2 align-middle h-screen">
+        <Col className="p-1 m-1 border-2 text-left" span={4}>
           <span className="">Posted</span>
           <span className=""> ({proposals.status === "posted" ? 0 : 1})</span>
           <div>
