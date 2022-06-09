@@ -49,12 +49,13 @@ app.get("/api/post/", async (req, res) => {
 app.get("/api/posts/", async (req, res) => {
   try {
     const res = await instance.get(server + `posts/`);
-    console.log(res.data.latest_posts);
     const result = {
       status: res.status + "-" + res.statusText,
       headers: res.headers,
       data: res.data,
     };
+    console.log(result.data.latest_posts);
+
     return result;
   } catch (error) {
     if (error.response) {

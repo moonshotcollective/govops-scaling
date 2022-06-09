@@ -47,9 +47,9 @@ const Proposals = ({ address }) => {
   const getLatestPosts = async () => {
     console.log("Fetching latest posts");
     try {
-      const { response } = await axios.get(server + "posts/");
+      const response = await axios.get(server + "posts/");
       console.log(response);
-      let data = response.data.latest_posts;
+      let data = response;
       return data;
     } catch (error) {
       console.log(error);
@@ -76,6 +76,7 @@ const Proposals = ({ address }) => {
               if (item.status === "posted") {
                 return (
                   <Card
+                    key={item.id}
                     title={proposals[index].title}
                     type="inner"
                     bordered={true}
