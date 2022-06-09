@@ -2,6 +2,7 @@ import { EditOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/ico
 import { Avatar, Card, Col, Row } from "antd";
 import React, { useEffect, useState } from "react";
 import { getLatestPosts, getSinglePost } from "../helpers";
+import { ProposalLane } from "../components";
 
 const server = "http://localhost:4001/api/";
 
@@ -60,9 +61,9 @@ const Proposals = ({ address }) => {
   // getPost();
 
   return (
-    <div>
+    <div className="">
       <Row className="p-1">
-        <Col className="p-1 m-1 border-2" span={11}>
+        <Col className="p-1" span={12}>
           <Row>
             <Col span={8}>
               <span className="text-left text-6xl">Proposals</span>
@@ -71,297 +72,21 @@ const Proposals = ({ address }) => {
             <Col span={8}></Col>
           </Row>
           <Row>
-            <Col span={8}></Col>
+            <Col span={8}>test</Col>
             <Col span={8}></Col>
             <Col span={8}></Col>
           </Row>
         </Col>
-        <Col className="p-1 m-1 border-2" span={11}>
+        <Col className="p-1 border-2" span={12}>
           sorting/filters
         </Col>
       </Row>
-      <Row className="p-2 align-middle h-screen">
-        <Col className="p-1 m-1 border-2 text-left" span={4}>
-          <span className="">Posted</span>
-          <span className=""> ({proposals.status === "posted" ? 0 : 1})</span>
-          <div>
-            {proposals.map((item, index) => {
-              if (item.status === "posted") {
-                return (
-                  <Card
-                    key={item.id}
-                    title={proposals[index].title}
-                    type="inner"
-                    bordered={true}
-                    style={{}}
-                    actions={[
-                      <SettingOutlined
-                        key="setting"
-                        onClick={() => {
-                          console.log("Settings clicked");
-                        }}
-                      />,
-                      <EditOutlined
-                        key="edit"
-                        onClick={() => {
-                          console.log("Edit clicked");
-                        }}
-                      />,
-                      <EllipsisOutlined
-                        key="ellipsis"
-                        onClick={() => {
-                          console.log("Elipses clicked");
-                        }}
-                      />,
-                    ]}
-                  >
-                    <Meta
-                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={item.title}
-                      description="description"
-                    />
-                    {/* Add score here */}
-                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                    <br />
-                    Posted: {item.posted}
-                    <br />
-                    Version: {item.version}
-                    <br />
-                    {item.comments.length} comments
-                    <br />
-                    Last comment: {item.lastComment.by}
-                  </Card>
-                );
-              } else {
-                return <></>;
-              }
-            })}
-          </div>
-        </Col>
-        <Col className="p-1 m-1 border-2 text-left" span={4}>
-          <span className="">In Review</span>
-          <span className=""> ({proposals.status === "review" ? 0 : 0})</span>
-          <div>
-            {proposals.map((item, index) => {
-              if (item.status === "review") {
-                return (
-                  <Card
-                    title={proposals[index].title}
-                    type="inner"
-                    bordered={true}
-                    style={{}}
-                    actions={[
-                      <SettingOutlined
-                        key="setting"
-                        onClick={() => {
-                          console.log("Settings clicked");
-                        }}
-                      />,
-                      <EditOutlined
-                        key="edit"
-                        onClick={() => {
-                          console.log("Edit clicked");
-                        }}
-                      />,
-                      <EllipsisOutlined
-                        key="ellipsis"
-                        onClick={() => {
-                          console.log("Elipses clicked");
-                        }}
-                      />,
-                    ]}
-                  >
-                    <Meta
-                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={item.title}
-                      description="description"
-                    />
-                    {/* Add score here */}
-                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                    <br />
-                    Posted: {item.posted}
-                    <br />
-                    Version: {item.version}
-                    <br />
-                    {item.comments.length} comments
-                    <br />
-                    Last comment: {item.lastComment.by}
-                  </Card>
-                );
-              } else {
-                return <></>;
-              }
-            })}
-          </div>
-        </Col>
-        <Col className="p-1 m-1 border-2 text-left" span={4}>
-          <span className="">Amended</span>
-          <span className=""> ({proposals.status === "amended" ? 0 : 0})</span>
-          <div>
-            {proposals.map((item, index) => {
-              if (item.status === "amended") {
-                return (
-                  <Card
-                    title={proposals[index].title}
-                    type="inner"
-                    bordered={true}
-                    style={{}}
-                    actions={[
-                      <SettingOutlined
-                        key="setting"
-                        onClick={() => {
-                          console.log("Settings clicked");
-                        }}
-                      />,
-                      <EditOutlined
-                        key="edit"
-                        onClick={() => {
-                          console.log("Edit clicked");
-                        }}
-                      />,
-                      <EllipsisOutlined
-                        key="ellipsis"
-                        onClick={() => {
-                          console.log("Elipses clicked");
-                        }}
-                      />,
-                    ]}
-                  >
-                    <Meta
-                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={item.title}
-                      description="description"
-                    />
-                    {/* Add score here */}
-                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                    <br />
-                    Posted: {item.posted}
-                    <br />
-                    Version: {item.version}
-                    <br />
-                    {item.comments.length} comments
-                    <br />
-                    Last comment: {item.lastComment.by}
-                  </Card>
-                );
-              } else {
-                return <></>;
-              }
-            })}
-          </div>
-        </Col>
-        <Col className="p-1 m-1 border-2 text-left" span={4}>
-          <span className="">Ready to Vote - Snapshot</span>
-          <span className=""> ({proposals.status === "readyToVoteSnapshot" ? 0 : 0})</span>
-          <div>
-            {proposals.map((item, index) => {
-              if (item.status === "readyToVoteSnapshot") {
-                return (
-                  <Card
-                    title={proposals[index].title}
-                    type="inner"
-                    bordered={true}
-                    style={{}}
-                    actions={[
-                      <SettingOutlined
-                        key="setting"
-                        onClick={() => {
-                          console.log("Settings clicked");
-                        }}
-                      />,
-                      <EditOutlined
-                        key="edit"
-                        onClick={() => {
-                          console.log("Edit clicked");
-                        }}
-                      />,
-                      <EllipsisOutlined
-                        key="ellipsis"
-                        onClick={() => {
-                          console.log("Elipses clicked");
-                        }}
-                      />,
-                    ]}
-                  >
-                    <Meta
-                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={item.title}
-                      description="description"
-                    />
-                    {/* Add score here */}
-                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                    <br />
-                    Posted: {item.posted}
-                    <br />
-                    Version: {item.version}
-                    <br />
-                    {item.comments.length} comments
-                    <br />
-                    Last comment: {item.lastComment.by}
-                  </Card>
-                );
-              } else {
-                return <></>;
-              }
-            })}
-          </div>
-        </Col>
-        <Col className="p-1 m-1 border-2 text-left" span={4}>
-          <span className="">Ready to Vote - Tally</span>
-          <span className=""> ({proposals.status === "readyToVoteTally" ? 0 : 0})</span>
-          <div>
-            {proposals.map((item, index) => {
-              if (item.status === "readyToVoteTally") {
-                return (
-                  <Card
-                    title={proposals[index].title}
-                    type="inner"
-                    bordered={true}
-                    style={{}}
-                    actions={[
-                      <SettingOutlined
-                        key="setting"
-                        onClick={() => {
-                          console.log("Settings clicked");
-                        }}
-                      />,
-                      <EditOutlined
-                        key="edit"
-                        onClick={() => {
-                          console.log("Edit clicked");
-                        }}
-                      />,
-                      <EllipsisOutlined
-                        key="ellipsis"
-                        onClick={() => {
-                          console.log("Elipses clicked");
-                        }}
-                      />,
-                    ]}
-                  >
-                    <Meta
-                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={item.title}
-                      description="description"
-                    />
-                    {/* Add score here */}
-                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                    <br />
-                    Posted: {item.posted}
-                    <br />
-                    Version: {item.version}
-                    <br />
-                    {item.comments.length} comments
-                    <br />
-                    Last comment: {item.lastComment.by}
-                  </Card>
-                );
-              } else {
-                return <></>;
-              }
-            })}
-          </div>
-        </Col>
+      <Row className="p-2 h-screen border-2 border-purple-700 rounded bg-purple-700">
+        <ProposalLane title="Posted" proposals={proposals} status="posted" />
+        <ProposalLane title="In Review" proposals={proposals} status="review" />
+        <ProposalLane title="Amended" proposals={proposals} status="amended" />
+        <ProposalLane title="Ready To Vote Snapshot" proposals={proposals} status="readyToVoteSnapshot" />
+        <ProposalLane title="Ready To Vote Tally" proposals={proposals} status="readyToVoteTally" />
       </Row>
     </div>
   );
