@@ -8,7 +8,7 @@ const ProposalLane = ({ title, proposals, status }) => {
   return (
     <Col className="p-1 m-1 border-2 text-left bg-purple-500 rounded-xl" span={4}>
       <span className="">{title}</span>
-      <span className=""> ({proposals.status === status ? 0 : 1})</span>
+      <span className=""> ({proposals.status === status ? 0 : 0})</span>
       <div>
         {proposals.map((item, index) => {
           if (item.status === status) {
