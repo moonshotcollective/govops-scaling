@@ -1,18 +1,24 @@
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
-import { Avatar, Card, Col, Row } from "antd";
+import { Card, Col, notification, Row } from "antd";
 import React, { useEffect, useState } from "react";
-import { getLatestPosts, getSinglePost } from "../helpers";
 import { ProposalLane } from "../components";
+import { getLatestPosts, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
 const { Meta } = Card;
 
-const Proposals = ({ address }) => {
+//! Developer notes: a gaugeId will equal the proposalId, they are the same.
+const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   const status = ["posted", "review", "amended", "readyToVoteSnapshot", "readyToVoteTally", "misc"];
 
   const [latestPosts, setLatestPosts] = useState();
   const [currentPost, setCurrentPost] = useState();
+  const [isGaugeExecutable, setIsGaugeExecutable] = useState(false);
+  const [gaugeId, setGaugeId] = useState(1);
+  const [proposalId, setProposalId] = useState(1);
+  const [amount, setAmount] = useState(0);
+  const [gaugeDetails, setGaugeDetails] = useState({});
+  const [totalStakedForProposal, setTotalStakedForProposal] = useState(0);
   const [proposals, setProposals] = useState([
     {
       id: 1,
@@ -44,6 +50,104 @@ const Proposals = ({ address }) => {
     },
   ]);
 
+  // On-chain functions
+  const checkIsGaugeExecutable = id => {
+    readContracts?.ConvictionVoting?.isGaugeExecutable(id).then(response => {
+      console.log(response);
+      setIsGaugeExecutable(response);
+    });
+  };
+  // checkIsGaugeExecutable(1);
+
+  // Adding a new gauge when a proposal is added.. how are we to deal with the gas??
+  const addGauge = async threshold => {
+    //setLoadingGauge(true);
+    await tx(writeContracts?.ConvictionVoting?.addGauge(threshold), async update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.success({
+          placement: "topRight",
+          message: `Gauge added for proposal ${proposalId}`,
+        });
+      }
+    });
+    //setLoadingGauge(false);
+  };
+
+  // Adding conviction to a propsal
+  const addConviction = async () => {
+    await tx(writeContracts?.ConvictionVoting?.addConviction(address, gaugeId, amount), async update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.success({
+          placement: "topRight",
+          message: `Your conviction has been added to propsal ${proposalId}`,
+        });
+      }
+    });
+  };
+
+  // Removing conviction from a proposal
+  const removeAllConvictions = async () => {
+    await tx(
+      writeContracts?.ConvictionVoting?.removeAllConvictions(
+        gaugeId, // gaugeId
+        address, // the reciver of the tokens...
+      ),
+      async update => {
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          console.log(" 🍾 Transaction " + update.hash + " finished!");
+          console.log(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+          notification.success({
+            placement: "topRight",
+            message: `All your conviction has been removed for proposal ${proposalId}`,
+          });
+        }
+      },
+    );
+  };
+
+  // Gauge information
+  const totalStaked = async () => {
+    await readContracts?.ConvictionVoting?.totalStakedForGauge(proposalId).then(result => {
+      console.log(result.toString());
+      setTotalStakedForProposal(result);
+    });
+  };
+
+  const getGaugeDetails = async () => {
+    await readContracts?.ConvictionVoting?.getGaugeDetails(proposalId).then(result => {
+      setGaugeDetails(result);
+    });
+  };
+
+  // Discourse integration
   useEffect(() => {
     getLatestPosts().then(result => {
       console.log("test response: ", result.data.data);
@@ -57,8 +161,9 @@ const Proposals = ({ address }) => {
     });
   };
 
-  // Auth errors...
   // getPost();
+
+  const fetchCurrentProposals = () => {};
 
   return (
     <div className="">

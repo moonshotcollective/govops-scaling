@@ -1,4 +1,4 @@
-import { Button, Col, Menu, Row } from "antd";
+import { Menu } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -12,25 +12,14 @@ import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 import "./App.css";
-import {
-  Account,
-  Contract,
-  Faucet,
-  FaucetHint,
-  GasGauge,
-  Header,
-  NetworkDisplay,
-  NetworkSwitch,
-  Ramp,
-  ThemeSwitch,
-} from "./components";
+import { Account, Contract, FaucetHint, Header, NetworkDisplay, NetworkSwitch, ThemeSwitch } from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, Home, Subgraph, Proposals, Stewards } from "./views";
+import { Dashboard, Home, Proposals, Stewards, Subgraph } from "./views";
 
 const { ethers } = require("ethers");
 /*
@@ -266,7 +255,7 @@ function App(props) {
         {/* <Menu.Item key="/main">
           <Link to="/main">Main</Link>
         </Menu.Item> */}
-         <Menu.Item key="/proposals">
+        <Menu.Item key="/proposals">
           <Link to="/proposals">Proposals</Link>
         </Menu.Item>
         <Menu.Item key="/stewards">
@@ -291,8 +280,8 @@ function App(props) {
         {/* <Route exact path="/main">
           <Main />
         </Route> */}
-         <Route exact path="/proposals">
-          <Proposals address={address} />
+        <Route exact path="/proposals">
+          <Proposals address={address} readContracts={readContracts} writeContracts={writeContracts} tx={tx} />
         </Route>
         <Route exact path="/stewards">
           <Stewards />

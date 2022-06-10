@@ -1,4 +1,4 @@
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
+import { QuestionOutlined, PlusOutlined, SettingOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import { Avatar, Card, Col } from "antd";
 import React from "react";
 
@@ -20,22 +20,22 @@ const ProposalLane = ({ title, proposals, status }) => {
                 bordered={true}
                 style={{}}
                 actions={[
-                  <SettingOutlined
+                  <QuestionOutlined
                     key="setting"
                     onClick={() => {
-                      console.log("Settings clicked");
+                      console.log("Details clicked");
                     }}
                   />,
-                  <EditOutlined
+                  <FallOutlined
                     key="edit"
                     onClick={() => {
-                      console.log("Edit clicked");
+                      console.log("Decrease clicked");
                     }}
                   />,
-                  <EllipsisOutlined
+                  <RiseOutlined
                     key="ellipsis"
                     onClick={() => {
-                      console.log("Elipses clicked");
+                      console.log("Increase clicked");
                     }}
                   />,
                 ]}

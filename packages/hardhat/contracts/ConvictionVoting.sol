@@ -322,7 +322,7 @@ contract ConvictionVoting is Ownable {
     }
 
     // solhint-disable-next-line not-rely-on-time
-
+    // todo: to be completed
     /// @notice Calculates the minimum conviction a user can commit
     /// @return convictionReqd The amount of tokens required to add conviction to a gauge
     function calculateMinimumConviction(
