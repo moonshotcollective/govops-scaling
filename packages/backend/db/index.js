@@ -30,7 +30,7 @@ connection.on("open", function (ref) {
   connection.db.listCollections().toArray(function (err, names) {
     collections = names;
   });
-  //console.log(collections);
+  console.log(collections);
 });
 
 module.exports = {

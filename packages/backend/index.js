@@ -9,6 +9,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 const apiPort = 4001;
+const { connection, collections } = require("./db");
+const postRouter = require("./routes/post-router");
+const stewardRouter = require("./routes/steward-router");
 
 app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
@@ -25,6 +28,15 @@ const instance = axios.create({
     Accept: "application/json",
   },
 });
+
+
+connection.on(
+  "error",
+  console.error.bind(console, "MongoDB connection error: ")
+);
+
+app.use("/api", postRouter);
+app.use("/api", stewardRouter);
 
 // Root api call for connectivity and info
 app.get("/api", (req, res) => {
