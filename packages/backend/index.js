@@ -38,7 +38,7 @@ connection.on(
 
 app.use("/api", postRouter);
 app.use("/api", stewardRouter);
-app,use("/api", proposalRouter);
+app.use("/api", proposalRouter);
 
 // Root api call for connectivity and info
 app.get("/api", (req, res) => {

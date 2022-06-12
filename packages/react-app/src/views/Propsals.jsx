@@ -1,4 +1,5 @@
 import { Card, Col, notification, Row } from "antd";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ProposalLane } from "../components";
 import { getLatestPosts, getSinglePost } from "../helpers";
@@ -49,6 +50,8 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
       status: status[1],
     },
   ]);
+
+  const server = "http://localhost:4001/api/";
 
   // On-chain functions
   const checkIsGaugeExecutable = id => {
@@ -163,7 +166,32 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
 
   // getPost();
 
-  const fetchCurrentProposals = () => {};
+  const getProposals = async () => {
+    try {
+      const proposalResponse = await axios.get(server + "/api/proposals");
+      if (proposalResponse.data.success) {
+        setProposals(proposalResponse.data.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  getProposals();
+
+  const getProposal = async id => {
+    try {
+      const params = new URLSearchParams([["id", id]]);
+      const proposalResponse = await axios.get(server + "/api/proposal", { params });
+      if (proposalResponse.data.success) {
+        setProposals(proposalResponse.data.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  getProposal(1);
 
   return (
     <div className="">
