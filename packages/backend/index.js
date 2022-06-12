@@ -12,6 +12,7 @@ const apiPort = 4001;
 const { connection, collections } = require("./db");
 const postRouter = require("./routes/post-router");
 const stewardRouter = require("./routes/steward-router");
+const proposalRouter = require("./routes/proposal-router");
 
 app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
@@ -37,6 +38,7 @@ connection.on(
 
 app.use("/api", postRouter);
 app.use("/api", stewardRouter);
+app,use("/api", proposalRouter);
 
 // Root api call for connectivity and info
 app.get("/api", (req, res) => {
