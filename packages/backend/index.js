@@ -47,18 +47,19 @@ app.get("/api", (req, res) => {
 });
 
 // Get single post
-app.get("/api/post/", async (req, res) => {
+app.get("/api/post/:ID", async (req, res) => {
   try {
     console.log("Fetching post ", req.query.ID);
-    const response = await instance.get(server + `posts/${req.query.ID}.json`);
+    const id = req.query.ID;
+    const response = await instance.get(server + `posts/${id}.json`);
     const result = {
       status: response.status + "-" + response.statusText,
       headers: response.headers,
       data: response.data,
     };
-    console.log(result);
+    console.log(result.data);
 
-    res.send(result);
+    res.json(result);
   } catch (error) {
     if (error.response) {
       // get response with a status code not in range 2xx
@@ -87,7 +88,7 @@ app.get("/api/posts/", async (req, res) => {
     };
     console.log(result.data.latest_posts);
 
-    return res.send(result);
+    res.json(result);
   } catch (error) {
     if (error.response) {
       // get response with a status code not in range 2xx
@@ -106,9 +107,9 @@ app.get("/api/posts/", async (req, res) => {
 });
 
 // Fetch all relplies for a single Post
-app.get("/api/post/replies/", (req, res) => {
+app.get("/api/post/replies/", async (req, res) => {
   instance
-    .get(server + `posts/${req.query.ID}.json`)
+    .get(server + `posts/${req.query.ID}/replies.json`)
     .then((response) => {
       const result = {
         status: response.status + "-" + response.statusText,

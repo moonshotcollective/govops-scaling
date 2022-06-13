@@ -6,8 +6,8 @@ const server = "http://localhost:4001/api/";
 export const getSinglePost = async id => {
   console.log("Fetching single post");
   try {
-    const response = await axios.get(server + "post/", { params: { ID: id } });
-    console.log(response);
+    const response = await axios.get(server + "post/:ID", { params: { ID: id } });
+    console.log("Single post data: ", response.status);
     return response;
   } catch (error) {
     console.log(error);

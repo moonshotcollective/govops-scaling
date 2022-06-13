@@ -151,20 +151,21 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   };
 
   // Discourse integration
-  useEffect(() => {
-    getLatestPosts().then(result => {
-      console.log("test response: ", result.data.data);
-      setLatestPosts(result.data.data);
-    });
-  }, [address]);
+  // useEffect(() => {
+  //   getLatestPosts().then(result => {
+  //     console.log("test response: ", result.data);
+  //     setLatestPosts(result.data);
+  //   });
+  // }, [address]);
 
-  const getPost = id => {
-    getSinglePost(id).then(res => {
-      setCurrentPost(res.data.data);
+  const getPost = async id => {
+    await getSinglePost(id).then(res => {
+      console.log("single post", res);
+      setCurrentPost(res);
     });
   };
 
-  // getPost();
+  getPost("27410");
 
   const getProposals = async () => {
     try {
@@ -177,13 +178,14 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     }
   };
 
-  getProposals();
+  // getProposals();
 
   const getProposal = async id => {
     try {
       const params = new URLSearchParams([["id", id]]);
-      const proposalResponse = await axios.get(server + "/api/proposal", { params });
+      const proposalResponse = await axios.get(server + "/api/posts", { params });
       if (proposalResponse.data.success) {
+        console.log(proposalResponse.data.data);
         setProposals(proposalResponse.data.data);
       }
     } catch (e) {
@@ -191,7 +193,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     }
   };
 
-  getProposal(1);
+  // getProposal(10438);
 
   return (
     <div className="">
