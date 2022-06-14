@@ -1,8 +1,8 @@
 import { Card, Col, notification, Row } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ProposalLane } from "../components";
-import { getLatestPosts, getSinglePost } from "../helpers";
+import { getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
@@ -165,7 +165,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     });
   };
 
-  getPost("27410");
+  //getPost("27410");
 
   const getProposals = async () => {
     try {
@@ -179,21 +179,6 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   };
 
   // getProposals();
-
-  const getProposal = async id => {
-    try {
-      const params = new URLSearchParams([["id", id]]);
-      const proposalResponse = await axios.get(server + "/api/posts", { params });
-      if (proposalResponse.data.success) {
-        console.log(proposalResponse.data.data);
-        setProposals(proposalResponse.data.data);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  // getProposal(10438);
 
   return (
     <div className="">
