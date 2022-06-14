@@ -24,3 +24,4 @@ export { default as Timeline } from "./Timeline";
 export { default as TokenBalance } from "./TokenBalance";
 export { default as TokenSelect } from "./TokenSelect";
 export { default as Wallet } from "./Wallet";
+export { default as ProposalLane } from "./ProposalLane";

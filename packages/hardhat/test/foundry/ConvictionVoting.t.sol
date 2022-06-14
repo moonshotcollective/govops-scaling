@@ -41,6 +41,7 @@ contract ConvictionVotingTest is Test, Ownable {
     struct Gauge {
         uint256 id;
         uint256 currentConvictionId;
+        uint256 totalCovictionStaked;
         mapping(uint256 => Conviction) convictions;
         mapping(address => uint256[]) convictionsByUser;
     }
@@ -81,6 +82,22 @@ contract ConvictionVotingTest is Test, Ownable {
         emit AddConviction(gaugeId, convictionId, user, amount);
     }
 
+    function testRemoveAllConvictions(uint256 gaugeId, address receiver)
+        external
+    {
+        Gauge storage gauge = gauges[gaugeId];
+        if (gauge.id == 0) revert BadGaugeId();
+        uint256 returnAmount = 0;
+        uint256[] memory convictions = gauge.convictionsByUser[msg.sender];
+        for (uint256 i = 0; i < convictions.length; i++) {
+            returnAmount += gauge.convictions[convictions[i]].amount;
+            gauge.totalCovictionStaked -= returnAmount;
+            delete gauge.convictions[convictions[i]];
+        }
+        delete gauge.convictionsByUser[msg.sender];
+        token.safeTransfer(receiver, returnAmount);
+    }
+
     function testCalculateConvictionScore(uint256 gaugeId)
         external
         view
@@ -106,6 +123,16 @@ contract ConvictionVotingTest is Test, Ownable {
         uint256 convictionReqd = 0;
 
         return convictionReqd;
+    }
+
+    function testGetGaugeDetails(uint256 gaugeId)
+        public
+        view
+        returns (uint256)
+    {
+        Gauge storage gauge = gauges[gaugeId];
+
+        return gauge.totalCovictionStaked;
     }
 
     /// @notice index out of bounds error

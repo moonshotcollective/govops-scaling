@@ -1,4 +1,4 @@
-import { Button, Col, Menu, Row } from "antd";
+import { Menu } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -12,25 +12,14 @@ import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 import "./App.css";
-import {
-  Account,
-  Contract,
-  Faucet,
-  FaucetHint,
-  GasGauge,
-  Header,
-  NetworkDisplay,
-  NetworkSwitch,
-  Ramp,
-  ThemeSwitch,
-} from "./components";
+import { Account, Contract, FaucetHint, Header, NetworkDisplay, NetworkSwitch, ThemeSwitch } from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, Home, Subgraph } from "./views";
+import { Dashboard, Home, Proposals, Stewards, Subgraph } from "./views";
 
 const { ethers } = require("ethers");
 /*
@@ -73,7 +62,7 @@ const providers = [
 function App(props) {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
-  const networkOptions = [initialNetwork.name, "mainnet", "rinkeby"];
+  const networkOptions = [initialNetwork.name, "mainnet", "goerli"];
 
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
@@ -263,6 +252,15 @@ function App(props) {
         <Menu.Item key="/dashboard">
           <Link to="/dashboard">My Dashboard</Link>
         </Menu.Item>
+        {/* <Menu.Item key="/main">
+          <Link to="/main">Main</Link>
+        </Menu.Item> */}
+        <Menu.Item key="/proposals">
+          <Link to="/proposals">Proposals</Link>
+        </Menu.Item>
+        <Menu.Item key="/stewards">
+          <Link to="/stewards">Stewards</Link>
+        </Menu.Item>
         <Menu.Item key="/debug">
           <Link to="/debug">Debug Contracts</Link>
         </Menu.Item>
@@ -278,6 +276,15 @@ function App(props) {
         </Route>
         <Route exact path="/dashboard">
           <Dashboard readContracts={readContracts} writeContracts={writeContracts} address={address} tx={tx} />
+        </Route>
+        {/* <Route exact path="/main">
+          <Main />
+        </Route> */}
+        <Route exact path="/proposals">
+          <Proposals address={address} readContracts={readContracts} writeContracts={writeContracts} tx={tx} />
+        </Route>
+        <Route exact path="/stewards">
+          <Stewards />
         </Route>
         <Route exact path="/debug">
           <Contract
