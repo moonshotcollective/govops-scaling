@@ -2,7 +2,7 @@ import { Card, Col, notification, Row } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { ProposalLane } from "../components";
-import { getSinglePost } from "../helpers";
+import { sayHello, getGaugeScore, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
@@ -179,6 +179,9 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   };
 
   // getProposals();
+
+  sayHello();
+  getGaugeScore(1);
 
   return (
     <div className="">
