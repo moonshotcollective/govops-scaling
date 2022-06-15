@@ -26,18 +26,20 @@ function Subgraph(props) {
 
   const EXAMPLE_GRAPHQL = `
   {
-    purposes(first: 25, orderBy: createdAt, orderDirection: desc) {
+    gauges(first: 5) {
       id
-      purpose
-      createdAt
-      sender {
+      totalStaked
+      votes {
         id
       }
     }
-    senders {
+    voters(first: 5) {
       id
-      address
-      purposeCount
+      voteCount
+      totalStaked
+      votes {
+        id
+      }
     }
   }
   `;

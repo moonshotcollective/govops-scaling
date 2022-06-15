@@ -14,12 +14,11 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Purpose
         - Sender
       abis:
         - name: ConvictionVoting
           file: ./abis/localhost_ConvictionVoting.json
       eventHandlers:
-        - event:  NewGauge(uint256)
+        - event:  NewGauge(indexed uint256)
           handler: handleGaugeCreated
       file: ./src/mapping.ts
