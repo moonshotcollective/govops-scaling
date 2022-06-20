@@ -5,6 +5,8 @@ const server = "https://gov.gitcoin.co/";
 // "https://gov.gitcoin.co/posts/{id}.json";
 
 const express = require("express");
+var { graphqlHTTP } = require("express-graphql");
+var { buildSchema } = require("graphql");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
@@ -19,6 +21,27 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cors());
 app.use(bodyParser.json());
 
+// construct a schema
+var schema = buildSchema(`
+  type Query {
+    hello: String
+    gaugeScore: Int
+  }
+`);
+
+// the root provides a resolver function for each api endpoint
+var root = {
+  hello: () => {
+    return "Hello Jason";
+  },
+  gaugeScore: ({ ID }) => {
+    let score = 0;
+    // fetch the gauge score using the id...
+
+    return score;
+  },
+};
+
 // Axios instance
 const instance = axios.create({
   baseUrl: server,
@@ -30,7 +53,6 @@ const instance = axios.create({
   },
 });
 
-
 connection.on(
   "error",
   console.error.bind(console, "MongoDB connection error: ")
@@ -39,6 +61,15 @@ connection.on(
 app.use("/api", postRouter);
 app.use("/api", stewardRouter);
 app.use("/api", proposalRouter);
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true,
+  })
+);
 
 // Root api call for connectivity and info
 app.get("/api", (req, res) => {
