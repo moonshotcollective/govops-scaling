@@ -20,6 +20,7 @@ import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
 import { Dashboard, Home, Proposals, Stewards, Subgraph } from "./views";
+import ProposalDetail from "./views/ProposalDetail";
 
 const { ethers } = require("ethers");
 /*
@@ -282,6 +283,9 @@ function App(props) {
         </Route> */}
         <Route exact path="/proposals">
           <Proposals address={address} readContracts={readContracts} writeContracts={writeContracts} tx={tx} />
+        </Route>
+        <Route path="/proposalDetail/:id" children={<ProposalDetail />}>
+          <ProposalDetail tx={tx} address={address} writeContracts={writeContracts} readContracts={readContracts} />
         </Route>
         <Route exact path="/stewards">
           <Stewards />
