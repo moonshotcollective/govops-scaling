@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 
 mongoose
   .connect(
-    "mongodb+srv://jaxcoder:JaxCodes1@development.u48nl.mongodb.net/talentdao?retryWrites=true&w=majority",
+    "mongodb+srv://jaxcoder:JaxCodes1@development.u48nl.mongodb.net/mc-govops?retryWrites=true&w=majority",
     { useNewUrlParser: true }
   )
   .catch((e) => {
