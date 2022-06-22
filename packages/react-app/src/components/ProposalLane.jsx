@@ -37,7 +37,7 @@ const ProposalLane = ({ title, proposals, status }) => {
         <span className="">{title}</span>
         <span className=""> ({proposals.status === status ? 0 : 0})</span>
         <Draggable onStart={() => onStart()}>
-          <div>
+          <div className="w-96">
             {proposals.map((item, index) => {
               if (item.status === status) {
                 return (

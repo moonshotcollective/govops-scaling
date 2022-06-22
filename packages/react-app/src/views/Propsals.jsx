@@ -97,11 +97,11 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
         </Col>
       </Row>
       <div className="p-2 h-screen border-2 border-purple-700 rounded bg-purple-700">
-        <ProposalLane title="Posted" proposals={proposals} status="posted" />
-        <ProposalLane title="In Review" proposals={proposals} status="review" />
-        <ProposalLane title="Amended" proposals={proposals} status="amended" />
-        <ProposalLane title="Ready To Vote Snapshot" proposals={proposals} status="readyToVoteSnapshot" />
-        <ProposalLane title="Ready To Vote Tally" proposals={proposals} status="readyToVoteTally" />
+        <ProposalLane title="Posted" proposals={proposals} status={status[0]} />
+        <ProposalLane title="In Review" proposals={proposals} status={status[1]} />
+        <ProposalLane title="Amended" proposals={proposals} status={status[2]} />
+        <ProposalLane title="Ready To Vote Snapshot" proposals={proposals} status={status[3]} />
+        <ProposalLane title="Ready To Vote Tally" proposals={proposals} status={status[4]} />
       </div>
     </div>
   );
