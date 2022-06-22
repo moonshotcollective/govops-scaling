@@ -1,7 +1,8 @@
 import { Col, notification, Row } from "antd";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { ConvictionModal, ProposalOptions } from "../components";
+import { ConvictionModal, OptionModal, ProposalOptions } from "../components";
 
 const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [amount, setAmount] = useState(0);
@@ -11,18 +12,26 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
   const [proposalId, setProposalId] = useState();
   const [cgtcbalance, setCgtcbalance] = useState(0);
   const [convictionLoading, setConvictionLoading] = useState(false);
-  const [action, setAction] = useState(true);
   const [allowance, setAllowance] = useState(0);
+  const [loadingApprove, setLoadingApprove] = useState(false);
+  const [cgtcBalance, setCgtcBalance] = useState(0);
+  const [isSteward, setIsSteward] = useState(false);
 
-  // conviction modal state vars
+  // modal state vars
   const [showConvictionModal, setShowConvictionModal] = useState(false);
+  const [showOptionModal, setShowOptionModal] = useState(false);
 
   const showCModal = () => {
     setShowConvictionModal(true);
   };
 
+  const showOModal = () => {
+    setShowOptionModal(true);
+  };
+
   const handleCancel = () => {
     setShowConvictionModal(false);
+    setShowOptionModal(false);
   };
 
   // let's get the id that was passed for the proposal
@@ -39,6 +48,9 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
     getApprovedAmount();
   }, [address]);
 
+  // database functions
+  const submitOption = () => {};
+
   // Some read functions for onchain data
   const getApprovedAmount = async () => {
     await readContracts?.CGTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(result => {
@@ -47,18 +59,33 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
     });
   };
 
+  const getCgtcBalance = () => {
+    readContracts?.GTC?.balanceOf(address ? address : "").then(result => {
+      setCgtcBalance(result.toString());
+    });
+  };
+
+  // write functions for onchain
+  const approveCgtc = async () => {
+    setLoadingApprove(true);
+    await tx(writeContracts?.CGTC?.approve(readContracts?.ConvictionVoting?.address, ethers.utils.parseEther(amount)));
+    getApprovedAmount();
+    getCgtcBalance();
+    setLoadingApprove(false);
+  };
+
   // todo: add function to check wether stake or unstake
-  const submitConviction = async action => {
+  const submitConviction = async (action, option) => {
     if (action === true) {
       // true is 'stake'
       await addConviction();
       getApprovedAmount();
-      //getCgtcBalance();
+      getCgtcBalance();
     } else if (action === false) {
       // false is 'unstake'
       await removeAllConvictions();
-      //getApprovedAmount();
-      //getCgtcBalance();
+      getApprovedAmount();
+      getCgtcBalance();
     }
   };
 
@@ -255,9 +282,15 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         <Col span={12}>
           <Row>
             <Col span={23} className="mt-11 mr-4 pr-4">
-              <button className="w-full p-3 bg-purple-600 hover:bg-purple-400" onClick={() => showCModal()}>
-                Submit Your Conviction
-              </button>
+              {!isSteward ? (
+                <button className="w-full p-3 bg-purple-600 hover:bg-purple-400" onClick={() => showOModal()}>
+                  Add Option
+                </button>
+              ) : (
+                <button className="w-full p-3 bg-purple-600 hover:bg-purple-400" onClick={() => showCModal()}>
+                  Submit Your Conviction
+                </button>
+              )}
             </Col>
           </Row>
           <Row>
@@ -278,7 +311,16 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         handleCancel={handleCancel}
         proposal={proposals[id - 1]}
         cgtcbalance={cgtcbalance}
-        submitConviction={() => submitConviction(action)}
+        submitOption={submitConviction}
+        allowance={allowance}
+      />
+      <OptionModal
+        isVisible={showOptionModal}
+        handleCancel={handleCancel}
+        proposal={proposals[id - 1]}
+        cgtcbalance={cgtcbalance}
+        submitOption={submitOption}
+        allowance={allowance}
       />
     </div>
   );
