@@ -5,7 +5,7 @@ import Draggable from "react-draggable";
 
 const { Meta } = Card;
 
-const ProposalLane = ({ title, proposals, status }) => {
+const ProposalLane = ({ title, proposals, workstream }) => {
   const [bounds, setBounds] = useState({
     left: 0,
     top: 0,
@@ -35,11 +35,11 @@ const ProposalLane = ({ title, proposals, status }) => {
     <Row className="p-1 m-1 border-2 text-left bg-purple-500 rounded-xl">
       <Col span={24}>
         <span className="">{title}</span>
-        <span className=""> ({proposals.status === status ? 0 : 0})</span>
+        <span className=""> ({proposals.workstream === workstream ? 0 : 0})</span>
         <Draggable onStart={() => onStart()}>
           <div className="w-96">
             {proposals.map((item, index) => {
-              if (item.status === status) {
+              if (item.workstream === workstream) {
                 return (
                   <Card
                     key={item.id}

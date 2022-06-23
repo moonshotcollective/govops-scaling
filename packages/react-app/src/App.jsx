@@ -1,4 +1,4 @@
-import { Menu } from "antd";
+import { Col, Menu, Row } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -12,7 +12,16 @@ import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 // import "./App.css";
-import { Account, Contract, FaucetHint, Header, NetworkDisplay, NetworkSwitch, ThemeSwitch } from "./components";
+import {
+  Account,
+  Contract,
+  Faucet,
+  FaucetHint,
+  Header,
+  NetworkDisplay,
+  NetworkSwitch,
+  ThemeSwitch,
+} from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
@@ -378,17 +387,15 @@ function App(props) {
           </Col>
         </Row> */}
 
-        {/* <Row align="middle" gutter={[4, 4]}>
+        <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
-            {
-              faucetAvailable ? (
-                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
-              ) : (
-                ""
-              )
-            }
+            {faucetAvailable ? (
+              <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+            ) : (
+              ""
+            )}
           </Col>
-        </Row> */}
+        </Row>
       </div>
     </div>
   );

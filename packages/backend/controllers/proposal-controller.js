@@ -3,12 +3,13 @@ const Proposal = require("../models/proposal-model");
 createProposal = (req, res) => {
   Proposal.create(
     {
-      id: req.query.id,
-      title: req.query.title,
-      contentRaw: req.query.contentRaw,
-      latestActivity: req.query.latestActivity,
-      score: req.query.score,
-      staked: req.query.staked,
+      id: req.body.id,
+      title: req.body.title,
+      contentRaw: req.body.contentRaw,
+      latestActivity: req.body.latestActivity,
+      score: req.body.score,
+      staked: req.body.staked,
+      options: req.body.options,
     },
     (err) => {
       if (err) {
@@ -16,43 +17,89 @@ createProposal = (req, res) => {
       }
       return res
         .status(200)
-        .json({ success: true, data: "Proposal was created successfully." });
+        .json({ success: true, data: "Proposal was created successfully" });
     }
   );
 };
 
+updateProposal = async (req, res) => {
+  await Proposal.updateOne(
+    { _id: req.body.id },
+    {
+      id: req.body.id,
+      title: req.body.title,
+      contentRaw: req.body.contentRaw,
+      latestActivity: req.body.latestActivity,
+      score: req.body.score,
+      staked: req.body.staked,
+      options: req.body.options,
+    }
+  );
+};
+
+updateProposalOptions = async (req, res) => {
+  await Proposal.updateOne(
+    { _id: req.body.id },
+    {
+      options: req.body.options,
+    },
+    (err, proposal) => {
+      if (err) {
+        return res.status(400).json({ success: false, error: err });
+      }
+      return res.status(200).json({ success: true, data: proposal });
+    }
+  )
+    .clone()
+    .catch((err) => console.error(err));
+};
+
+deleteProposal = async (req, res) => {
+  await Proposal.deleteOne({ id: req.params.id }, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err });
+    }
+    return res.status(200).json({ success: true, data: "Proposal deleted" });
+  })
+    .clone()
+    .catch((err) => console.log(err));
+};
+
 getProposal = async (req, res) => {
-    await Proposal.find({ id: req.query.id }, (err, proposal) => {
-        if (err) {
-            return res.status(400).json({ success: false, error: err });
-          }
-          if (!steward.length) {
-            return res
-              .status(200)
-              .json({ success: false, error: "Proposal not found" });
-          }
-          return res.status(200).json({ success: true, data: proposal });
-    })
+  await Proposal.find({ id: req.query.id }, (err, proposal) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err });
+    }
+    if (!steward.length) {
+      return res
+        .status(200)
+        .json({ success: false, error: "Proposal not found" });
+    }
+    return res.status(200).json({ success: true, data: proposal });
+  });
 };
 
 getProposals = async (req, res) => {
-    await Steward.find(req.query, (err, proposals) => {
-        if (err) {
-          return res.status(400).json({ success: false, error: err });
-        }
-        if (!proposals.length) {
-          return res
-            .status(200)
-            .json({ success: false, error: "Proposals not found" });
-        }
-        return res.status(200).json({ success: true, data: proposals });
-      })
-        .clone()
-        .catch((err) => console.error(err));
+  await Proposal.find(req.query, (err, proposals) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err });
+    }
+    if (!proposals.length) {
+      return res
+        .status(200)
+        .json({ success: false, error: "Proposals not found" });
+    }
+    return res.status(200).json({ success: true, data: proposals });
+  })
+    .clone()
+    .catch((err) => console.error(err));
 };
 
 module.exports = {
   createProposal,
+  updateProposal,
+  updateProposalOptions,
+  deleteProposal,
   getProposal,
   getProposals,
 };

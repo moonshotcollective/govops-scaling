@@ -1,14 +1,14 @@
-import { Card, Col, Row } from "antd";
+import { Col, Row } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProposalLane } from "../components";
-import { getSinglePost, sayHello } from "../helpers";
+import { getLatestPosts, getSinglePost, sayHello } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
 //! Developer notes: a gaugeId will equal the proposalId, they are the same.
 const Proposals = ({ address, readContracts, writeContracts, tx }) => {
-  const status = ["posted", "review", "amended", "readyToVoteSnapshot", "readyToVoteTally", "misc"];
+  const workstream = ["Public Goods Funding", "MMM", "Moonshot Collective", "FDD", "DAO Operations", "Kernel"];
 
   const [latestPosts, setLatestPosts] = useState();
   const [currentPost, setCurrentPost] = useState();
@@ -25,11 +25,11 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
         { comment: "", by: "" },
       ],
       lastComment: { comment: "This is awesome", by: "jaxcoder" },
-      status: status[0],
+      workstream: workstream[0],
     },
     {
       id: 2,
-      title: "KERNEL Budget Request",
+      title: "MMM Budget Request",
       reviewedBy: [{ steward: "" }],
       posted: "3d ago",
       updated: "",
@@ -39,7 +39,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
         { comment: "", by: "" },
       ],
       lastComment: { comment: "Leeeeettttt's Goooo", by: "gtchase" },
-      status: status[1],
+      workstream: workstream[1],
     },
   ]);
 
@@ -73,7 +73,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
 
   // getProposals();
 
-  sayHello();
+  // sayHello();
 
   return (
     <div className="">
@@ -97,11 +97,12 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
         </Col>
       </Row>
       <div className="p-2 h-screen border-2 border-purple-700 rounded bg-purple-700">
-        <ProposalLane title="Posted" proposals={proposals} status={status[0]} />
-        <ProposalLane title="In Review" proposals={proposals} status={status[1]} />
-        <ProposalLane title="Amended" proposals={proposals} status={status[2]} />
-        <ProposalLane title="Ready To Vote Snapshot" proposals={proposals} status={status[3]} />
-        <ProposalLane title="Ready To Vote Tally" proposals={proposals} status={status[4]} />
+        <ProposalLane title={workstream[0]} proposals={proposals} workstream={workstream[0]} />
+        <ProposalLane title={workstream[1]} proposals={proposals} workstream={workstream[1]} />
+        <ProposalLane title={workstream[2]} proposals={proposals} workstream={workstream[2]} />
+        <ProposalLane title={workstream[3]} proposals={proposals} workstream={workstream[3]} />
+        <ProposalLane title={workstream[4]} proposals={proposals} workstream={workstream[4]} />
+        <ProposalLane title={workstream[5]} proposals={proposals} workstream={workstream[5]} />
       </div>
     </div>
   );
