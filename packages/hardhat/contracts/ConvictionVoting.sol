@@ -95,6 +95,8 @@ contract ConvictionVoting is Ownable {
         _transferOwnership(owner);
     }
 
+    /// @notice Adds a new tranche with threshold-disabled gauges
+    /// @param count the number of gauges to create
     function addTranche(uint256 count) public onlyOwner {
         require(count > 0, "EMPTY_TRANCHE");
         uint256 current = ++currentTrancheId;
@@ -107,6 +109,9 @@ contract ConvictionVoting is Ownable {
         emit NewTranche(current, gaugeIds);
     }
 
+    /// @notice Adds a new tranche with threshold-enabled gauges
+    /// @param count the number of gauges to create
+    /// @param threshold the value of the threshold for each gauge
     function addTranche(uint256 count, uint256 threshold) public onlyOwner {
         require(count > 0, "EMPTY_TRANCHE");
         uint256 current = ++currentTrancheId;
