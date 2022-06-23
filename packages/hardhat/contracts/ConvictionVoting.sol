@@ -101,7 +101,7 @@ contract ConvictionVoting is Ownable {
         require(count > 0, "EMPTY_TRANCHE");
         uint256 current = ++currentTrancheId;
         uint256[] memory gaugeIds = new uint256[](0);
-        for(uint256 i = 0; i < count; i++) {
+        for (uint256 i = 0; i < count; i++) {
             gaugeIds[i] = addGauge();
         }
         tranches[current] = gaugeIds;
@@ -116,8 +116,8 @@ contract ConvictionVoting is Ownable {
         require(count > 0, "EMPTY_TRANCHE");
         uint256 current = ++currentTrancheId;
         uint256[] memory gaugeIds = new uint256[](0);
-        for(uint256 i = 0; i < count; i++) {
-            addGauge(threshold);
+        for (uint256 i = 0; i < count; i++) {
+            gaugeIds[i] = addGauge(threshold);
         }
         tranches[current] = gaugeIds;
 
