@@ -59,6 +59,7 @@ contract ConvictionVoting is Ownable {
     }
 
     uint256 public currentGaugeId;
+    uint256 public currentTrancheId;
     uint256 public convictionThreshold;
     uint256 public effectiveSupply;
     uint256 public minimumConviction;
@@ -66,12 +67,16 @@ contract ConvictionVoting is Ownable {
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
 
+    /// @notice Mapping of tranche to gauges
+    mapping(uint256 => uint256[]) public tranches;
+
     /// @notice Mapping of conviction scores for a user
     mapping(address => uint256) public scores;
 
     IERC20 public token;
 
     event NewGauge(uint256 indexed id);
+    event NewTranche(uint256 indexed id, uint256[] gaugeIds);
     event AddConviction(
         uint256 indexed gaugeId,
         uint256 indexed convictionId,
@@ -90,24 +95,52 @@ contract ConvictionVoting is Ownable {
         _transferOwnership(owner);
     }
 
-    /// @notice Adds a new gauge with no convictions
-    // function addGauge() external onlyOwner {
-    //     uint256 current = ++currentGaugeId;
-    //     Gauge storage gauge = gauges[current]; // gauges start from 1...
-    //     gauge.id = current;
+    function addTranche(uint256 count) public onlyOwner {
+        require(count > 0, "EMPTY_TRANCHE");
+        uint256 current = ++currentTrancheId;
+        uint256[] memory gaugeIds = new uint256[](0);
+        for(uint256 i = 0; i < count; i++) {
+            gaugeIds[i] = addGauge();
+        }
+        tranches[current] = gaugeIds;
 
-    //     emit NewGauge(current);
-    // }
+        emit NewTranche(current, gaugeIds);
+    }
+
+    function addTranche(uint256 count, uint256 threshold) public onlyOwner {
+        require(count > 0, "EMPTY_TRANCHE");
+        uint256 current = ++currentTrancheId;
+        uint256[] memory gaugeIds = new uint256[](0);
+        for(uint256 i = 0; i < count; i++) {
+            addGauge(threshold);
+        }
+        tranches[current] = gaugeIds;
+
+        emit NewTranche(current, gaugeIds);
+    }
+
+    /// @notice Adds a new gauge with no convictions
+    function addGauge() public onlyOwner returns (uint256) {
+        uint256 current = ++currentGaugeId;
+        Gauge storage gauge = gauges[current]; // gauges start from 1...
+        gauge.id = current;
+
+        emit NewGauge(current);
+
+        return current;
+    }
 
     /// @notice Adds a new gauge with a threshold
     /// @param threshold the value of the threshold requested
-    function addGauge(uint256 threshold) public onlyOwner {
+    function addGauge(uint256 threshold) public onlyOwner returns (uint256) {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
         gauge.id = current;
         gauge.threshold = threshold;
 
         emit NewGauge(current);
+
+        return current;
     }
 
     /// @notice Adds conviction to a gauge
