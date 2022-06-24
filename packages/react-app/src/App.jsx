@@ -28,7 +28,7 @@ import externalContracts from "./contracts/external_contracts";
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, Home, Proposals, Stewards, Subgraph } from "./views";
+import { Dashboard, Home, Proposals, ProposalImport, Stewards, Subgraph } from "./views";
 import ProposalDetail from "./views/ProposalDetail";
 
 const { ethers } = require("ethers");
@@ -277,6 +277,9 @@ function App(props) {
         <Menu.Item key="/subgraph">
           <Link to="/subgraph">Subgraph</Link>
         </Menu.Item>
+        <Menu.Item key="/proposal-import">
+          <Link to="/proposal-import">Import</Link>
+        </Menu.Item>
       </Menu>
 
       <Switch>
@@ -326,6 +329,9 @@ function App(props) {
             writeContracts={writeContracts}
             mainnetProvider={mainnetProvider}
           />
+        </Route>
+        <Route path="/proposal-import">
+          <ProposalImport />
         </Route>
       </Switch>
 

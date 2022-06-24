@@ -1,8 +1,7 @@
 import { Col, Row } from "antd";
-import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ProposalLane } from "../components";
-import { getLatestPosts, getSinglePost, sayHello } from "../helpers";
+import { getSingleProposalData, getAllPropsalData, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
@@ -60,18 +59,18 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
 
   //getPost("27410");
 
-  const getProposals = async () => {
+  const getAllProposals = async () => {
     try {
-      const proposalResponse = await axios.get(server + "/api/proposals");
-      if (proposalResponse.data.success) {
-        setProposals(proposalResponse.data.data);
-      }
+      getAllPropsalData({}).then(res => {
+        console.log("Proposals: ", res);
+        // setProposals(res);
+      });
     } catch (e) {
       console.error(e);
     }
   };
 
-  // getProposals();
+  // getAllProposals();
 
   // sayHello();
 
