@@ -1,5 +1,6 @@
 import { Col, Modal, Row } from "antd";
 import React, { useState } from "react";
+// import { OptionEditor } from "../components";
 
 const OptionModal = ({ isVisible, handleCancel, proposal, submitOption, allowance }) => {
   // todo: update the staked values offchain
@@ -34,7 +35,10 @@ const OptionModal = ({ isVisible, handleCancel, proposal, submitOption, allowanc
           <div className="mb-9">
             <span className="mb-2">Option Description</span>
             <br />
-            <input id="option-description" className="w-full" type="text" value={option.description} />
+            <textarea id="option-description" className="w-full text-black" rows="10" value={option.description}>
+              Enter details of option here...
+            </textarea>
+            {/* <OptionEditor />*/}
           </div>
           <div className="mb-9">
             <span className="mb-2">Amount Requested</span>

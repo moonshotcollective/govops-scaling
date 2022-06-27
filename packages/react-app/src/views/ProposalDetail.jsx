@@ -161,6 +161,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
       posted: "5d ago",
       updated: "",
       version: "1",
+      amended: false,
       comments: [
         { comment: "", by: "" },
         { comment: "", by: "" },
@@ -182,6 +183,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
       posted: "3d ago",
       updated: "",
       version: "1",
+      amended: false,
       comments: [
         { comment: "", by: "" },
         { comment: "", by: "" },
@@ -203,6 +205,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
       posted: "3d ago",
       updated: "",
       version: "1",
+      amended: false,
       comments: [
         { comment: "", by: "" },
         { comment: "", by: "" },

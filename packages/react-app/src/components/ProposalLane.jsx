@@ -1,5 +1,5 @@
-import { FallOutlined, QuestionOutlined, RiseOutlined } from "@ant-design/icons";
-import { Avatar, Card, Col, Progress, Row } from "antd";
+import { CommentOutlined, FallOutlined, QuestionOutlined, RiseOutlined } from "@ant-design/icons";
+import { Avatar, Card, Col, Divider, Progress, Row } from "antd";
 import React, { useRef, useState } from "react";
 import Draggable from "react-draggable";
 
@@ -69,28 +69,37 @@ const ProposalLane = ({ title, proposals, workstream }) => {
                       />,
                     ]}
                   >
-                    <Meta
-                      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={item.title}
-                      description="description"
-                    />
-                    {/* Add score here */}
-                    Reviewed By: {item.reviewedBy.length + "/5 stewards"}
-                    <br />
-                    Posted: {item.posted}
-                    <br />
-                    Version: {item.version}
-                    <br />
-                    {item.comments.length} comments
-                    <br />
-                    Last comment: {item.lastComment.by}
-                    <hr />
+                    <Meta avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />} title={item.title} />
+                    <div className="mt-3">
+                      <Row>
+                        <Col span={12}>
+                          <span>by: {item.author}</span>
+                          <br />
+                        </Col>
+                        <Col span={12} className="text-right">
+                          <span className="p-2">{item.comments.length}</span>
+                          <CommentOutlined className="" />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={24}>
+                          <span className="text-gray-500">Last Comment</span>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={24}>
+                          {/* todo: make this a modal link that will show the last comment made */}
+                          <span className="">{item.comments[item.comments.length - 1].by}</span>
+                        </Col>
+                      </Row>
+                    </div>
+                    <Divider>Options</Divider>
                     {proposals[index].options.map((item, index) => {
                       // console.log(item);
                       return (
                         <div key={index}>
                           <span>Option {item.id} </span>
-                          <span className="text-right">CGTC {item.amount}</span>
+                          <span className="text-right"> | CGTC {item.amount}</span>
                           <Progress
                             strokeColor={{
                               "0%": "#108ee9",

@@ -69,6 +69,9 @@ const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcbala
           <div id="subtitle" className="text-center">
             Your CGTC Balance: {ethers.utils.formatEther(cgtcbalance.toString())}
           </div>
+          <div id="subtitle" className="text-center">
+            Your Staked CGTC Balance: {ethers.utils.formatEther("0")}
+          </div>
         </div>
       )}
     </Modal>
