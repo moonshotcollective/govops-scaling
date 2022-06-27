@@ -16,6 +16,7 @@ const ProposalImport = () => {
       getSinglePost(id).then(res => {
         console.log(res);
         setPost(res.data.data);
+        setProposal(res.data.data);
       });
     } catch (error) {
       console.error(error);
@@ -39,6 +40,10 @@ const ProposalImport = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const saveProposalToDatabase = () => {
+    createProposalNoOptions(proposal);
   };
 
   return (
@@ -95,6 +100,7 @@ const ProposalImport = () => {
                 className="bg-purple-600 p-4 w-96 hover:bg-purple-400"
                 onClick={() => {
                   console.log("Saving...");
+                  saveProposalToDatabase();
                 }}
               >
                 Save

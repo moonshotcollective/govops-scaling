@@ -393,7 +393,7 @@ function App(props) {
           </Col>
         </Row> */}
 
-        <Row align="middle" gutter={[4, 4]}>
+        {/* <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
             {faucetAvailable ? (
               <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
@@ -401,7 +401,7 @@ function App(props) {
               ""
             )}
           </Col>
-        </Row>
+        </Row> */}
       </div>
     </div>
   );

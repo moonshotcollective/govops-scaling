@@ -1,20 +1,22 @@
 import { Col, Row } from "antd";
 import React, { useState } from "react";
 import { ProposalLane } from "../components";
-import { getSingleProposalData, getAllPropsalData, getSinglePost } from "../helpers";
+import { getAllPropsalData, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
-//! Developer notes: a gaugeId will equal the proposalId, they are the same.
+//! Developer notes: a gaugeId will equal the proposalId
 const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   const workstream = ["Public Goods Funding", "MMM", "Moonshot Collective", "FDD", "DAO Operations", "Kernel"];
 
   const [latestPosts, setLatestPosts] = useState();
   const [currentPost, setCurrentPost] = useState();
+  const [posts, setPosts] = useState([]);
   const [proposals, setProposals] = useState([
     {
       id: 1,
-      title: "GR14 Round Structure",
+      title: "GR14 Round Structure & Grants Eligibility Update",
+      author: "annikalewis",
       reviewedBy: [{ steward: "" }],
       posted: "5d ago",
       updated: "",
@@ -25,10 +27,18 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
       ],
       lastComment: { comment: "This is awesome", by: "jaxcoder" },
       workstream: workstream[0],
+      options: [
+        { id: "A", amount: 123456, convictionScore: 38 },
+        { id: "B", amount: 8765457, convictionScore: 52 },
+        { id: "C", amount: 290634, convictionScore: 79 },
+        { id: "D", amount: 146794, convictionScore: 85 },
+      ],
+      contentRaw: "",
     },
     {
       id: 2,
-      title: "MMM Budget Request",
+      title: "Decentralize Gitcoin Kudos - budget request",
+      author: "cerestation",
       reviewedBy: [{ steward: "" }],
       posted: "3d ago",
       updated: "",
@@ -39,6 +49,35 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
       ],
       lastComment: { comment: "Leeeeettttt's Goooo", by: "gtchase" },
       workstream: workstream[1],
+      options: [
+        { id: "A", amount: 123456, convictionScore: 38 },
+        { id: "B", amount: 8765457, convictionScore: 52 },
+        { id: "C", amount: 290634, convictionScore: 79 },
+        { id: "D", amount: 146794, convictionScore: 85 },
+      ],
+      contentRaw: "",
+    },
+    {
+      id: 3,
+      title: "KERNEL Budget Request of 49K GTC",
+      author: "viveksingh",
+      reviewedBy: [{ steward: "" }],
+      posted: "3d ago",
+      updated: "",
+      version: "1",
+      comments: [
+        { comment: "", by: "" },
+        { comment: "", by: "" },
+      ],
+      lastComment: { comment: "Leeeeettttt's Goooo", by: "gtchase" },
+      workstream: workstream[5],
+      options: [
+        { id: "A", amount: 123456, convictionScore: 38 },
+        { id: "B", amount: 8765457, convictionScore: 52 },
+        { id: "C", amount: 290634, convictionScore: 79 },
+        { id: "D", amount: 146794, convictionScore: 85 },
+      ],
+      contentRaw: "",
     },
   ]);
 
@@ -80,20 +119,27 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
         <Col className="p-1" span={12}>
           <Row>
             <Col span={8}>
-              <span className="text-left text-6xl">Proposals</span>
+              <span className="text-left text-5xl">Proposals</span>
             </Col>
-            <Col span={8}></Col>
-            <Col span={8}></Col>
           </Row>
           <Row>
-            <Col span={8}>test</Col>
-            <Col span={8}></Col>
-            <Col span={8}></Col>
+            <Col span={8}>
+              <span className="text-left text-3xl">Stats</span>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={8}>
+              <span className="text-left text-sm">This Round Total</span>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={8}>
+              <span className="text-left text-xl">123,456 GTC</span>
+              <span>(+13.6% from last round)</span>
+            </Col>
           </Row>
         </Col>
-        <Col className="p-1 border-2" span={12}>
-          sorting/filters
-        </Col>
+        <Col className="p-1" span={12}></Col>
       </Row>
       <div className="p-2 h-screen border-2 border-purple-700 rounded bg-purple-700">
         <ProposalLane title={workstream[0]} proposals={proposals} workstream={workstream[0]} />

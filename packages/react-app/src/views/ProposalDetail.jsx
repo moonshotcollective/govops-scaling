@@ -154,34 +154,67 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
   //! dummy proposals
   const proposals = [
     {
+      id: 1,
       title: "GR14 Round Structure & Grants Eligibility Update",
       author: "annikalewis",
+      reviewedBy: [{ steward: "" }],
+      posted: "5d ago",
+      updated: "",
+      version: "1",
+      comments: [
+        { comment: "", by: "" },
+        { comment: "", by: "" },
+      ],
+      lastComment: { comment: "This is awesome", by: "jaxcoder" },
       options: [
         { id: "A", amount: 123456, convictionScore: 38 },
         { id: "B", amount: 8765457, convictionScore: 52 },
         { id: "C", amount: 290634, convictionScore: 79 },
         { id: "D", amount: 146794, convictionScore: 85 },
       ],
+      contentRaw: "",
     },
     {
+      id: 2,
       title: "Decentralize Gitcoin Kudos - budget request",
       author: "cerestation",
+      reviewedBy: [{ steward: "" }],
+      posted: "3d ago",
+      updated: "",
+      version: "1",
+      comments: [
+        { comment: "", by: "" },
+        { comment: "", by: "" },
+      ],
+      lastComment: { comment: "Leeeeettttt's Goooo", by: "gtchase" },
       options: [
         { id: "A", amount: 123456, convictionScore: 38 },
         { id: "B", amount: 8765457, convictionScore: 52 },
         { id: "C", amount: 290634, convictionScore: 79 },
         { id: "D", amount: 146794, convictionScore: 85 },
       ],
+      contentRaw: "",
     },
     {
+      id: 3,
       title: "KERNEL Budget Request of 49K GTC",
       author: "viveksingh",
+      reviewedBy: [{ steward: "" }],
+      posted: "3d ago",
+      updated: "",
+      version: "1",
+      comments: [
+        { comment: "", by: "" },
+        { comment: "", by: "" },
+      ],
+      lastComment: { comment: "Leeeeettttt's Goooo", by: "gtchase" },
       options: [
         { id: "A", amount: 123456, convictionScore: 38 },
         { id: "B", amount: 8765457, convictionScore: 52 },
         { id: "C", amount: 290634, convictionScore: 79 },
         { id: "D", amount: 146794, convictionScore: 85 },
       ],
+      contentRaw: "",
     },
   ];
 
@@ -194,7 +227,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
 
   return (
     <div>
-      <Row>
+      <Row id="header">
         <Col span={8} className="">
           <button
             className="text-left p-3 m-3 bg-purple-600 hover:bg-purple-400"
@@ -212,20 +245,20 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
           <span></span>
         </Col>
       </Row>
-      <Row>
+      <Row id="main">
         {/* Left side */}
         <Col span={12}>
           <Row className="mt-5">
             <Col span={24} className="text-4xl mt-4 ml-4">
-              Title content
+              {proposals[id - 1].title}
             </Col>
           </Row>
           <Row className="mt-4 ml-5">
-            <Col span={8}>
-              <span>by annikalewis</span>
+            <Col span={7}>
+              <span>{proposals[id - 1].author}</span>
             </Col>
-            <Col span={8}>
-              <span>Posted Jun 6, 2022 | 15d</span>
+            <Col span={8} className="mr-8">
+              <span>Posted {proposals[id - 1].posted}</span>
             </Col>
             <Col span={8}>
               <a href="https://gov.gitcoin.co/">View on Forum</a>

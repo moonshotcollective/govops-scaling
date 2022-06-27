@@ -1,5 +1,5 @@
 import { FallOutlined, QuestionOutlined, RiseOutlined } from "@ant-design/icons";
-import { Avatar, Card, Col, Row } from "antd";
+import { Avatar, Card, Col, Progress, Row } from "antd";
 import React, { useRef, useState } from "react";
 import Draggable from "react-draggable";
 
@@ -37,7 +37,7 @@ const ProposalLane = ({ title, proposals, workstream }) => {
         <span className="">{title}</span>
         <span className=""> ({proposals.workstream === workstream ? 0 : 0})</span>
         <Draggable onStart={() => onStart()}>
-          <div className="w-96">
+          <div className="w-4/12">
             {proposals.map((item, index) => {
               if (item.workstream === workstream) {
                 return (
@@ -84,6 +84,27 @@ const ProposalLane = ({ title, proposals, workstream }) => {
                     {item.comments.length} comments
                     <br />
                     Last comment: {item.lastComment.by}
+                    <hr />
+                    {proposals[index].options.map((item, index) => {
+                      // console.log(item);
+                      return (
+                        <div key={index}>
+                          <span>Option {item.id} </span>
+                          <span className="text-right">CGTC {item.amount}</span>
+                          <Progress
+                            strokeColor={{
+                              "0%": "#108ee9",
+                              "100%": "#87d068",
+                            }}
+                            percent={item.convictionScore}
+                            type="line"
+                            size="small"
+                            status="active"
+                          />
+                          <br />
+                        </div>
+                      );
+                    })}
                   </Card>
                 );
               } else {
