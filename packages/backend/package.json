@@ -19,5 +19,12 @@
     "graphql": "^16.5.0",
     "https": "^1.0.0",
     "mongoose": "^6.3.6"
+  },
+  "devDependencies": {
+    "@babel/eslint-plugin": "^7.17.7",
+    "eslint": "^8.18.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "prettier": "^2.7.1"
   }
 }
