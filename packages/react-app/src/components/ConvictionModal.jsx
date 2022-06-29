@@ -3,12 +3,12 @@ import { Col, Modal, Row, Switch } from "antd";
 import { ethers } from "ethers";
 import React, { useState } from "react";
 
-const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcbalance, submitConviction, allowance }) => {
+const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcBalance, submitConviction, allowance }) => {
   // todo: update the staked values offchain
   const updateValuesCallback = async id => {};
 
   const [action, setAction] = useState(true);
-  const [option, setOption] = useState("");
+  const [optionsFunded, setOptionsFunded] = useState([]);
 
   const onSwitchChange = e => {
     setAction(e);
@@ -19,13 +19,11 @@ const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcbala
       title="Your Conviction"
       visible={isVisible}
       onCancel={handleCancel}
-      okText="Submit"
+      okText={allowance > 0 ? "Submit" : "Approve"}
       okButtonProps={{
-        onClick: () => {
-          submitConviction(action, option);
-        },
         style: { width: "400px" },
       }}
+      onOk={() => submitConviction(action, optionsFunded)}
     >
       {action ? (
         <div>
@@ -44,7 +42,7 @@ const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcbala
             How much would you like to stake?
           </div>
           <div id="subtitle" className="text-center">
-            Your CGTC Balance: {ethers.utils.formatEther(cgtcbalance.toString())}
+            Your CGTC Balance: {ethers.utils.formatEther(cgtcBalance.toString())}
           </div>
           <div>
             {proposal.options.map((item, index) => {
@@ -67,7 +65,7 @@ const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcbala
             Unstake all of your convictions
           </div>
           <div id="subtitle" className="text-center">
-            Your CGTC Balance: {ethers.utils.formatEther(cgtcbalance.toString())}
+            Your CGTC Balance: {ethers.utils.formatEther(cgtcBalance.toString())}
           </div>
           <div id="subtitle" className="text-center">
             Your Staked CGTC Balance: {ethers.utils.formatEther("0")}

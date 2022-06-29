@@ -1,5 +1,6 @@
 import { Col, Row } from "antd";
-import React, { useState } from "react";
+import { ethers } from "ethers";
+import React, { useEffect, useState } from "react";
 import { ProposalLane } from "../components";
 import { getAllPropsalData, getSinglePost } from "../helpers";
 
@@ -84,6 +85,8 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
       contentRaw: "",
     },
   ]);
+  const [gtcBalance, setGtcBalance] = useState(0);
+  const [cgtcBalance, setCgtcBalance] = useState(0);
 
   // Discourse integration
   // useEffect(() => {
@@ -117,6 +120,27 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
 
   // sayHello();
 
+  // Get balances of tokens used
+  useEffect(() => {
+    const getGtcBalance = () => {
+      readContracts?.GTC?.balanceOf(address).then(result => {
+        setGtcBalance(result.toString());
+      });
+    };
+
+    getGtcBalance();
+  }, [address]);
+
+  useEffect(() => {
+    const getCgtcBalance = () => {
+      readContracts?.CGTC?.balanceOf(address).then(result => {
+        setCgtcBalance(result.toString());
+      });
+    };
+
+    getCgtcBalance();
+  }, [address]);
+
   return (
     <div className="">
       <Row className="p-1">
@@ -143,15 +167,55 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
             </Col>
           </Row>
         </Col>
-        <Col className="p-1" span={12}></Col>
+        <Col className="p-1" span={12}>
+          GTC Balance: {ethers.utils.formatEther(gtcBalance.toString())}
+          <br />
+          CGTC Balance: {ethers.utils.formatEther(cgtcBalance.toString())}
+        </Col>
       </Row>
       <div className="p-2 h-screen border-2 border-purple-700 rounded bg-purple-700">
-        <ProposalLane title={workstream[0]} proposals={proposals} workstream={workstream[0]} />
-        <ProposalLane title={workstream[1]} proposals={proposals} workstream={workstream[1]} />
-        <ProposalLane title={workstream[2]} proposals={proposals} workstream={workstream[2]} />
-        <ProposalLane title={workstream[3]} proposals={proposals} workstream={workstream[3]} />
-        <ProposalLane title={workstream[4]} proposals={proposals} workstream={workstream[4]} />
-        <ProposalLane title={workstream[5]} proposals={proposals} workstream={workstream[5]} />
+        <ProposalLane
+          title={workstream[0]}
+          proposals={proposals}
+          workstream={workstream[0]}
+          cgtcBalance={cgtcBalance}
+          gtcBalance={gtcBalance}
+        />
+        <ProposalLane
+          title={workstream[1]}
+          proposals={proposals}
+          workstream={workstream[1]}
+          cgtcBalance={cgtcBalance}
+          gtcBalance={gtcBalance}
+        />
+        <ProposalLane
+          title={workstream[2]}
+          proposals={proposals}
+          workstream={workstream[2]}
+          cgtcBalance={cgtcBalance}
+          gtcBalance={gtcBalance}
+        />
+        <ProposalLane
+          title={workstream[3]}
+          proposals={proposals}
+          workstream={workstream[3]}
+          cgtcBalance={cgtcBalance}
+          gtcBalance={gtcBalance}
+        />
+        <ProposalLane
+          title={workstream[4]}
+          proposals={proposals}
+          workstream={workstream[4]}
+          cgtcBalance={cgtcBalance}
+          gtcBalance={gtcBalance}
+        />
+        <ProposalLane
+          title={workstream[5]}
+          proposals={proposals}
+          workstream={workstream[5]}
+          cgtcBalance={cgtcBalance}
+          gtcBalance={gtcBalance}
+        />
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import Draggable from "react-draggable";
 
 const { Meta } = Card;
 
-const ProposalLane = ({ title, proposals, workstream }) => {
+const ProposalLane = ({ title, proposals, workstream, cgtcBalance, gtcBalance }) => {
   const [bounds, setBounds] = useState({
     left: 0,
     top: 0,

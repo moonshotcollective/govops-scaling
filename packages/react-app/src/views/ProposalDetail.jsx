@@ -10,11 +10,11 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
   const [gaugeDetails, setGaugeDetails] = useState({});
   const [totalStakedForProposal, setTotalStakedForProposal] = useState(0);
   const [proposalId, setProposalId] = useState();
-  const [cgtcbalance, setCgtcbalance] = useState(0);
+  const [cgtcBalance, setCgtcBalance] = useState(0);
+  const [gtcBalance, setGtcBalance] = useState(0);
   const [convictionLoading, setConvictionLoading] = useState(false);
   const [allowance, setAllowance] = useState(0);
   const [loadingApprove, setLoadingApprove] = useState(false);
-  const [cgtcBalance, setCgtcBalance] = useState(0);
   const [isSteward, setIsSteward] = useState(false);
 
   // modal state vars
@@ -60,8 +60,8 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
   };
 
   const getCgtcBalance = () => {
-    readContracts?.GTC?.balanceOf(address ? address : "").then(result => {
-      setCgtcBalance(result.toString());
+    readContracts?.CGTC?.balanceOf(address).then(result => {
+      setCgtcBalance(result);
     });
   };
 
@@ -228,6 +228,29 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
 
   const deleteOption = () => {};
 
+  // Get balances of tokens used
+  useEffect(() => {
+    const getGtcBalance = () => {
+      readContracts?.GTC?.balanceOf(address).then(result => {
+        setGtcBalance(result.toString());
+        console.log(result);
+      });
+    };
+
+    getGtcBalance();
+  }, [address, readContracts?.GTC]);
+
+  useEffect(() => {
+    const getCgtcBalance = () => {
+      readContracts?.CGTC?.balanceOf(address).then(result => {
+        setCgtcBalance(result.toString());
+        console.log(result);
+      });
+    };
+
+    getCgtcBalance();
+  }, [address, readContracts?.CGTC]);
+
   return (
     <div>
       <Row id="header">
@@ -318,7 +341,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         <Col span={12}>
           <Row>
             <Col span={23} className="mt-11 mr-4 pr-4">
-              {!isSteward ? (
+              {isSteward ? (
                 <button className="w-full p-3 bg-purple-600 hover:bg-purple-400" onClick={() => showOModal()}>
                   Add Option
                 </button>
@@ -346,7 +369,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         isVisible={showConvictionModal}
         handleCancel={handleCancel}
         proposal={proposals[id - 1]}
-        cgtcbalance={cgtcbalance}
+        cgtcBalance={cgtcBalance}
         submitOption={submitConviction}
         allowance={allowance}
       />
@@ -354,7 +377,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         isVisible={showOptionModal}
         handleCancel={handleCancel}
         proposal={proposals[id - 1]}
-        cgtcbalance={cgtcbalance}
+        cgtcBalance={cgtcBalance}
         submitOption={submitOption}
         allowance={allowance}
       />
