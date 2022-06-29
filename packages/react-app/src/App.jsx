@@ -1,4 +1,4 @@
-import { Menu } from "antd";
+import { Col, Menu, Row } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -11,15 +11,25 @@ import {
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
-import "./App.css";
-import { Account, Contract, FaucetHint, Header, NetworkDisplay, NetworkSwitch, ThemeSwitch } from "./components";
+// import "./App.css";
+import {
+  Account,
+  Contract,
+  Faucet,
+  FaucetHint,
+  Header,
+  NetworkDisplay,
+  NetworkSwitch,
+  ThemeSwitch,
+} from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, Home, Proposals, Stewards, Subgraph } from "./views";
+import { Dashboard, Home, Proposals, ProposalImport, Stewards, Subgraph } from "./views";
+import ProposalDetail from "./views/ProposalDetail";
 
 const { ethers } = require("ethers");
 /*
@@ -267,6 +277,9 @@ function App(props) {
         <Menu.Item key="/subgraph">
           <Link to="/subgraph">Subgraph</Link>
         </Menu.Item>
+        <Menu.Item key="/proposal-import">
+          <Link to="/proposal-import">Import</Link>
+        </Menu.Item>
       </Menu>
 
       <Switch>
@@ -282,6 +295,9 @@ function App(props) {
         </Route> */}
         <Route exact path="/proposals">
           <Proposals address={address} readContracts={readContracts} writeContracts={writeContracts} tx={tx} />
+        </Route>
+        <Route path="/proposalDetail/:id" children={<ProposalDetail />}>
+          <ProposalDetail tx={tx} address={address} writeContracts={writeContracts} readContracts={readContracts} />
         </Route>
         <Route exact path="/stewards">
           <Stewards />
@@ -313,6 +329,9 @@ function App(props) {
             writeContracts={writeContracts}
             mainnetProvider={mainnetProvider}
           />
+        </Route>
+        <Route path="/proposal-import">
+          <ProposalImport />
         </Route>
       </Switch>
 
@@ -376,13 +395,11 @@ function App(props) {
 
         {/* <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
-            {
-              faucetAvailable ? (
-                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
-              ) : (
-                ""
-              )
-            }
+            {faucetAvailable ? (
+              <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+            ) : (
+              ""
+            )}
           </Col>
         </Row> */}
       </div>
