@@ -5,10 +5,11 @@ const server = "https://gov.gitcoin.co/";
 // "https://gov.gitcoin.co/posts/{id}.json";
 
 const express = require("express");
-var { graphqlHTTP } = require("express-graphql");
-var { buildSchema } = require("graphql");
+const { graphqlHTTP } = require("express-graphql");
+const { buildSchema } = require("graphql");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+
 const app = express();
 const apiPort = 4001;
 const { connection, collections } = require("./db");
@@ -22,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // construct a schema
-var schema = buildSchema(`
+const schema = buildSchema(`
   type Query {
     hello: String
     gaugeScore: Int
@@ -30,12 +31,10 @@ var schema = buildSchema(`
 `);
 
 // the root provides a resolver function for each api endpoint
-var root = {
-  hello: () => {
-    return "Hello Jason";
-  },
+const root = {
+  hello: () => "Hello Jason",
   gaugeScore: ({ ID }) => {
-    let score = 0;
+    const score = 0;
     // fetch the gauge score using the id...
 
     return score;
@@ -65,7 +64,7 @@ app.use("/api", proposalRouter);
 app.use(
   "/graphql",
   graphqlHTTP({
-    schema: schema,
+    schema,
     rootValue: root,
     graphiql: true,
   })
@@ -82,9 +81,9 @@ app.get("/api/post/:ID", async (req, res) => {
   try {
     console.log("Fetching post ", req.query.ID);
     const id = req.query.ID;
-    const response = await instance.get(server + `posts/${id}.json`);
+    const response = await instance.get(`${server}posts/${id}.json`);
     const result = {
-      status: response.status + "-" + response.statusText,
+      status: `${response.status}-${response.statusText}`,
       headers: response.headers,
       data: response.data,
     };
@@ -111,9 +110,9 @@ app.get("/api/post/:ID", async (req, res) => {
 // Get latest posts
 app.get("/api/posts/", async (req, res) => {
   try {
-    const response = await instance.get(server + `posts/`);
+    const response = await instance.get(`${server}posts/`);
     const result = {
-      status: response.status + "-" + response.statusText,
+      status: `${response.status}-${response.statusText}`,
       headers: response.headers,
       data: response.data,
     };
@@ -140,10 +139,10 @@ app.get("/api/posts/", async (req, res) => {
 // Fetch all relplies for a single Post
 app.get("/api/post/replies/", async (req, res) => {
   instance
-    .get(server + `posts/${req.query.ID}/replies.json`)
+    .get(`${server}posts/${req.query.ID}/replies.json`)
     .then((response) => {
       const result = {
-        status: response.status + "-" + response.statusText,
+        status: `${response.status}-${response.statusText}`,
         headers: response.headers,
         data: response.data,
       };
