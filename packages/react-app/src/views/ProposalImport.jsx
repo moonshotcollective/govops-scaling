@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getSinglePost } from "../helpers";
 
-const server = "";
+const server = "http://localhost:4001";
 
 const ProposalImport = () => {
   const [proposal, setProposal] = useState({});
@@ -23,19 +23,25 @@ const ProposalImport = () => {
     }
   };
 
-  useEffect(() => {}, [proposal]);
+  useEffect(() => {
+    importProposal(proposal.id);
+  }, [proposal.id]);
 
   // Calls to database
-  const createProposalNoOptions = async ({ proposal }) => {
+  const createProposalNoOptions = async proposal => {
     try {
+      console.log(proposal);
       const res = await axios.post(`${server}/api/proposal`, {
         id: proposal.id,
-        title: proposal.title,
-        contentRaw: proposal.contentRaw,
+        topic_slug: proposal.topic_slug,
+        raw: proposal.raw,
+        latestActivity: [],
         score: proposal.score,
         staked: proposal.staked,
         options: [],
       });
+
+      console.log(res);
       return res;
     } catch (error) {
       console.error(error);

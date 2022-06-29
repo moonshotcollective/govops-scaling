@@ -4,8 +4,8 @@ createProposal = (req, res) => {
   Proposal.create(
     {
       id: req.body.id,
-      title: req.body.title,
-      contentRaw: req.body.contentRaw,
+      title: req.body.topic_slug,
+      contentRaw: req.body.raw,
       latestActivity: req.body.latestActivity,
       score: req.body.score,
       staked: req.body.staked,
@@ -27,8 +27,8 @@ updateProposal = async (req, res) => {
     { _id: req.body.id },
     {
       id: req.body.id,
-      title: req.body.title,
-      contentRaw: req.body.contentRaw,
+      title: req.body.topic_slug,
+      contentRaw: req.body.cooked,
       latestActivity: req.body.latestActivity,
       score: req.body.score,
       staked: req.body.staked,
