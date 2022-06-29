@@ -1,7 +1,7 @@
 const Steward = require("../models/steward-model");
 
-createSteward = (req, res) => {
-  Steward.create(
+createSteward = async (req, res) => {
+  await Steward.create(
     {
       id: req.query.address,
       name: req.query.name,

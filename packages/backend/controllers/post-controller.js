@@ -1,9 +1,7 @@
 const Post = require("../models/post-model");
 
-getPost = (req, res) => {
-    
-}
+getPost = async (req, res) => {};
 
 module.exports = {
-    getPost,
-}
+  getPost,
+};
