@@ -1,7 +1,7 @@
 const Proposal = require("../models/proposal-model");
 
-createProposal = (req, res) => {
-  Proposal.create(
+createProposal = async (req, res) => {
+  await Proposal.create(
     {
       id: req.query.id,
       title: req.query.title,
