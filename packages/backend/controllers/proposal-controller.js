@@ -7,8 +7,8 @@ createProposal = async (req, res) => {
       title: req.body.topic_slug,
       contentRaw: req.body.raw,
       latestActivity: req.body.latestActivity,
-      score: req.body.score,
-      staked: req.body.staked,
+      // score: req.body.score,
+      // staked: req.body.staked,
       options: req.body.options,
     },
     (err) => {
@@ -30,8 +30,8 @@ updateProposal = async (req, res) => {
       title: req.body.topic_slug,
       contentRaw: req.body.raw,
       latestActivity: req.body.latestActivity,
-      score: req.body.score,
-      staked: req.body.staked,
+      // score: req.body.score,
+      // staked: req.body.staked,
       options: req.body.options,
     },
     (err, proposal) => {

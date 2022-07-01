@@ -36,8 +36,8 @@ const ProposalImport = () => {
         topic_slug: proposal.topic_slug,
         raw: proposal.raw,
         latestActivity: [],
-        score: proposal.score,
-        staked: proposal.staked,
+        // score: proposal.score,
+        // staked: proposal.staked,
         options: [],
       });
 
