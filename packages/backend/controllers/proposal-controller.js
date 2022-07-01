@@ -28,13 +28,21 @@ updateProposal = async (req, res) => {
     {
       id: req.body.id,
       title: req.body.topic_slug,
-      contentRaw: req.body.cooked,
+      contentRaw: req.body.raw,
       latestActivity: req.body.latestActivity,
       score: req.body.score,
       staked: req.body.staked,
       options: req.body.options,
+    },
+    (err, proposal) => {
+      if (err) {
+        return res.status(400).json({ success: false, error: err });
+      }
+      return res.status(200).json({ success: true, data: proposal });
     }
-  );
+  )
+    .clone()
+    .catch((err) => console.error(err));
 };
 
 updateProposalOptions = async (req, res) => {
