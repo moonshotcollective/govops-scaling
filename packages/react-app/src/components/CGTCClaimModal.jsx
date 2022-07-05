@@ -1,16 +1,34 @@
-import { Modal } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { Modal, notification } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 
-const CGTCClaimModal = ({ isVisible, handleCancel, cgtcBalance, address, readContracts }) => {
+const CGTCClaimModal = ({ isVisible, handleCancel, cgtcBalance, address, readContracts, writeContracts, tx }) => {
   const [gtcBalance, setGtcBalance] = useState(0);
   const [delegatedGtcBalance, setDelegatedGtcBalance] = useState(0);
   const [isClaimLoading, setIsClaimLoading] = useState(false);
 
-  const claimTokens = () => {
+  const claimTokens = async () => {
     setIsClaimLoading(true);
-
-    setIsClaimLoading(false);
+    tx(writeContracts?.CGTC?.claimTokens(), async update => {
+      if (update && (update.status === "confirmed" || UploadOutlined.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.success({
+          placement: "topRight",
+          message: "You have claimed your CGTC 💃",
+        });
+        setIsClaimLoading(false);
+      }
+    });
   };
 
   // Loads up the balance of GTC in wallet

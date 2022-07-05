@@ -402,6 +402,8 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         cgtcBalance={cgtcBalance}
         address={address}
         readContracts={readContracts}
+        writeContracts={writeContracts}
+        tx={tx}
       />
     </div>
   );

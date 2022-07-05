@@ -18,6 +18,7 @@ export { default as L2Bridge } from "./L2Bridge";
 export { default as MultiAddressInput } from "./MultiAddressInput";
 export { default as NetworkDisplay } from "./NetworkDisplay";
 export { default as NetworkSwitch } from "./NetworkSwitch";
+export { default as OptionComponent } from "./OptionComponent";
 export { default as OptionEditor } from "./OptionEditor";
 export { default as OptionModal } from "./OptionModal";
 export { default as ProposalLane } from "./ProposalLane";
