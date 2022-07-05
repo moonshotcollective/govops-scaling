@@ -78,7 +78,12 @@ const ProposalLane = ({ title, proposals, workstream, cgtcBalance, gtcBalance })
                         </Col>
                         <Col span={12} className="text-right">
                           <span className="p-2">{item.comments.length}</span>
-                          <CommentOutlined className="" />
+                          <CommentOutlined
+                            className="cursor-pointer"
+                            onClick={() => {
+                              console.log("Comments Clicked");
+                            }}
+                          />
                         </Col>
                       </Row>
                       <Row>
