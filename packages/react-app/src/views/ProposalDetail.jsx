@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { CGTCClaimModal, ConvictionModal, OptionModal, ProposalOptions } from "../components";
 
-const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }) => {
+const ProposalDetail = ({ readContracts, writeContracts, address, tx, props }) => {
   const [amount, setAmount] = useState(0);
   const [isGaugeExecutable, setIsGaugeExecutable] = useState(false);
   const [gaugeDetails, setGaugeDetails] = useState({});

@@ -42,6 +42,7 @@ contract ConvictionVoting is Ownable {
 
     error BadGaugeId();
     error EmptyCount();
+    error EmptyTranche();
 
     struct Gauge {
         uint256 id;
@@ -67,7 +68,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
 
-    /// @notice Mapping of tranche to gauges
+    /// @notice Mapping of tranche to gauge ids
     mapping(uint256 => uint256[]) public tranches;
 
     /// @notice Mapping of conviction scores for a user
@@ -98,7 +99,7 @@ contract ConvictionVoting is Ownable {
     /// @notice Adds a new tranche with threshold-disabled gauges
     /// @param count the number of gauges to create
     function addTranche(uint256 count) public onlyOwner {
-        require(count > 0, "EMPTY_TRANCHE");
+        if(count == 0) revert EmptyTranche();
         uint256 current = ++currentTrancheId;
         uint256[] memory gaugeIds = new uint256[](0);
         for (uint256 i = 0; i < count; i++) {
@@ -113,7 +114,7 @@ contract ConvictionVoting is Ownable {
     /// @param count the number of gauges to create
     /// @param threshold the value of the threshold for each gauge
     function addTranche(uint256 count, uint256 threshold) public onlyOwner {
-        require(count > 0, "EMPTY_TRANCHE");
+        if(count == 0) revert EmptyTranche();
         uint256 current = ++currentTrancheId;
         uint256[] memory gaugeIds = new uint256[](0);
         for (uint256 i = 0; i < count; i++) {
@@ -316,9 +317,9 @@ contract ConvictionVoting is Ownable {
         external
         view
         returns (
-            uint256,
-            uint256,
-            uint256
+            uint256 currentConvictionId,
+            uint256 totalStake,
+            uint256 threshold
         )
     {
         Gauge storage gauge = gauges[gaugeId];

@@ -21,7 +21,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     });
     CGTC = await deploy("CGTC", {
       from: deployer,
-      args: [owner],
+      args: [owner, GTC.address],
       log: true,
     });
   }
