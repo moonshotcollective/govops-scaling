@@ -3,15 +3,49 @@ import { Col, Modal, Row, Switch } from "antd";
 import { ethers } from "ethers";
 import React, { useState } from "react";
 
-const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcBalance, submitConviction, allowance }) => {
+const ConvictionModal = ({
+  isVisible,
+  handleOk,
+  handleCancel,
+  proposal,
+  cgtcBalance,
+  submitConviction,
+  allowance,
+  tx,
+  readContracts,
+  writeContracts,
+  address,
+  setAllowance,
+  setLoadingApprove,
+  getCgtcBalance,
+  getGtcBalance,
+}) => {
   // todo: update the staked values offchain
-  const updateValuesCallback = async id => {};
+  const updateValuesCallback = async option => {
+    const optionToUpdate = proposal.options[option];
+    console.log("Updating... ", optionToUpdate);
+  };
 
   const [action, setAction] = useState(true);
   const [optionsFunded, setOptionsFunded] = useState([]);
 
   const onSwitchChange = e => {
     setAction(e);
+  };
+
+  const getApprovedAmount = async () => {
+    await readContracts?.CGTC?.allowance(address, readContracts?.ConvictionVoting?.address).then(result => {
+      console.log("Allowance: ", result.toString());
+      setAllowance(result.toString());
+    });
+  };
+
+  const approveCgtc = async amount => {
+    setLoadingApprove(true);
+    await tx(writeContracts?.CGTC?.approve(readContracts?.ConvictionVoting?.address, ethers.utils.parseEther(amount)));
+    getApprovedAmount();
+    getCgtcBalance();
+    setLoadingApprove(false);
   };
 
   return (
@@ -23,7 +57,13 @@ const ConvictionModal = ({ isVisible, handleOk, handleCancel, proposal, cgtcBala
       okButtonProps={{
         style: { width: "400px" },
       }}
-      onOk={() => submitConviction(action, optionsFunded)}
+      onOk={() => {
+        if (allowance === 0) {
+          approveCgtc("10000");
+        } else if (allowance > 0) {
+          submitConviction(action, optionsFunded);
+        }
+      }}
     >
       {action ? (
         <div>
@@ -88,7 +128,7 @@ const Option = ({ values, updateValuesCallback }) => {
           value={amount}
           onChange={e => {
             setAmount(e.target.value);
-            updateValuesCallback(values.id);
+            updateValuesCallback(values.options[0]);
           }}
         />
         <span className="ml-2">CGTC</span>

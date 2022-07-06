@@ -10,7 +10,7 @@ const CGTCClaimModal = ({ isVisible, handleCancel, cgtcBalance, address, readCon
 
   const claimTokens = async () => {
     setIsClaimLoading(true);
-    tx(writeContracts?.CGTC?.claimTokens(), async update => {
+    tx(writeContracts?.CGTC?.claimTokensForCaller(), async update => {
       if (update && (update.status === "confirmed" || UploadOutlined.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(

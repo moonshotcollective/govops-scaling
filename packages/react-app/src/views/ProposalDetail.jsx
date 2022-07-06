@@ -63,6 +63,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, props }) =
       setAllowance(result.toString());
     });
   };
+
   const getCgtcBalance = () => {
     readContracts?.CGTC?.balanceOf(address).then(result => {
       setCgtcBalance(result);
@@ -384,8 +385,16 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, props }) =
         handleCancel={handleCancel}
         proposal={proposals[id - 1]}
         cgtcBalance={cgtcBalance}
-        submitOption={submitConviction}
+        submitConviction={submitConviction}
         allowance={allowance}
+        tx={tx}
+        readContracts={readContracts}
+        writeContracts={writeContracts}
+        address={address}
+        setAllowance={setAllowance}
+        setLoadingApprove={setLoadingApprove}
+        getCgtcBalance={getCgtcBalance}
+        getGtcBalance={getGtcBalance}
       />
       <OptionModal
         isVisible={showOptionModal}

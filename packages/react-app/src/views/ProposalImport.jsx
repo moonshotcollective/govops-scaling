@@ -64,9 +64,7 @@ const ProposalImport = () => {
           <div className="text-center text-2xl m-4">
             <span>Content</span>
           </div>
-          <div className="border-2 bg-purple-200 text-black">
-            <div id="post-content">{post.cooked}</div>
-          </div>
+          <p className="border-2 bg-purple-200 text-black">{post.cooked}</p>
         </Col>
         <Col span={12} className="text-center">
           <div className="text-center text-2xl m-4">
@@ -103,7 +101,7 @@ const ProposalImport = () => {
               <span>Save to the database</span>
               <br />
               <button
-                className="bg-purple-600 p-4 w-96 hover:bg-purple-400"
+                className="bg-purple-600 p-4 w-96 hover:bg-purple-400 m-4"
                 onClick={() => {
                   console.log("Saving...");
                   saveProposalToDatabase();
@@ -111,6 +109,15 @@ const ProposalImport = () => {
               >
                 Save
               </button>
+              <hr className="p-4 m-4" />
+              <label>Username: </label>
+              <span>{post.username}</span>
+              <br />
+              <label>Created At: </label>
+              <span>{post.created_at}</span>
+              <br />
+              <label>Last Updated: </label>
+              <span>{post.updated_at}</span>
             </Col>
           </Row>
         </Col>
