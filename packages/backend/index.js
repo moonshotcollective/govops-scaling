@@ -81,7 +81,7 @@ app.get("/api/post/:ID", async (req, res) => {
   try {
     console.log("Fetching post ", req.query.ID);
     const id = req.query.ID;
-    const response = await instance.get(`${server}posts/${id}.json`);
+    const response = await instance.get(`${server}t/${id}.json`);
     const result = {
       status: `${response.status}-${response.statusText}`,
       headers: response.headers,

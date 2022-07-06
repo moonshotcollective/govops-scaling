@@ -2,9 +2,9 @@ import { Col, notification, Row } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { ConvictionModal, OptionModal, ProposalOptions } from "../components";
+import { CGTCClaimModal, ConvictionModal, OptionModal, ProposalOptions } from "../components";
 
-const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }) => {
+const ProposalDetail = ({ readContracts, writeContracts, address, tx, props }) => {
   const [amount, setAmount] = useState(0);
   const [isGaugeExecutable, setIsGaugeExecutable] = useState(false);
   const [gaugeDetails, setGaugeDetails] = useState({});
@@ -20,6 +20,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
   // modal state vars
   const [showConvictionModal, setShowConvictionModal] = useState(false);
   const [showOptionModal, setShowOptionModal] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
 
   const showCModal = () => {
     setShowConvictionModal(true);
@@ -29,9 +30,13 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
     setShowOptionModal(true);
   };
 
+  const showClmModal = () => {
+    setShowClaimModal(true);
+  };
   const handleCancel = () => {
     setShowConvictionModal(false);
     setShowOptionModal(false);
+    setShowClaimModal(false);
   };
 
   // let's get the id that was passed for the proposal
@@ -58,10 +63,15 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
       setAllowance(result.toString());
     });
   };
-
   const getCgtcBalance = () => {
     readContracts?.CGTC?.balanceOf(address).then(result => {
       setCgtcBalance(result);
+    });
+  };
+
+  const getGtcBalance = () => {
+    readContracts?.GTC?.balanceOf(address).then(result => {
+      setGtcBalance(result);
     });
   };
 
@@ -233,7 +243,7 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
     const getGtcBalance = () => {
       readContracts?.GTC?.balanceOf(address).then(result => {
         setGtcBalance(result.toString());
-        console.log(result);
+        console.log(result.toString());
       });
     };
 
@@ -341,7 +351,11 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         <Col span={12}>
           <Row>
             <Col span={23} className="mt-11 mr-4 pr-4">
-              {isSteward ? (
+              {cgtcBalance == 0 ? (
+                <button className="w-full p-3 bg-purple-600 hover:bg-purple-400" onClick={() => showClmModal()}>
+                  Claim CGTC
+                </button>
+              ) : isSteward ? (
                 <button className="w-full p-3 bg-purple-600 hover:bg-purple-400" onClick={() => showOModal()}>
                   Add Option
                 </button>
@@ -380,6 +394,16 @@ const ProposalDetail = ({ readContracts, writeContracts, address, tx, ...props }
         cgtcBalance={cgtcBalance}
         submitOption={submitOption}
         allowance={allowance}
+      />
+      <CGTCClaimModal
+        isVisible={showClaimModal}
+        handleCancel={handleCancel}
+        gtcBalance={gtcBalance}
+        cgtcBalance={cgtcBalance}
+        address={address}
+        readContracts={readContracts}
+        writeContracts={writeContracts}
+        tx={tx}
       />
     </div>
   );

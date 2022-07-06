@@ -15,8 +15,8 @@ const ProposalImport = () => {
     try {
       getSinglePost(id).then(res => {
         console.log(res);
-        setPost(res.data.data);
-        setProposal(res.data.data);
+        setPost(res.data.data.post_stream.posts[0]);
+        setProposal(res.data.data.post_stream.posts[0]);
       });
     } catch (error) {
       console.error(error);
@@ -36,8 +36,8 @@ const ProposalImport = () => {
         topic_slug: proposal.topic_slug,
         raw: proposal.raw,
         latestActivity: [],
-        score: proposal.score,
-        staked: proposal.staked,
+        // score: proposal.score,
+        // staked: proposal.staked,
         options: [],
       });
 
@@ -65,7 +65,7 @@ const ProposalImport = () => {
             <span>Content</span>
           </div>
           <div className="border-2 bg-purple-200 text-black">
-            <div id="post-content">{post.raw}</div>
+            <div id="post-content">{post.cooked}</div>
           </div>
         </Col>
         <Col span={12} className="text-center">

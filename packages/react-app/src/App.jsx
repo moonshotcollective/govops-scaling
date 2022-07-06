@@ -1,4 +1,4 @@
-import { Col, Menu, Row } from "antd";
+import { Menu } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -6,29 +6,20 @@ import {
   useContractReader,
   useGasPrice,
   useOnBlock,
-  useUserProviderAndSigner,
+  useUserProviderAndSigner
 } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 // import "./App.css";
-import {
-  Account,
-  Contract,
-  Faucet,
-  FaucetHint,
-  Header,
-  NetworkDisplay,
-  NetworkSwitch,
-  ThemeSwitch,
-} from "./components";
+import { Account, Contract, FaucetHint, Header, NetworkDisplay, NetworkSwitch, ThemeSwitch } from "./components";
 import { ALCHEMY_KEY, NETWORKS } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { useStaticJsonRPC } from "./hooks";
-import { Dashboard, Home, Proposals, ProposalImport, Stewards, Subgraph } from "./views";
+import { Dashboard, Home, ProposalImport, Proposals, Stewards, Subgraph } from "./views";
 import ProposalDetail from "./views/ProposalDetail";
 
 const { ethers } = require("ethers");
@@ -165,8 +156,10 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
-  // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  const myGtcBalance = useContractReader(mainnetContracts, "GTC", "balanceOf", [
+    "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B",
+  ]);
+  console.log("GTC Balance", myGtcBalance?.toString());
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");

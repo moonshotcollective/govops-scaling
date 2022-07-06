@@ -900,7 +900,7 @@
       "chainId": "31337",
       "contracts": {
         "CGTC": {
-          "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+          "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
           "abi": [
             {
               "inputs": [
@@ -908,10 +908,25 @@
                   "internalType": "address",
                   "name": "admin",
                   "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "gtcAddress",
+                  "type": "address"
                 }
               ],
               "stateMutability": "nonpayable",
               "type": "constructor"
+            },
+            {
+              "inputs": [],
+              "name": "NotOwner",
+              "type": "error"
+            },
+            {
+              "inputs": [],
+              "name": "ZeroBalance",
+              "type": "error"
             },
             {
               "anonymous": false,
@@ -944,6 +959,63 @@
                 {
                   "indexed": true,
                   "internalType": "address",
+                  "name": "previousOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "claimant",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "amountBurned",
+                  "type": "uint256"
+                }
+              ],
+              "name": "TokensBurned",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "claimant",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "amountClaimed",
+                  "type": "uint256"
+                }
+              ],
+              "name": "TokensClaimed",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
                   "name": "from",
                   "type": "address"
                 },
@@ -962,6 +1034,19 @@
               ],
               "name": "Transfer",
               "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "_gtcAddress",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
             },
             {
               "inputs": [
@@ -1031,6 +1116,77 @@
               "type": "function"
             },
             {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "burn",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "burnFrom",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "user",
+                  "type": "address"
+                }
+              ],
+              "name": "burnFromAddress",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "burnFromCaller",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "user",
+                  "type": "address"
+                }
+              ],
+              "name": "claimTokensForAddress",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "claimTokensForCaller",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
               "inputs": [],
               "name": "decimals",
               "outputs": [
@@ -1075,6 +1231,19 @@
               "type": "function"
             },
             {
+              "inputs": [],
+              "name": "getClaimAmount",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "claimAmount",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
               "inputs": [
                 {
                   "internalType": "address",
@@ -1109,6 +1278,26 @@
                 }
               ],
               "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "renounceOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
               "type": "function"
             },
             {
@@ -1189,11 +1378,24 @@
               ],
               "stateMutability": "nonpayable",
               "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
             }
           ]
         },
         "ConvictionVoting": {
-          "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+          "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
           "abi": [
             {
               "inputs": [
@@ -1886,7 +2088,7 @@
           ]
         },
         "GTC": {
-          "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+          "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
           "abi": [
             {
               "inputs": [
