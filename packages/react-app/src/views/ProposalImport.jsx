@@ -15,8 +15,8 @@ const ProposalImport = () => {
     try {
       getSinglePost(id).then(res => {
         console.log(res);
-        setPost(res.data.data.post_stream.posts[0].cooked);
-        setProposal(res.data.data.post_stream.posts[0].cooked);
+        setPost(res.data.data.post_stream.posts[0]);
+        setProposal(res.data.data.post_stream.posts[0]);
       });
     } catch (error) {
       console.error(error);
@@ -65,7 +65,7 @@ const ProposalImport = () => {
             <span>Content</span>
           </div>
           <div className="border-2 bg-purple-200 text-black">
-            <div id="post-content">{post}</div>
+            <div id="post-content">{post.cooked}</div>
           </div>
         </Col>
         <Col span={12} className="text-center">
