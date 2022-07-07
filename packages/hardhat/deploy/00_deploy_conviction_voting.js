@@ -26,14 +26,18 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     });
   }
 
-  await deploy("ConvictionVoting", {
+  const ConvictionVotingContract = await deploy("ConvictionVoting", {
     from: deployer,
     args: [GTC.address, owner],
     log: true,
     waitConfirmations: 5,
   });
 
-  console.log({ GTC: GTC.address }, { CGTC: CGTC.address });
+  console.log(
+    { GTC: GTC.address },
+    { CGTC: CGTC.address },
+    { ConvictionVoting: ConvictionVotingContract.address }
+  );
 
   // Verify from the command line by running `yarn verify`
 
