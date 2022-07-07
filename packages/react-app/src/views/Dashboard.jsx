@@ -29,7 +29,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
 
   const addGauge = async threshold => {
     setLoadingGauge(true);
-    await tx(writeContracts?.ConvictionVoting?.addGauge(threshold), async update => {
+    await tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
         console.log(" 🍾 Transaction " + update.hash + " finished!");
         console.log(
@@ -282,7 +282,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <div className="">
             <Statistic
               title="Gauge Score"
-              value={ethers.utils.formatUnits(score, 20)}
+              value={ethers.utils.formatUnits(score == undefined ? 0 : score, 20)}
               precision={8}
               valueStyle={{ color: "purple", margin: "1px" }}
             />
@@ -298,7 +298,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               precision={8}
               valueStyle={{ color: "purple", margin: "1px" }}
             />
-            <Gauge value={ethers.utils.formatUnits(score, 20).slice(0, 9)} className="mt-6" />
+            <Gauge value={ethers.utils.formatUnits(score == undefined ? 0 : score, 20).slice(0, 9)} className="mt-6" />
           </div>
           {address == "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B" ? (
             <>

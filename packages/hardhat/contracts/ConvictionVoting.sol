@@ -23,7 +23,7 @@
                     Moonshot Collective
             https://github.com/moonshotcollective
 */
-pragma solidity ^0.8.14;
+pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -42,6 +42,7 @@ contract ConvictionVoting is Ownable {
 
     error BadGaugeId();
     error EmptyCount();
+    error EmptyTranche();
 
     struct Gauge {
         uint256 id;
@@ -59,6 +60,7 @@ contract ConvictionVoting is Ownable {
     }
 
     uint256 public currentGaugeId;
+    uint256 public currentTrancheId;
     uint256 public convictionThreshold;
     uint256 public effectiveSupply;
     uint256 public minimumConviction;
@@ -66,12 +68,16 @@ contract ConvictionVoting is Ownable {
     /// @notice Mapping of all gauges structs
     mapping(uint256 => Gauge) public gauges;
 
+    /// @notice Mapping of tranche to gauge ids
+    mapping(uint256 => uint256[]) public tranches;
+
     /// @notice Mapping of conviction scores for a user
     mapping(address => uint256) public scores;
 
     IERC20 public token;
 
     event NewGauge(uint256 indexed id);
+    event NewTranche(uint256 indexed id, uint256[] gaugeIds);
     event AddConviction(
         uint256 indexed gaugeId,
         uint256 indexed convictionId,
@@ -90,24 +96,57 @@ contract ConvictionVoting is Ownable {
         _transferOwnership(owner);
     }
 
-    /// @notice Adds a new gauge with no convictions
-    // function addGauge() external onlyOwner {
-    //     uint256 current = ++currentGaugeId;
-    //     Gauge storage gauge = gauges[current]; // gauges start from 1...
-    //     gauge.id = current;
+    /// @notice Adds a new tranche with threshold-disabled gauges
+    /// @param count the number of gauges to create
+    function addTranche(uint256 count) public onlyOwner {
+        if(count == 0) revert EmptyTranche();
+        uint256 current = ++currentTrancheId;
+        uint256[] memory gaugeIds = new uint256[](0);
+        for (uint256 i = 0; i < count; i++) {
+            gaugeIds[i] = addGauge();
+        }
+        tranches[current] = gaugeIds;
 
-    //     emit NewGauge(current);
-    // }
+        emit NewTranche(current, gaugeIds);
+    }
+
+    /// @notice Adds a new tranche with threshold-enabled gauges
+    /// @param count the number of gauges to create
+    /// @param threshold the value of the threshold for each gauge
+    function addTranche(uint256 count, uint256 threshold) public onlyOwner {
+        if(count == 0) revert EmptyTranche();
+        uint256 current = ++currentTrancheId;
+        uint256[] memory gaugeIds = new uint256[](0);
+        for (uint256 i = 0; i < count; i++) {
+            gaugeIds[i] = addGauge(threshold);
+        }
+        tranches[current] = gaugeIds;
+
+        emit NewTranche(current, gaugeIds);
+    }
+
+    /// @notice Adds a new gauge with no convictions
+    function addGauge() public onlyOwner returns (uint256) {
+        uint256 current = ++currentGaugeId;
+        Gauge storage gauge = gauges[current]; // gauges start from 1...
+        gauge.id = current;
+
+        emit NewGauge(current);
+
+        return current;
+    }
 
     /// @notice Adds a new gauge with a threshold
     /// @param threshold the value of the threshold requested
-    function addGauge(uint256 threshold) public onlyOwner {
+    function addGauge(uint256 threshold) public onlyOwner returns (uint256) {
         uint256 current = ++currentGaugeId;
         Gauge storage gauge = gauges[current]; // gauges start from 1...
         gauge.id = current;
         gauge.threshold = threshold;
 
         emit NewGauge(current);
+
+        return current;
     }
 
     /// @notice Adds conviction to a gauge
@@ -278,9 +317,9 @@ contract ConvictionVoting is Ownable {
         external
         view
         returns (
-            uint256,
-            uint256,
-            uint256
+            uint256 currentConvictionId,
+            uint256 totalStake,
+            uint256 threshold
         )
     {
         Gauge storage gauge = gauges[gaugeId];

@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 
 mongoose
   .connect(
-    "mongodb+srv://jaxcoder:JaxCodes1@development.u48nl.mongodb.net/talentdao?retryWrites=true&w=majority",
+    "mongodb+srv://jaxcoder:JaxCodes1@development.u48nl.mongodb.net/mc-govops?retryWrites=true&w=majority",
     { useNewUrlParser: true }
   )
   .catch((e) => {
@@ -22,12 +22,12 @@ mongoose
 //         console.error('Connection error', e.message)
 //     })
 
-const connection = mongoose.connection;
+const { connection } = mongoose;
 let collections = [];
 
-connection.on("open", function (ref) {
+connection.on("open", (ref) => {
   console.log("Connected to mongo server.");
-  connection.db.listCollections().toArray(function (err, names) {
+  connection.db.listCollections().toArray((err, names) => {
     collections = names;
   });
   console.log(collections);
