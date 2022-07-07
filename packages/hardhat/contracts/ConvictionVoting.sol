@@ -60,7 +60,7 @@ contract ConvictionVoting is Ownable {
     }
 
     uint256 public currentGaugeId;
-    uint256 public currentTrancheId;
+    uint256 private currentTrancheId;
     uint256 public convictionThreshold;
     uint256 public effectiveSupply;
     uint256 public minimumConviction;
@@ -94,6 +94,10 @@ contract ConvictionVoting is Ownable {
     constructor(address newToken, address owner) {
         token = IERC20(newToken);
         _transferOwnership(owner);
+    }
+
+    function getCurrentTrancheId () public view returns(uint256) {
+        return currentTrancheId;
     }
 
     /// @notice Adds a new tranche with threshold-disabled gauges

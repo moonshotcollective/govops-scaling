@@ -16,6 +16,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   const [proposals, setProposals] = useState([
     {
       id: 1,
+      gaugeId: 1,
       title: "GR14 Round Structure & Grants Eligibility Update",
       author: "annikalewis",
       reviewedBy: [{ steward: "" }],
@@ -39,6 +40,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     },
     {
       id: 2,
+      gaugeId: 2,
       title: "Decentralize Gitcoin Kudos - budget request",
       author: "cerestation",
       reviewedBy: [{ steward: "kbw" }],
@@ -63,6 +65,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     },
     {
       id: 3,
+      gaugeId: 3,
       title: "KERNEL Budget Request of 49K GTC",
       author: "viveksingh",
       reviewedBy: [{ steward: "" }],
