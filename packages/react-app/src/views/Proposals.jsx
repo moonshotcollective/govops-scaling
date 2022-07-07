@@ -8,7 +8,7 @@ const server = "http://localhost:4001/api/";
 
 //! Developer notes: a gaugeId will equal the proposalId
 const Proposals = ({ address, readContracts, writeContracts, tx }) => {
-  const workstream = ["Public Goods Funding", "MMM", "Moonshot Collective", "FDD", "DAO Operations", "Kernel"];
+  const workstream = ["PGF", "MMM", "MC", "FDD", "DAO Ops", "Kernel"];
 
   const [latestPosts, setLatestPosts] = useState();
   const [currentPost, setCurrentPost] = useState();

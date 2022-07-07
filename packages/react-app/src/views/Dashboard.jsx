@@ -7,7 +7,7 @@ import { Gauge } from "../components";
 const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => {
   const [currentGaugeId, setCurrentGaugeId] = useState();
   const [gaugeId, setGaugeId] = useState(1);
-  const [user, setUser] = useState([{ address: address, gauges: [{ id: 1, score: 0 }] }]);
+  const [user, setUser] = useState([{ address: address ? address : "", gauges: [{ id: 1, score: 0 }] }]);
   const [userScore, setUserScore] = useState(0);
   const [userStake, setUserStake] = useState(0);
   const [gauges, setGauges] = useState([]);
@@ -27,7 +27,31 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
     setAction(e);
   };
 
-  const addGauge = async threshold => {
+  const addGauge = async () => {
+    setLoadingGauge(true);
+    await tx(writeContracts?.ConvictionVoting?.addGauge(), async update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.success({
+          placement: "topRight",
+          message: "Gauge Added",
+        });
+      }
+    });
+    setLoadingGauge(false);
+    getGaugeInfo();
+  };
+
+  const addGaugeThreshold = async threshold => {
     setLoadingGauge(true);
     await tx(writeContracts?.ConvictionVoting?.addGauge(threshold), async update => {
       if (update && (update.status === "confirmed" || update.status === 1)) {
@@ -282,7 +306,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
           <div className="">
             <Statistic
               title="Gauge Score"
-              value={ethers.utils.formatUnits(score == undefined ? 0 : score, 20)}
+              value={ethers.utils.formatUnits(score ? score : 0, 20)}
               precision={8}
               valueStyle={{ color: "purple", margin: "1px" }}
             />
@@ -298,7 +322,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               precision={8}
               valueStyle={{ color: "purple", margin: "1px" }}
             />
-            <Gauge value={ethers.utils.formatUnits(score == undefined ? 0 : score, 20).slice(0, 9)} className="mt-6" />
+            <Gauge value={ethers.utils.formatUnits(score ? score : 0, 20).slice(0, 9)} className="mt-6" />
           </div>
           {address == "0x3f15B8c6F9939879Cb030D6dd935348E57109637" ? (
             <>
@@ -310,7 +334,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               <Button
                 loading={loadingGauge}
                 className="mt-5 bg-purple-700 hover:bg-purple-300"
-                onClick={() => addGauge(thresholdForGauge)}
+                onClick={() => addGaugeThreshold(thresholdForGauge)}
               >
                 Add Gauge
               </Button>
@@ -350,7 +374,7 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
               <label>Amount: </label>
               <input
                 className="w-60 m-4 bg-transparent border-2 p-1"
-                value={amount}
+                value={amount ? amount : 0}
                 onChange={e => {
                   setAmount(e.target.value);
                   getApprovedAmount();
@@ -418,22 +442,27 @@ const Dashboard = ({ readContracts, writeContracts, address, tx, ...props }) => 
                     getTotalStakedForGauge(item.id);
                   }}
                 >
-                  <Statistic title="Gauge Score" value={item.score} precision={8} valueStyle={{ color: "yellow" }} />
+                  <Statistic
+                    title="Gauge Score"
+                    value={item.score ? item.score : 0}
+                    precision={8}
+                    valueStyle={{ color: "yellow" }}
+                  />
                   <Statistic
                     title="Gauge Stake"
-                    value={item.totalStaked}
+                    value={item.totalStaked ? item.totalStaked : 0}
                     precision={8}
                     valueStyle={{ color: "yellow" }}
                   />
                   <Statistic
                     title="Your GTC Staked"
-                    value={item.userStake}
+                    value={item.userStake ? item.userStake : 0}
                     precision={8}
                     valueStyle={{ color: "yellow" }}
                   />
                   <Statistic
                     title="Your Gauge Score"
-                    value={item.userScore}
+                    value={item.userScore ? item.userScore : 0}
                     precision={8}
                     valueStyle={{ color: "yellow" }}
                   />
