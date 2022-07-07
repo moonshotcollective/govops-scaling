@@ -17,7 +17,7 @@ export async function getSingleProposalData(params) {
   return null;
 }
 
-export async function getAllPropsalData() {
+export async function getAllProposalData() {
   try {
     const res = await axios.get(`${server}/api/proposals`, {});
     if (res.data.success) {

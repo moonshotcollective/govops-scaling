@@ -10,7 +10,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  const owner = process.env.DEVELOPER || deployer;
+  const owner = process.env.DEVELOPER;
   let GTC = { address: "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F" };
 
   if (chainId !== "1") {

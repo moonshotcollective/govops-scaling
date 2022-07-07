@@ -2,7 +2,7 @@ import { Col, Row } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { ProposalLane } from "../components";
-import { getAllPropsalData, getSinglePost } from "../helpers";
+import { getAllProposalData, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
@@ -107,7 +107,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
 
   const getAllProposals = async () => {
     try {
-      getAllPropsalData({}).then(res => {
+      getAllProposalData({}).then(res => {
         console.log("Proposals: ", res);
         // setProposals(res);
       });
