@@ -2,6 +2,7 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { Col, Modal, Row, Switch } from "antd";
 import { ethers } from "ethers";
 import React, { useState } from "react";
+import { ProposalOptions } from "../components";
 
 const ConvictionModal = ({
   isVisible,
@@ -58,7 +59,7 @@ const ConvictionModal = ({
         style: { width: "400px" },
       }}
       onOk={() => {
-        if (allowance === 0) {
+        if (allowance == 0) {
           approveCgtc("10000");
         } else if (allowance > 0) {
           submitConviction(action, optionsFunded);
@@ -128,7 +129,7 @@ const Option = ({ values, updateValuesCallback }) => {
           value={amount}
           onChange={e => {
             setAmount(e.target.value);
-            updateValuesCallback(values.options[0]);
+            updateValuesCallback(0);
           }}
         />
         <span className="ml-2">CGTC</span>

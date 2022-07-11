@@ -10,7 +10,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  const owner = process.env.DEVELOPER || deployer;
+  const owner = process.env.DEVELOPER;
   let GTC = { address: "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F" };
 
   if (chainId !== "1") {
@@ -26,14 +26,18 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     });
   }
 
-  await deploy("ConvictionVoting", {
+  const ConvictionVotingContract = await deploy("ConvictionVoting", {
     from: deployer,
     args: [GTC.address, owner],
     log: true,
     waitConfirmations: 5,
   });
 
-  console.log({ GTC: GTC.address }, { CGTC: CGTC.address });
+  console.log(
+    { GTC: GTC.address },
+    { CGTC: CGTC.address },
+    { ConvictionVoting: ConvictionVotingContract.address }
+  );
 
   // Verify from the command line by running `yarn verify`
 

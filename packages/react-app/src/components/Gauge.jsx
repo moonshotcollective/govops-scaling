@@ -36,7 +36,7 @@ const Gauge = ({ value }) => {
         style={{ margin: "0 auto" }}
         width={radius * 2}
         height={radius * 2}
-        value={value}
+        value={value.toString()}
         percent=""
         textSize={1}
         textOffsetX={0}

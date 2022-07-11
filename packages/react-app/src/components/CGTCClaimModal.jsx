@@ -29,6 +29,7 @@ const CGTCClaimModal = ({ isVisible, handleCancel, cgtcBalance, address, readCon
         setIsClaimLoading(false);
       }
     });
+    setIsClaimLoading(false);
   };
 
   // Loads up the balance of GTC in wallet

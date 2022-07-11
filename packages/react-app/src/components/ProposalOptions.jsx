@@ -1,7 +1,7 @@
 import { Col, Divider, Progress, Row } from "antd";
 import React from "react";
 
-const ProposalOptions = ({ options }) => {
+const ProposalOptions = ({ options, updateOptionsCallback }) => {
   return (
     <>
       {options.map((item, index) => {

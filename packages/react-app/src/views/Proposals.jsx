@@ -2,13 +2,13 @@ import { Col, Row } from "antd";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { ProposalLane } from "../components";
-import { getAllPropsalData, getSinglePost } from "../helpers";
+import { getAllProposalData, getSinglePost } from "../helpers";
 
 const server = "http://localhost:4001/api/";
 
 //! Developer notes: a gaugeId will equal the proposalId
 const Proposals = ({ address, readContracts, writeContracts, tx }) => {
-  const workstream = ["Public Goods Funding", "MMM", "Moonshot Collective", "FDD", "DAO Operations", "Kernel"];
+  const workstream = ["PGF", "MMM", "MC", "FDD", "DAO Ops", "Kernel"];
 
   const [latestPosts, setLatestPosts] = useState();
   const [currentPost, setCurrentPost] = useState();
@@ -16,6 +16,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
   const [proposals, setProposals] = useState([
     {
       id: 1,
+      gaugeId: 1,
       title: "GR14 Round Structure & Grants Eligibility Update",
       author: "annikalewis",
       reviewedBy: [{ steward: "" }],
@@ -39,6 +40,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     },
     {
       id: 2,
+      gaugeId: 2,
       title: "Decentralize Gitcoin Kudos - budget request",
       author: "cerestation",
       reviewedBy: [{ steward: "kbw" }],
@@ -63,6 +65,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
     },
     {
       id: 3,
+      gaugeId: 3,
       title: "KERNEL Budget Request of 49K GTC",
       author: "viveksingh",
       reviewedBy: [{ steward: "" }],
@@ -107,7 +110,7 @@ const Proposals = ({ address, readContracts, writeContracts, tx }) => {
 
   const getAllProposals = async () => {
     try {
-      getAllPropsalData({}).then(res => {
+      getAllProposalData({}).then(res => {
         console.log("Proposals: ", res);
         // setProposals(res);
       });
